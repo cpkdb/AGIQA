@@ -1,0 +1,173 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "created_at": "2025-11-22T20:01:07.504409",
+    "description": "正负对比自监督AIGC图像数据集Demo",
+    "generator_model": "stable-diffusion-xl-base-1.0",
+    "total_pairs": 4
+  },
+  "pairs": [
+    {
+      "pair_id": "demo_0000_visual",
+      "type": "visual_quality",
+      "positive": {
+        "prompt": "a beautiful sunset over the ocean with colorful clouds, masterpiece, best quality, high resolution, detailed, sharp, professional",
+        "image_path": "images/demo_0000_visual_positive.png",
+        "generation_info": {
+          "prompt": "a beautiful sunset over the ocean with colorful clouds, masterpiece, best quality, high resolution, detailed, sharp, professional",
+          "negative_prompt": "low quality, worst quality, blurry, ugly, deformed",
+          "seed": 42,
+          "steps": 30,
+          "cfg_scale": 7.5,
+          "width": 1024,
+          "height": 1024
+        },
+        "reward_score": 0.0
+      },
+      "negative": {
+        "prompt": "a beautiful sunset over the ocean with colorful clouds, slightly blurry, soft focus",
+        "image_path": "images/demo_0000_visual_negative.png",
+        "generation_info": {
+          "prompt": "a beautiful sunset over the ocean with colorful clouds, slightly blurry, soft focus",
+          "negative_prompt": "",
+          "seed": 42,
+          "steps": 30,
+          "cfg_scale": 7.5,
+          "width": 1024,
+          "height": 1024
+        },
+        "reward_score": 0.0
+      },
+      "degradation": {
+        "category": "visual_quality",
+        "type": "blur",
+        "severity": "mild",
+        "keywords_added": "slightly blurry, soft focus"
+      },
+      "score_difference": 0.0
+    },
+    {
+      "pair_id": "demo_0000_semantic",
+      "type": "semantic_alignment",
+      "positive": {
+        "prompt": "a beautiful sunset over the ocean with colorful clouds, masterpiece, best quality, high resolution, detailed",
+        "image_path": "images/demo_0000_semantic_positive.png",
+        "generation_info": {
+          "prompt": "a beautiful sunset over the ocean with colorful clouds, masterpiece, best quality, high resolution, detailed",
+          "negative_prompt": "low quality, worst quality, blurry, ugly",
+          "seed": 1042,
+          "steps": 30,
+          "cfg_scale": 7.5,
+          "width": 1024,
+          "height": 1024
+        },
+        "reward_score": 0.0
+      },
+      "negative": {
+        "prompt": "a beautiful sunrise over the ocean with colorful clouds, masterpiece, best quality, high resolution, detailed",
+        "image_path": "images/demo_0000_semantic_negative.png",
+        "generation_info": {
+          "prompt": "a beautiful sunrise over the ocean with colorful clouds, masterpiece, best quality, high resolution, detailed",
+          "negative_prompt": "low quality, worst quality, blurry, ugly",
+          "seed": 1042,
+          "steps": 30,
+          "cfg_scale": 7.5,
+          "width": 1024,
+          "height": 1024
+        },
+        "reward_score": 0.0,
+        "evaluated_with_prompt": "a beautiful sunset over the ocean with colorful clouds"
+      },
+      "degradation": {
+        "category": "alignment",
+        "modification": {
+          "original": "sunset",
+          "replaced": "sunrise",
+          "type": "scene"
+        }
+      },
+      "score_difference": 0.0
+    },
+    {
+      "pair_id": "demo_0001_visual",
+      "type": "visual_quality",
+      "positive": {
+        "prompt": "a cute orange cat sitting on a red velvet chair, masterpiece, best quality, high resolution, detailed, sharp, professional",
+        "image_path": "images/demo_0001_visual_positive.png",
+        "generation_info": {
+          "prompt": "a cute orange cat sitting on a red velvet chair, masterpiece, best quality, high resolution, detailed, sharp, professional",
+          "negative_prompt": "low quality, worst quality, blurry, ugly, deformed",
+          "seed": 43,
+          "steps": 30,
+          "cfg_scale": 7.5,
+          "width": 1024,
+          "height": 1024
+        },
+        "reward_score": 0.0
+      },
+      "negative": {
+        "prompt": "a cute orange cat sitting on a red velvet chair, noisy, visible grain",
+        "image_path": "images/demo_0001_visual_negative.png",
+        "generation_info": {
+          "prompt": "a cute orange cat sitting on a red velvet chair, noisy, visible grain",
+          "negative_prompt": "",
+          "seed": 43,
+          "steps": 30,
+          "cfg_scale": 7.5,
+          "width": 1024,
+          "height": 1024
+        },
+        "reward_score": 0.0
+      },
+      "degradation": {
+        "category": "visual_quality",
+        "type": "noise",
+        "severity": "moderate",
+        "keywords_added": "noisy, visible grain"
+      },
+      "score_difference": 0.0
+    },
+    {
+      "pair_id": "demo_0001_semantic",
+      "type": "semantic_alignment",
+      "positive": {
+        "prompt": "a cute orange cat sitting on a red velvet chair, masterpiece, best quality, high resolution, detailed",
+        "image_path": "images/demo_0001_semantic_positive.png",
+        "generation_info": {
+          "prompt": "a cute orange cat sitting on a red velvet chair, masterpiece, best quality, high resolution, detailed",
+          "negative_prompt": "low quality, worst quality, blurry, ugly",
+          "seed": 1043,
+          "steps": 30,
+          "cfg_scale": 7.5,
+          "width": 1024,
+          "height": 1024
+        },
+        "reward_score": 0.0
+      },
+      "negative": {
+        "prompt": "a cute orange dog sitting on a red velvet chair, masterpiece, best quality, high resolution, detailed",
+        "image_path": "images/demo_0001_semantic_negative.png",
+        "generation_info": {
+          "prompt": "a cute orange dog sitting on a red velvet chair, masterpiece, best quality, high resolution, detailed",
+          "negative_prompt": "low quality, worst quality, blurry, ugly",
+          "seed": 1043,
+          "steps": 30,
+          "cfg_scale": 7.5,
+          "width": 1024,
+          "height": 1024
+        },
+        "reward_score": 0.0,
+        "evaluated_with_prompt": "a cute orange cat sitting on a red velvet chair"
+      },
+      "degradation": {
+        "category": "alignment",
+        "modification": {
+          "original": "cat",
+          "replaced": "dog",
+          "type": "object"
+        }
+      },
+      "score_difference": 0.0
+    }
+  ]
+}

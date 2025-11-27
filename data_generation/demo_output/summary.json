@@ -1,0 +1,11 @@
+{
+  "total_pairs": 4,
+  "visual_quality_pairs": 2,
+  "semantic_alignment_pairs": 2,
+  "scores": {
+    "average_positive_score": 0.0,
+    "average_negative_score": 0.0,
+    "average_score_difference": 0.0
+  },
+  "generated_at": "2025-11-22T20:02:04.978481"
+}

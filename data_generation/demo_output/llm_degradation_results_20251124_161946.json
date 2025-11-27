@@ -1,0 +1,166 @@
+{
+  "metadata": {
+    "generated_at": "2025-11-24T16:19:46.422768",
+    "subcategory": "low_visual_quality",
+    "severity_distribution": {
+      "mild": 5,
+      "moderate": 7,
+      "severe": 8
+    },
+    "total_prompts": 20,
+    "success_count": 5,
+    "fail_count": 15
+  },
+  "results": [
+    {
+      "id": 1,
+      "positive_prompt": "a beautiful sunset over the ocean, masterpiece, high quality, detailed, 8k",
+      "negative_prompt": "a blurry and noisy sunset over the ocean, with severe color distortion, low contrast, and lack of detail",
+      "degradation_info": {
+        "category": "visual_quality",
+        "dimension": "low_visual_quality",
+        "subcategory": "low_visual_quality",
+        "severity": "severe",
+        "method": "llm"
+      }
+    },
+    {
+      "id": 2,
+      "positive_prompt": "portrait of a young woman with blue eyes, professional photography, sharp focus, natural lighting",
+      "negative_prompt": "portrait of a young woman with blue eyes, photography with noticeable blur, uneven lighting, reduced sharpness",
+      "degradation_info": {
+        "category": "visual_quality",
+        "dimension": "low_visual_quality",
+        "subcategory": "low_visual_quality",
+        "severity": "moderate",
+        "method": "llm"
+      }
+    },
+    {
+      "id": 3,
+      "positive_prompt": "a red sports car on a mountain road, automotive photography, high resolution, dramatic angle",
+      "negative_prompt": "a red sports car on a mountain road, automotive photography, moderate blur, low sharpness, reduced contrast",
+      "degradation_info": {
+        "category": "visual_quality",
+        "dimension": "low_visual_quality",
+        "subcategory": "low_visual_quality",
+        "severity": "moderate",
+        "method": "llm"
+      }
+    },
+    {
+      "id": 4,
+      "positive_prompt": "a cat sitting on a wooden chair, cute, detailed fur, warm lighting",
+      "negative_prompt": "a cat sitting on a wooden chair, blurry, noisy, washed-out colors, dull lighting",
+      "degradation_info": {
+        "category": "visual_quality",
+        "dimension": "low_visual_quality",
+        "subcategory": "low_visual_quality",
+        "severity": "severe",
+        "method": "llm"
+      }
+    },
+    {
+      "id": 5,
+      "positive_prompt": "modern architecture building with glass facade, architectural photography, clean lines, professional",
+      "negative_prompt": "modern architecture building with glass facade, architectural photography, soft focus, grainy texture, muted colors",
+      "degradation_info": {
+        "category": "visual_quality",
+        "dimension": "low_visual_quality",
+        "subcategory": "low_visual_quality",
+        "severity": "moderate",
+        "method": "llm"
+      }
+    },
+    {
+      "id": 6,
+      "positive_prompt": "a bowl of fresh fruits on a table, food photography, vibrant colors, high quality",
+      "negative_prompt": null,
+      "error": "Error code: 429 - {'error': {'message': 'gpt-4o-ca模型免费API限制每日5次请求，请00:00后再试，如有更多需求，请访问 https://api.chatanywhere.tech/#/shop 购买付费API。The free account is limited to 5 requests per day. Please try again after 00:00 the next day. If you have additional requirements, please visit https://api.chatanywhere.tech/#/shop to purchase a premium key.(当前请求使用的ApiKey: sk-O2D****73qK)【如果您遇到问题，欢迎加入QQ群咨询：1048463714】', 'type': 'chatanywhere_error', 'param': None, 'code': '429 TOO_MANY_REQUESTS'}}"
+    },
+    {
+      "id": 7,
+      "positive_prompt": "landscape with mountains and forest, nature photography, golden hour, breathtaking view",
+      "negative_prompt": null,
+      "error": "Error code: 429 - {'error': {'message': 'gpt-4o-ca模型免费API限制每日5次请求，请00:00后再试，如有更多需求，请访问 https://api.chatanywhere.tech/#/shop 购买付费API。The free account is limited to 5 requests per day. Please try again after 00:00 the next day. If you have additional requirements, please visit https://api.chatanywhere.tech/#/shop to purchase a premium key.(当前请求使用的ApiKey: sk-O2D****73qK)【如果您遇到问题，欢迎加入QQ群咨询：1048463714】', 'type': 'chatanywhere_error', 'param': None, 'code': '429 TOO_MANY_REQUESTS'}}"
+    },
+    {
+      "id": 8,
+      "positive_prompt": "a white dog playing in the park, action shot, clear focus, natural colors",
+      "negative_prompt": null,
+      "error": "Error code: 429 - {'error': {'message': 'gpt-4o-ca模型免费API限制每日5次请求，请00:00后再试，如有更多需求，请访问 https://api.chatanywhere.tech/#/shop 购买付费API。The free account is limited to 5 requests per day. Please try again after 00:00 the next day. If you have additional requirements, please visit https://api.chatanywhere.tech/#/shop to purchase a premium key.(当前请求使用的ApiKey: sk-O2D****73qK)【如果您遇到问题，欢迎加入QQ群咨询：1048463714】', 'type': 'chatanywhere_error', 'param': None, 'code': '429 TOO_MANY_REQUESTS'}}"
+    },
+    {
+      "id": 9,
+      "positive_prompt": "abstract art with geometric shapes, colorful, modern art style, high contrast",
+      "negative_prompt": null,
+      "error": "Error code: 429 - {'error': {'message': 'gpt-4o-ca模型免费API限制每日5次请求，请00:00后再试，如有更多需求，请访问 https://api.chatanywhere.tech/#/shop 购买付费API。The free account is limited to 5 requests per day. Please try again after 00:00 the next day. If you have additional requirements, please visit https://api.chatanywhere.tech/#/shop to purchase a premium key.(当前请求使用的ApiKey: sk-O2D****73qK)【如果您遇到问题，欢迎加入QQ群咨询：1048463714】', 'type': 'chatanywhere_error', 'param': None, 'code': '429 TOO_MANY_REQUESTS'}}"
+    },
+    {
+      "id": 10,
+      "positive_prompt": "city skyline at night, urban photography, long exposure, professional quality",
+      "negative_prompt": null,
+      "error": "Error code: 429 - {'error': {'message': 'gpt-4o-ca模型免费API限制每日5次请求，请00:00后再试，如有更多需求，请访问 https://api.chatanywhere.tech/#/shop 购买付费API。The free account is limited to 5 requests per day. Please try again after 00:00 the next day. If you have additional requirements, please visit https://api.chatanywhere.tech/#/shop to purchase a premium key.(当前请求使用的ApiKey: sk-O2D****73qK)【如果您遇到问题，欢迎加入QQ群咨询：1048463714】', 'type': 'chatanywhere_error', 'param': None, 'code': '429 TOO_MANY_REQUESTS'}}"
+    },
+    {
+      "id": 11,
+      "positive_prompt": "a book and coffee on a desk, cozy atmosphere, warm lighting, detailed",
+      "negative_prompt": null,
+      "error": "Error code: 429 - {'error': {'message': 'gpt-4o-ca模型免费API限制每日5次请求，请00:00后再试，如有更多需求，请访问 https://api.chatanywhere.tech/#/shop 购买付费API。The free account is limited to 5 requests per day. Please try again after 00:00 the next day. If you have additional requirements, please visit https://api.chatanywhere.tech/#/shop to purchase a premium key.(当前请求使用的ApiKey: sk-O2D****73qK)【如果您遇到问题，欢迎加入QQ群咨询：1048463714】', 'type': 'chatanywhere_error', 'param': None, 'code': '429 TOO_MANY_REQUESTS'}}"
+    },
+    {
+      "id": 12,
+      "positive_prompt": "flower bouquet in a vase, macro photography, sharp details, natural light",
+      "negative_prompt": null,
+      "error": "Error code: 429 - {'error': {'message': '异常请求过多，暂时禁止访问。Too many requests for exceptions, temporarily disabling access.【如果您遇到问题，欢迎加入QQ群咨询：1048463714】', 'type': 'chatanywhere_error', 'param': None, 'code': '429 TOO_MANY_REQUESTS'}}"
+    },
+    {
+      "id": 13,
+      "positive_prompt": "a person running on the beach, dynamic pose, golden hour lighting, professional shot",
+      "negative_prompt": null,
+      "error": "<!DOCTYPE html><html><meta charset=\"UTF-8\"><meta content=\"width=device-width,initial-scale=1\" name=\"viewport\"><title>AccessDeny</title><style>html{font-size:30px;font-family:PingFangSC-Regular}.content{padding:0 30px 0;width:1200px}.text1{font-size:1.25em}.text2{font-size:.625em}.text3{font-size:.75em;margin:100px 0}.footer-line{border-top:1px solid #000}</style><body style=\"display:none\"><div class=\"content\"><h1 class=\"err\">Restricted Access</h1><p class=\"text2\"><span id=\"id1\">Request ID:</span><span>12650932730154234785</span></p><p class=\"text3\">The security policy of this website has blocked you from further access.</p><div class=\"footer-line\"><p class=\"text2\"><span id=\"id3\">Protected by Tencent Cloud EdgeOne</span></p></div></div></body><script>function changeLang(){[\"zh-cn\",\"zh\"].includes((navigator.userLanguage||navigator.language).toLowerCase())&&(document.querySelector(\".err\").innerHTML=\"访问受限\",document.querySelector(\".text3\").innerHTML=\"您的请求已被该站点的安全策略拦截。\",document.querySelector(\"#id1\").innerHTML=\"请求 ID：\",document.querySelector(\"#id3\").innerHTML=\"由 Tencent Cloud EdgeOne 提供防护\"),document.body.style=\"display: block\"}changeLang()</script></html>"
+    },
+    {
+      "id": 14,
+      "positive_prompt": "vintage bicycle against a brick wall, retro style, detailed, artistic composition",
+      "negative_prompt": null,
+      "error": "<!DOCTYPE html><html><meta charset=\"UTF-8\"><meta content=\"width=device-width,initial-scale=1\" name=\"viewport\"><title>AccessDeny</title><style>html{font-size:30px;font-family:PingFangSC-Regular}.content{padding:0 30px 0;width:1200px}.text1{font-size:1.25em}.text2{font-size:.625em}.text3{font-size:.75em;margin:100px 0}.footer-line{border-top:1px solid #000}</style><body style=\"display:none\"><div class=\"content\"><h1 class=\"err\">Restricted Access</h1><p class=\"text2\"><span id=\"id1\">Request ID:</span><span>6084245055559450378</span></p><p class=\"text3\">The security policy of this website has blocked you from further access.</p><div class=\"footer-line\"><p class=\"text2\"><span id=\"id3\">Protected by Tencent Cloud EdgeOne</span></p></div></div></body><script>function changeLang(){[\"zh-cn\",\"zh\"].includes((navigator.userLanguage||navigator.language).toLowerCase())&&(document.querySelector(\".err\").innerHTML=\"访问受限\",document.querySelector(\".text3\").innerHTML=\"您的请求已被该站点的安全策略拦截。\",document.querySelector(\"#id1\").innerHTML=\"请求 ID：\",document.querySelector(\"#id3\").innerHTML=\"由 Tencent Cloud EdgeOne 提供防护\"),document.body.style=\"display: block\"}changeLang()</script></html>"
+    },
+    {
+      "id": 15,
+      "positive_prompt": "steaming cup of tea with herbs, close-up, warm tones, high quality food photography",
+      "negative_prompt": null,
+      "error": "<!DOCTYPE html><html><meta charset=\"UTF-8\"><meta content=\"width=device-width,initial-scale=1\" name=\"viewport\"><title>AccessDeny</title><style>html{font-size:30px;font-family:PingFangSC-Regular}.content{padding:0 30px 0;width:1200px}.text1{font-size:1.25em}.text2{font-size:.625em}.text3{font-size:.75em;margin:100px 0}.footer-line{border-top:1px solid #000}</style><body style=\"display:none\"><div class=\"content\"><h1 class=\"err\">Restricted Access</h1><p class=\"text2\"><span id=\"id1\">Request ID:</span><span>12099571482890920295</span></p><p class=\"text3\">The security policy of this website has blocked you from further access.</p><div class=\"footer-line\"><p class=\"text2\"><span id=\"id3\">Protected by Tencent Cloud EdgeOne</span></p></div></div></body><script>function changeLang(){[\"zh-cn\",\"zh\"].includes((navigator.userLanguage||navigator.language).toLowerCase())&&(document.querySelector(\".err\").innerHTML=\"访问受限\",document.querySelector(\".text3\").innerHTML=\"您的请求已被该站点的安全策略拦截。\",document.querySelector(\"#id1\").innerHTML=\"请求 ID：\",document.querySelector(\"#id3\").innerHTML=\"由 Tencent Cloud EdgeOne 提供防护\"),document.body.style=\"display: block\"}changeLang()</script></html>"
+    },
+    {
+      "id": 16,
+      "positive_prompt": "forest path in autumn, nature scene, vibrant fall colors, peaceful atmosphere",
+      "negative_prompt": null,
+      "error": "<!DOCTYPE html><html><meta charset=\"UTF-8\"><meta content=\"width=device-width,initial-scale=1\" name=\"viewport\"><title>AccessDeny</title><style>html{font-size:30px;font-family:PingFangSC-Regular}.content{padding:0 30px 0;width:1200px}.text1{font-size:1.25em}.text2{font-size:.625em}.text3{font-size:.75em;margin:100px 0}.footer-line{border-top:1px solid #000}</style><body style=\"display:none\"><div class=\"content\"><h1 class=\"err\">Restricted Access</h1><p class=\"text2\"><span id=\"id1\">Request ID:</span><span>14617624644193619632</span></p><p class=\"text3\">The security policy of this website has blocked you from further access.</p><div class=\"footer-line\"><p class=\"text2\"><span id=\"id3\">Protected by Tencent Cloud EdgeOne</span></p></div></div></body><script>function changeLang(){[\"zh-cn\",\"zh\"].includes((navigator.userLanguage||navigator.language).toLowerCase())&&(document.querySelector(\".err\").innerHTML=\"访问受限\",document.querySelector(\".text3\").innerHTML=\"您的请求已被该站点的安全策略拦截。\",document.querySelector(\"#id1\").innerHTML=\"请求 ID：\",document.querySelector(\"#id3\").innerHTML=\"由 Tencent Cloud EdgeOne 提供防护\"),document.body.style=\"display: block\"}changeLang()</script></html>"
+    },
+    {
+      "id": 17,
+      "positive_prompt": "a lighthouse on a rocky coast, dramatic sky, professional landscape photography",
+      "negative_prompt": null,
+      "error": "<!DOCTYPE html><html><meta charset=\"UTF-8\"><meta content=\"width=device-width,initial-scale=1\" name=\"viewport\"><title>AccessDeny</title><style>html{font-size:30px;font-family:PingFangSC-Regular}.content{padding:0 30px 0;width:1200px}.text1{font-size:1.25em}.text2{font-size:.625em}.text3{font-size:.75em;margin:100px 0}.footer-line{border-top:1px solid #000}</style><body style=\"display:none\"><div class=\"content\"><h1 class=\"err\">Restricted Access</h1><p class=\"text2\"><span id=\"id1\">Request ID:</span><span>10324654149167501584</span></p><p class=\"text3\">The security policy of this website has blocked you from further access.</p><div class=\"footer-line\"><p class=\"text2\"><span id=\"id3\">Protected by Tencent Cloud EdgeOne</span></p></div></div></body><script>function changeLang(){[\"zh-cn\",\"zh\"].includes((navigator.userLanguage||navigator.language).toLowerCase())&&(document.querySelector(\".err\").innerHTML=\"访问受限\",document.querySelector(\".text3\").innerHTML=\"您的请求已被该站点的安全策略拦截。\",document.querySelector(\"#id1\").innerHTML=\"请求 ID：\",document.querySelector(\"#id3\").innerHTML=\"由 Tencent Cloud EdgeOne 提供防护\"),document.body.style=\"display: block\"}changeLang()</script></html>"
+    },
+    {
+      "id": 18,
+      "positive_prompt": "children playing in a playground, candid shot, natural lighting, joyful moment",
+      "negative_prompt": null,
+      "error": "<!DOCTYPE html><html><meta charset=\"UTF-8\"><meta content=\"width=device-width,initial-scale=1\" name=\"viewport\"><title>AccessDeny</title><style>html{font-size:30px;font-family:PingFangSC-Regular}.content{padding:0 30px 0;width:1200px}.text1{font-size:1.25em}.text2{font-size:.625em}.text3{font-size:.75em;margin:100px 0}.footer-line{border-top:1px solid #000}</style><body style=\"display:none\"><div class=\"content\"><h1 class=\"err\">Restricted Access</h1><p class=\"text2\"><span id=\"id1\">Request ID:</span><span>11963278802653838659</span></p><p class=\"text3\">The security policy of this website has blocked you from further access.</p><div class=\"footer-line\"><p class=\"text2\"><span id=\"id3\">Protected by Tencent Cloud EdgeOne</span></p></div></div></body><script>function changeLang(){[\"zh-cn\",\"zh\"].includes((navigator.userLanguage||navigator.language).toLowerCase())&&(document.querySelector(\".err\").innerHTML=\"访问受限\",document.querySelector(\".text3\").innerHTML=\"您的请求已被该站点的安全策略拦截。\",document.querySelector(\"#id1\").innerHTML=\"请求 ID：\",document.querySelector(\"#id3\").innerHTML=\"由 Tencent Cloud EdgeOne 提供防护\"),document.body.style=\"display: block\"}changeLang()</script></html>"
+    },
+    {
+      "id": 19,
+      "positive_prompt": "a piano in an elegant room, interior photography, soft lighting, detailed",
+      "negative_prompt": null,
+      "error": "<!DOCTYPE html><html><meta charset=\"UTF-8\"><meta content=\"width=device-width,initial-scale=1\" name=\"viewport\"><title>AccessDeny</title><style>html{font-size:30px;font-family:PingFangSC-Regular}.content{padding:0 30px 0;width:1200px}.text1{font-size:1.25em}.text2{font-size:.625em}.text3{font-size:.75em;margin:100px 0}.footer-line{border-top:1px solid #000}</style><body style=\"display:none\"><div class=\"content\"><h1 class=\"err\">Restricted Access</h1><p class=\"text2\"><span id=\"id1\">Request ID:</span><span>6264799196907570883</span></p><p class=\"text3\">The security policy of this website has blocked you from further access.</p><div class=\"footer-line\"><p class=\"text2\"><span id=\"id3\">Protected by Tencent Cloud EdgeOne</span></p></div></div></body><script>function changeLang(){[\"zh-cn\",\"zh\"].includes((navigator.userLanguage||navigator.language).toLowerCase())&&(document.querySelector(\".err\").innerHTML=\"访问受限\",document.querySelector(\".text3\").innerHTML=\"您的请求已被该站点的安全策略拦截。\",document.querySelector(\"#id1\").innerHTML=\"请求 ID：\",document.querySelector(\"#id3\").innerHTML=\"由 Tencent Cloud EdgeOne 提供防护\"),document.body.style=\"display: block\"}changeLang()</script></html>"
+    },
+    {
+      "id": 20,
+      "positive_prompt": "waterfall in a tropical forest, nature photography, long exposure, lush greenery",
+      "negative_prompt": null,
+      "error": "<!DOCTYPE html><html><meta charset=\"UTF-8\"><meta content=\"width=device-width,initial-scale=1\" name=\"viewport\"><title>AccessDeny</title><style>html{font-size:30px;font-family:PingFangSC-Regular}.content{padding:0 30px 0;width:1200px}.text1{font-size:1.25em}.text2{font-size:.625em}.text3{font-size:.75em;margin:100px 0}.footer-line{border-top:1px solid #000}</style><body style=\"display:none\"><div class=\"content\"><h1 class=\"err\">Restricted Access</h1><p class=\"text2\"><span id=\"id1\">Request ID:</span><span>6949175926040244751</span></p><p class=\"text3\">The security policy of this website has blocked you from further access.</p><div class=\"footer-line\"><p class=\"text2\"><span id=\"id3\">Protected by Tencent Cloud EdgeOne</span></p></div></div></body><script>function changeLang(){[\"zh-cn\",\"zh\"].includes((navigator.userLanguage||navigator.language).toLowerCase())&&(document.querySelector(\".err\").innerHTML=\"访问受限\",document.querySelector(\".text3\").innerHTML=\"您的请求已被该站点的安全策略拦截。\",document.querySelector(\"#id1\").innerHTML=\"请求 ID：\",document.querySelector(\"#id3\").innerHTML=\"由 Tencent Cloud EdgeOne 提供防护\"),document.body.style=\"display: block\"}changeLang()</script></html>"
+    }
+  ]
+}

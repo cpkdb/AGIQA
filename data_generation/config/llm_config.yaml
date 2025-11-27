@@ -1,0 +1,60 @@
+# LLM API配置文件
+# 用于基于LLM的质量退化Prompt生成
+
+llm:
+  # API提供商：openai, anthropic, azure等
+  provider: "openai"
+
+  # 模型选择
+  # OpenAI: gpt-4o, gpt-4-turbo, gpt-3.5-turbo
+  # Anthropic: claude-3-5-sonnet-20241022, claude-3-opus-20240229
+  model: "gpt-4o"
+
+  # API密钥配置（三种方式，按优先级）:
+  # 方式1: 直接填写（永久配置，推荐）
+  api_key: "sk-OFeNoWrvYQr52dKoSWefZZOdweq4hQLiigkSGSDtTxWiGyU7"
+  
+  # 方式2: 使用环境变量占位符
+  # api_key: "${OPENAI_API_KEY}"
+  
+  # 方式3: 留空，从环境变量 OPENAI_API_KEY 读取
+  # api_key: ""
+  
+  # 注意: 如果直接填写key，请不要将此文件提交到公开的git仓库
+
+  # API基础URL（可选，用于代理或自定义endpoint）
+  api_base: "https://api.chatanywhere.org"
+   
+  #api_base: "https://api.chatanywhere.tech"
+
+  # 生成参数
+  temperature: 0.7        # 控制创造性，0.0-2.0，建议0.5-0.9
+  max_tokens: 150         # 最大生成token数
+  top_p: 0.95            # 核采样参数
+
+  # 请求配置
+  timeout: 30            # API请求超时（秒）
+  max_retries: 3         # 失败重试次数
+  retry_delay: 2         # 重试延迟（秒）
+
+  # 批处理配置
+  batch_size: 10         # 批量处理时每批的数量
+  rate_limit_rpm: 60     # 每分钟最大请求数（根据API套餐调整）
+
+# 退化生成配置
+degradation:
+  # 缓存配置（可选，用于节省API调用）
+  enable_cache: false
+  cache_dir: "/root/ImageReward/data_generation/.cache/llm_degradation"
+
+  # 输出验证
+  validate_output: true           # 是否验证LLM输出
+  min_length: 10                  # 负样本prompt最小长度（词数）
+  max_length: 200                 # 负样本prompt最大长度（词数）
+  ensure_modification: true       # 确保负样本与正样本有差异
+
+# 日志配置
+logging:
+  level: "INFO"                   # DEBUG, INFO, WARNING, ERROR
+  log_api_calls: true             # 是否记录API调用详情
+  log_file: "logs/llm_degradation.log"

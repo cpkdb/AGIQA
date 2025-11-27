@@ -1,0 +1,176 @@
+{
+  "description": "正负对比自监督数据集生成Demo提示词",
+  "version": "1.0",
+  "prompts": [
+    {
+      "prompt": "a beautiful sunset over the ocean with colorful clouds",
+      "type": "both",
+      "category": "landscape",
+      "modification": {
+        "original": "sunset",
+        "replaced": "sunrise",
+        "type": "scene"
+      }
+    },
+    {
+      "prompt": "a cute orange cat sitting on a red velvet chair",
+      "type": "both",
+      "category": "animal",
+      "modification": {
+        "original": "cat",
+        "replaced": "dog",
+        "type": "object"
+      }
+    },
+    {
+      "prompt": "portrait of a young woman with blue eyes and blonde hair",
+      "type": "both",
+      "category": "portrait",
+      "modification": {
+        "original": "blue eyes",
+        "replaced": "brown eyes",
+        "type": "attribute"
+      }
+    },
+    {
+      "prompt": "a modern glass building reflecting the city skyline",
+      "type": "visual_quality",
+      "category": "architecture"
+    },
+    {
+      "prompt": "a red sports car driving on a mountain road",
+      "type": "both",
+      "category": "vehicle",
+      "modification": {
+        "original": "red",
+        "replaced": "blue",
+        "type": "color"
+      }
+    },
+    {
+      "prompt": "a white horse running through a green meadow",
+      "type": "both",
+      "category": "animal",
+      "modification": {
+        "original": "running",
+        "replaced": "standing",
+        "type": "action"
+      }
+    },
+    {
+      "prompt": "a cozy coffee shop interior with warm lighting",
+      "type": "visual_quality",
+      "category": "interior"
+    },
+    {
+      "prompt": "an astronaut floating in space with Earth in the background",
+      "type": "visual_quality",
+      "category": "scifi"
+    },
+    {
+      "prompt": "a golden retriever puppy playing in autumn leaves",
+      "type": "both",
+      "category": "animal",
+      "modification": {
+        "original": "golden retriever",
+        "replaced": "labrador",
+        "type": "object"
+      }
+    },
+    {
+      "prompt": "a traditional Japanese garden with a red bridge",
+      "type": "both",
+      "category": "landscape",
+      "modification": {
+        "original": "Japanese",
+        "replaced": "Chinese",
+        "type": "style"
+      }
+    },
+    {
+      "prompt": "a steaming cup of coffee on a wooden table with morning light",
+      "type": "visual_quality",
+      "category": "still_life"
+    },
+    {
+      "prompt": "a snowy mountain peak under a clear blue sky",
+      "type": "both",
+      "category": "landscape",
+      "modification": {
+        "original": "snowy",
+        "replaced": "rocky",
+        "type": "attribute"
+      }
+    },
+    {
+      "prompt": "a vintage red telephone booth on a London street",
+      "type": "both",
+      "category": "urban",
+      "modification": {
+        "original": "red",
+        "replaced": "green",
+        "type": "color"
+      }
+    },
+    {
+      "prompt": "a butterfly landing on a pink flower",
+      "type": "both",
+      "category": "nature",
+      "modification": {
+        "original": "butterfly",
+        "replaced": "bee",
+        "type": "object"
+      }
+    },
+    {
+      "prompt": "a chef preparing sushi in a modern kitchen",
+      "type": "both",
+      "category": "people",
+      "modification": {
+        "original": "sushi",
+        "replaced": "pasta",
+        "type": "object"
+      }
+    },
+    {
+      "prompt": "a lighthouse on a rocky cliff during stormy weather",
+      "type": "both",
+      "category": "landscape",
+      "modification": {
+        "original": "stormy",
+        "replaced": "sunny",
+        "type": "weather"
+      }
+    },
+    {
+      "prompt": "a cyberpunk city street with neon signs at night",
+      "type": "visual_quality",
+      "category": "scifi"
+    },
+    {
+      "prompt": "an old book with glasses on a wooden desk",
+      "type": "visual_quality",
+      "category": "still_life"
+    },
+    {
+      "prompt": "a colorful hot air balloon over a green valley",
+      "type": "both",
+      "category": "landscape",
+      "modification": {
+        "original": "hot air balloon",
+        "replaced": "airplane",
+        "type": "object"
+      }
+    },
+    {
+      "prompt": "a medieval castle on a hilltop at sunset",
+      "type": "both",
+      "category": "architecture",
+      "modification": {
+        "original": "sunset",
+        "replaced": "midnight",
+        "type": "time"
+      }
+    }
+  ]
+}

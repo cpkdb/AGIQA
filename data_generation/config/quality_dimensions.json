@@ -1,0 +1,78 @@
+{ 
+  "visual_quality": {
+    "subcategories": {
+      "low_visual_quality": {
+        "description": "图像的技术质量问题",
+        "attributes": {
+          "blur": {},
+          "noise": {},
+          "grain": {},
+          "exposure_issues": {},
+          "low_contrast": {},
+          "low_sharpness": {},
+          "color_distortion": {}
+        }
+      },
+      "aesthetic_quality": {
+        "description": "图像的艺术和审美价值",
+        "attributes": {
+          "poor_composition": {},
+          "poor_lighting": {},
+          "unharmonious_colors": {},
+          "lack_of_visual_appeal": {}
+        }
+      },
+      "semantic_plausibility": {
+        "description": "图像内容的合理性和真实性",
+        "attributes": {
+          "human_anatomy": {},
+          "facial_accuracy": {},
+          "object_structure": {},
+          "confusing_geometry": {},
+          "physical_plausibility": {},
+          "logical_consistency": {}
+        }
+      }
+    }
+  },
+  "alignment": {
+    "subcategories": {
+      "basic_recognition": {
+        "description": "基础识别与实体生成",
+        "attributes": {
+          "main_object": {},
+          "secondary_object": {},
+          "text_symbols": {},
+          "object_presence": {}
+        }
+      },
+      "attribute_alignment": {
+        "description": "属性感知与对齐",
+        "attributes": {
+          "color": {},
+          "shape": {},
+          "state": {},
+          "emotion_action": {},
+          "style": {}
+        }
+      },
+      "composition_interaction": {
+        "description": "组合与交互能力",
+        "attributes": {
+          "object_count": {},
+          "spatial_position": {},
+          "occlusion": {},
+          "size_comparison": {}
+        }
+      },
+      "external_knowledge": {
+        "description": "外部知识与复杂推理",
+        "attributes": {
+          "geographic": {},
+          "brand": {},
+          "artistic_style": {}
+        }
+      }
+    }
+  }
+}

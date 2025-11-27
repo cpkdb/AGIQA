@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AIGC图像质量评估自监督数据集",
+  "description": "用于BT模型偏好学习的正负样本对数据集",
+  "type": "object",
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "version": {"type": "string"},
+        "created_at": {"type": "string", "format": "date-time"},
+        "total_pairs": {"type": "integer"},
+        "generator_model": {"type": "string"},
+        "description": {"type": "string"}
+      }
+    },
+    "pairs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["pair_id", "positive", "negative", "degradation"],
+        "properties": {
+          "pair_id": {
+            "type": "string",
+            "description": "唯一标识符"
+          },
+          "positive": {
+            "type": "object",
+            "properties": {
+              "prompt": {"type": "string"},
+              "image_path": {"type": "string"},
+              "source": {
+                "type": "string",
+                "enum": ["imagereward", "diffusiondb", "custom", "laion"]
+              }
+            }
+          },
+          "negative": {
+            "type": "object",
+            "properties": {
+              "prompt": {"type": "string"},
+              "image_path": {"type": "string"}
+            }
+          },
+          "degradation": {
+            "type": "object",
+            "properties": {
+              "category": {
+                "type": "string",
+                "enum": ["visual_quality", "alignment"],
+                "description": "退化大类"
+              },
+              "dimension": {
+                "type": "string",
+                "description": "退化子维度"
+              },
+              "attribute": {
+                "type": "string",
+                "description": "具体退化属性"
+              },
+              "severity": {
+                "type": "string",
+                "enum": ["mild", "moderate", "severe"],
+                "description": "退化程度: mild(轻微), moderate(中等), severe(严重)"
+              },
+              "modification_type": {
+                "type": "string",
+                "enum": ["add", "remove", "replace", "weaken"],
+                "description": "修改方式"
+              }
+            }
+          },
+          "generation_info": {
+            "type": "object",
+            "properties": {
+              "model": {"type": "string"},
+              "seed": {"type": "integer"},
+              "steps": {"type": "integer"},
+              "cfg_scale": {"type": "number"},
+              "generated_at": {"type": "string", "format": "date-time"}
+            }
+          }
+        }
+      }
+    }
+  }
+}

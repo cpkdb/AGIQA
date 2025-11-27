@@ -1,0 +1,256 @@
+{
+  "metadata": {
+    "generated_at": "2025-11-24T20:57:45.814483",
+    "subcategory": "low_visual_quality",
+    "severity_distribution": {
+      "severe": 6,
+      "moderate": 12,
+      "mild": 2
+    },
+    "total_prompts": 20,
+    "success_count": 20,
+    "fail_count": 0
+  },
+  "results": [
+    {
+      "id": 1,
+      "positive_prompt": "a beautiful sunset over the ocean, masterpiece, high quality, detailed, 8k",
+      "negative_prompt": "a blurry sunset over the ocean, low quality, grainy, color distortion, lack of detail",
+      "degradation_info": {
+        "category": "visual_quality",
+        "dimension": "low_visual_quality",
+        "subcategory": "low_visual_quality",
+        "severity": "severe",
+        "method": "llm"
+      }
+    },
+    {
+      "id": 2,
+      "positive_prompt": "portrait of a young woman with blue eyes, professional photography, sharp focus, natural lighting",
+      "negative_prompt": "blurred portrait of a young woman with blue eyes, slightly out of focus, natural lighting, some noise present",
+      "degradation_info": {
+        "category": "visual_quality",
+        "dimension": "low_visual_quality",
+        "subcategory": "low_visual_quality",
+        "severity": "moderate",
+        "method": "llm"
+      }
+    },
+    {
+      "id": 3,
+      "positive_prompt": "a red sports car on a mountain road, automotive photography, high resolution, dramatic angle",
+      "negative_prompt": "a red sports car on a mountain road, automotive photography, low resolution, blurry with noise and color distortion, lack of sharpness",
+      "degradation_info": {
+        "category": "visual_quality",
+        "dimension": "low_visual_quality",
+        "subcategory": "low_visual_quality",
+        "severity": "severe",
+        "method": "llm"
+      }
+    },
+    {
+      "id": 4,
+      "positive_prompt": "a cat sitting on a wooden chair, cute, detailed fur, warm lighting",
+      "negative_prompt": "a cat sitting on a wooden chair, slight blur, subtle grain, less detailed fur, warm lighting",
+      "degradation_info": {
+        "category": "visual_quality",
+        "dimension": "low_visual_quality",
+        "subcategory": "low_visual_quality",
+        "severity": "mild",
+        "method": "llm"
+      }
+    },
+    {
+      "id": 5,
+      "positive_prompt": "modern architecture building with glass facade, architectural photography, clean lines, professional",
+      "negative_prompt": "blurred modern architecture building with glass facade, architectural photography, clean lines, visible noise",
+      "degradation_info": {
+        "category": "visual_quality",
+        "dimension": "low_visual_quality",
+        "subcategory": "low_visual_quality",
+        "severity": "moderate",
+        "method": "llm"
+      }
+    },
+    {
+      "id": 6,
+      "positive_prompt": "a bowl of fresh fruits on a table, food photography, vibrant colors, high quality",
+      "negative_prompt": "a bowl of fresh fruits on a table, food photography, with noticeable noise and color distortion",
+      "degradation_info": {
+        "category": "visual_quality",
+        "dimension": "low_visual_quality",
+        "subcategory": "low_visual_quality",
+        "severity": "moderate",
+        "method": "llm"
+      }
+    },
+    {
+      "id": 7,
+      "positive_prompt": "landscape with mountains and forest, nature photography, golden hour, breathtaking view",
+      "negative_prompt": "landscape with mountains and forest, nature photography, golden hour, low contrast, slightly blurred view",
+      "degradation_info": {
+        "category": "visual_quality",
+        "dimension": "low_visual_quality",
+        "subcategory": "low_visual_quality",
+        "severity": "moderate",
+        "method": "llm"
+      }
+    },
+    {
+      "id": 8,
+      "positive_prompt": "a white dog playing in the park, action shot, clear focus, natural colors",
+      "negative_prompt": "a white dog playing in the park, action shot, blurry and noisy, color distortion, low contrast",
+      "degradation_info": {
+        "category": "visual_quality",
+        "dimension": "low_visual_quality",
+        "subcategory": "low_visual_quality",
+        "severity": "severe",
+        "method": "llm"
+      }
+    },
+    {
+      "id": 9,
+      "positive_prompt": "abstract art with geometric shapes, colorful, modern art style, high contrast",
+      "negative_prompt": "abstract art with geometric shapes, colorful, modern art style, slightly blurred, low contrast",
+      "degradation_info": {
+        "category": "visual_quality",
+        "dimension": "low_visual_quality",
+        "subcategory": "low_visual_quality",
+        "severity": "mild",
+        "method": "llm"
+      }
+    },
+    {
+      "id": 10,
+      "positive_prompt": "city skyline at night, urban photography, long exposure, professional quality",
+      "negative_prompt": "city skyline at night, urban photography, long exposure, blur and noise, exposure issues, low contrast, severe visual quality degradation",
+      "degradation_info": {
+        "category": "visual_quality",
+        "dimension": "low_visual_quality",
+        "subcategory": "low_visual_quality",
+        "severity": "severe",
+        "method": "llm"
+      }
+    },
+    {
+      "id": 11,
+      "positive_prompt": "a book and coffee on a desk, cozy atmosphere, warm lighting, detailed",
+      "negative_prompt": "a book and coffee on a desk, cozy atmosphere, warm lighting, blurry, with noticeable noise and low contrast",
+      "degradation_info": {
+        "category": "visual_quality",
+        "dimension": "low_visual_quality",
+        "subcategory": "low_visual_quality",
+        "severity": "severe",
+        "method": "llm"
+      }
+    },
+    {
+      "id": 12,
+      "positive_prompt": "flower bouquet in a vase, macro photography, sharp details, natural light",
+      "negative_prompt": "flower bouquet in a vase, macro photography, slight blur, reduced contrast, natural light",
+      "degradation_info": {
+        "category": "visual_quality",
+        "dimension": "low_visual_quality",
+        "subcategory": "low_visual_quality",
+        "severity": "moderate",
+        "method": "llm"
+      }
+    },
+    {
+      "id": 13,
+      "positive_prompt": "a person running on the beach, dynamic pose, golden hour lighting, professional shot",
+      "negative_prompt": "a person running on the beach, dynamic pose, golden hour lighting, with noticeable blur and color distortion",
+      "degradation_info": {
+        "category": "visual_quality",
+        "dimension": "low_visual_quality",
+        "subcategory": "low_visual_quality",
+        "severity": "moderate",
+        "method": "llm"
+      }
+    },
+    {
+      "id": 14,
+      "positive_prompt": "vintage bicycle against a brick wall, retro style, detailed, artistic composition",
+      "negative_prompt": "vintage bicycle against a brick wall, retro style, blurry and noisy, low contrast, artistic composition",
+      "degradation_info": {
+        "category": "visual_quality",
+        "dimension": "low_visual_quality",
+        "subcategory": "low_visual_quality",
+        "severity": "severe",
+        "method": "llm"
+      }
+    },
+    {
+      "id": 15,
+      "positive_prompt": "steaming cup of tea with herbs, close-up, warm tones, high quality food photography",
+      "negative_prompt": "blurred steaming cup of tea with herbs, close-up, warm tones, noticeable noise, moderate quality food photography",
+      "degradation_info": {
+        "category": "visual_quality",
+        "dimension": "low_visual_quality",
+        "subcategory": "low_visual_quality",
+        "severity": "moderate",
+        "method": "llm"
+      }
+    },
+    {
+      "id": 16,
+      "positive_prompt": "forest path in autumn, nature scene, vibrant fall colors, peaceful atmosphere",
+      "negative_prompt": "blurred forest path in autumn, nature scene, muted fall colors, peaceful atmosphere, with noticeable noise",
+      "degradation_info": {
+        "category": "visual_quality",
+        "dimension": "low_visual_quality",
+        "subcategory": "low_visual_quality",
+        "severity": "moderate",
+        "method": "llm"
+      }
+    },
+    {
+      "id": 17,
+      "positive_prompt": "a lighthouse on a rocky coast, dramatic sky, professional landscape photography",
+      "negative_prompt": "a lighthouse on a rocky coast, dramatic sky, slight blur, noticeable noise, amateur landscape photography",
+      "degradation_info": {
+        "category": "visual_quality",
+        "dimension": "low_visual_quality",
+        "subcategory": "low_visual_quality",
+        "severity": "moderate",
+        "method": "llm"
+      }
+    },
+    {
+      "id": 18,
+      "positive_prompt": "children playing in a playground, candid shot, natural lighting, joyful moment",
+      "negative_prompt": "children playing in a playground, candid shot, natural lighting, joyful moment, slight blur and grain",
+      "degradation_info": {
+        "category": "visual_quality",
+        "dimension": "low_visual_quality",
+        "subcategory": "low_visual_quality",
+        "severity": "moderate",
+        "method": "llm"
+      }
+    },
+    {
+      "id": 19,
+      "positive_prompt": "a piano in an elegant room, interior photography, soft lighting, detailed",
+      "negative_prompt": "a piano in an elegant room, interior photography, soft lighting, slightly blurred, with some noise",
+      "degradation_info": {
+        "category": "visual_quality",
+        "dimension": "low_visual_quality",
+        "subcategory": "low_visual_quality",
+        "severity": "moderate",
+        "method": "llm"
+      }
+    },
+    {
+      "id": 20,
+      "positive_prompt": "waterfall in a tropical forest, nature photography, long exposure, lush greenery",
+      "negative_prompt": "waterfall in a tropical forest, nature photography, slightly blurry, with noticeable grain",
+      "degradation_info": {
+        "category": "visual_quality",
+        "dimension": "low_visual_quality",
+        "subcategory": "low_visual_quality",
+        "severity": "moderate",
+        "method": "llm"
+      }
+    }
+  ]
+}
