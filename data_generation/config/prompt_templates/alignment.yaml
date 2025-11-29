@@ -1,0 +1,1069 @@
+# Alignment Degradation Prompt Templates
+# 按子类别分组，每个属性有 mild/moderate/severe 三个版本
+# alignment 退化是关于语义偏移，不是质量退化
+# 策略框架: Identification → Replacement Options → Preservation Rules
+
+basic_recognition:
+  main_object:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by replacing the MAIN SUBJECT with a similar alternative (mild semantic distance - same category, slight variation).
+
+      ## Strategies
+      1. Identification: Find the primary subject noun in the prompt
+         - Look for: the main animal, person, vehicle, or object that is the focus
+         - Example: In "a golden retriever playing in the park", the main subject is "golden retriever"
+
+      2. Replacement Options (mild distance - same category variants):
+         - Animals: dog → puppy, hound, different breed; cat → kitten, tabby
+         - Vehicles: car → sedan, SUV, coupe; bike → bicycle, cycle
+         - People: woman → lady, girl; man → gentleman, guy
+         - Objects: cup → mug, glass; chair → armchair, seat
+         Example: "golden retriever in park" → "labrador in park"
+
+      3. Preservation Rules:
+         - Keep ALL adjectives and modifiers intact
+         - Keep the setting/location unchanged
+         - Keep actions and poses unchanged
+         - Only replace the core noun with same-category variant
+
+      ## Attribute-Specific Constraints
+      - Change should be subtle, same general category
+      - Viewers might not immediately notice the difference
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by replacing the MAIN SUBJECT with a related but different alternative (moderate semantic distance - related category, clear difference).
+
+      ## Strategies
+      1. Identification: Find the primary subject noun in the prompt
+         - Look for: the main animal, person, vehicle, or object that is the focus
+
+      2. Replacement Options (moderate distance - related but different):
+         - Animals: dog → cat, fox, wolf; cat → rabbit, hamster; bird → bat
+         - Vehicles: car → motorcycle, truck, bus; bicycle → scooter
+         - People: woman → man, child, elderly; doctor → nurse, scientist
+         - Objects: cup → bowl, bottle; chair → bench, stool
+         Example: "golden retriever in park" → "gray cat in park"
+
+      3. Preservation Rules:
+         - Keep ALL adjectives (adapt grammar if needed: "a fluffy dog" → "a fluffy cat")
+         - Keep the setting/location unchanged
+         - Keep actions unchanged (if plausible for new subject)
+         - Only replace the core noun
+
+      ## Attribute-Specific Constraints
+      - Change should be obvious but still related
+      - New subject should still make sense in the context
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by replacing the MAIN SUBJECT with a completely unrelated alternative (severe semantic distance - different category entirely).
+
+      ## Strategies
+      1. Identification: Find the primary subject noun in the prompt
+         - Look for: the main animal, person, vehicle, or object that is the focus
+
+      2. Replacement Options (severe distance - completely different category):
+         - Animals: dog → chair, lamp, tree; cat → bicycle, rock, cloud
+         - Vehicles: car → elephant, flower, building; bike → fish, star
+         - People: woman → statue, robot, mannequin; child → doll, toy
+         - Objects: cup → shoe, book; chair → fish, mountain
+         Example: "golden retriever in park" → "wooden chair in park"
+
+      3. Preservation Rules:
+         - Keep the setting/location unchanged
+         - Keep any applicable modifiers
+         - Maintain grammatical correctness
+         - Only replace the core noun
+
+      ## Attribute-Specific Constraints
+      - Change should be dramatic and clearly misaligned
+      - New subject should still be physically plausible in the setting
+
+  secondary_object:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by replacing a SECONDARY/BACKGROUND object with a similar alternative (mild semantic distance).
+
+      ## Strategies
+      1. Identification: Find secondary objects in the prompt
+         - Look for: background elements, props, furniture, environmental objects
+         - NOT the main subject
+         Example: In "cat sitting on a sofa", secondary object is "sofa"
+
+      2. Replacement Options (mild distance - similar items):
+         - Furniture: sofa → couch, armchair; table → desk, counter
+         - Settings: forest → woods, grove; beach → shore, coast
+         - Props: book → magazine, notebook; cup → mug
+         Example: "cat on sofa" → "cat on armchair"
+
+      3. Preservation Rules:
+         - Keep the main subject completely unchanged
+         - Keep the spatial relationship (on, in, near, etc.)
+         - Maintain scene plausibility
+
+      ## Attribute-Specific Constraints
+      - Main subject must remain exactly the same
+      - Only modify background/secondary elements
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by replacing a SECONDARY/BACKGROUND object with a different alternative (moderate semantic distance).
+
+      ## Strategies
+      1. Identification: Find secondary objects in the prompt
+         - Look for: background elements, props, furniture, environmental objects
+
+      2. Replacement Options (moderate distance - different but related):
+         - Furniture: sofa → bed, bench, rock; table → chair, box
+         - Settings: forest → desert, field; beach → mountain, city
+         - Props: book → phone, flower; cup → bowl, vase
+         Example: "cat on sofa" → "cat on wooden bench"
+
+      3. Preservation Rules:
+         - Keep the main subject completely unchanged
+         - Maintain spatial relationships where possible
+         - Scene should still be plausible
+
+      ## Attribute-Specific Constraints
+      - Change should be noticeable
+      - Main subject must remain exactly the same
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by replacing a SECONDARY/BACKGROUND object with a dramatically different alternative (severe semantic distance).
+
+      ## Strategies
+      1. Identification: Find secondary objects in the prompt
+         - Look for: background elements, props, furniture, environmental objects
+
+      2. Replacement Options (severe distance - completely different):
+         - Furniture: sofa → giant mushroom, boulder, fountain
+         - Settings: forest → underwater, space, abstract void
+         - Props: book → sword, live fish, glowing orb
+         Example: "cat on sofa" → "cat on giant mushroom"
+
+      3. Preservation Rules:
+         - Keep the main subject completely unchanged
+         - Scene may be unusual but should be imaginable
+
+      ## Attribute-Specific Constraints
+      - Change should be dramatic
+      - Main subject must remain exactly the same
+      - Result may be surreal but still parseable
+
+  object_presence:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by slightly modifying object QUANTITY/PRESENCE (mild change).
+
+      ## Strategies
+      1. Identification: Find countable objects or quantities in the prompt
+         - Look for: numbers, quantity words (one, two, several, many)
+         - Or objects that could have quantity modified
+
+      2. Replacement Options (mild quantity change):
+         - Numbers: one → two; two → three; three → four
+         - Quantities: "a few" → "several"; "some" → "a few"
+         - Add minor element: "cat on table" → "cat on table with small toy"
+         Example: "two birds on branch" → "three birds on branch"
+
+      3. Preservation Rules:
+         - Keep object types unchanged
+         - Keep setting unchanged
+         - Only modify quantity slightly
+
+      ## Attribute-Specific Constraints
+      - Change should be subtle (±1 or 2)
+      - Scene should remain plausible
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by noticeably modifying object QUANTITY/PRESENCE (moderate change).
+
+      ## Strategies
+      1. Identification: Find countable objects or quantities in the prompt
+
+      2. Replacement Options (moderate quantity change):
+         - Numbers: one → several; two → one; pair → group
+         - Add objects: "empty table" → "table with various items"
+         - Remove objects: "cat AND dog" → "only cat"
+         Example: "pair of shoes" → "single shoe"
+
+      3. Preservation Rules:
+         - Keep object types unchanged
+         - Keep setting unchanged
+         - Quantity change should be clear
+
+      ## Attribute-Specific Constraints
+      - Change should be noticeable
+      - Scene should remain plausible
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by dramatically modifying object QUANTITY/PRESENCE (severe change).
+
+      ## Strategies
+      1. Identification: Find countable objects or quantities in the prompt
+
+      2. Replacement Options (severe quantity change):
+         - Numbers: one → many, crowd of; crowd → single, empty
+         - Add many: "empty room" → "room cluttered with objects"
+         - Remove most: "table with many items" → "empty table"
+         Example: "single tree" → "dense forest of trees"
+
+      3. Preservation Rules:
+         - Keep object types unchanged
+         - Setting may feel different due to quantity change
+
+      ## Attribute-Specific Constraints
+      - Change should be dramatic
+      - May significantly alter scene feel
+
+
+attribute_alignment:
+  color:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by changing COLOR attributes to similar colors (mild semantic distance).
+
+      ## Strategies
+      1. Identification: Find color adjectives in the prompt
+         - Look for: red, blue, green, yellow, white, black, etc.
+         - Note which object the color describes
+
+      2. Replacement Options (mild distance - similar shades):
+         - red → crimson, scarlet, maroon, dark red
+         - blue → navy, azure, sky blue, teal
+         - green → emerald, olive, lime, forest green
+         - yellow → golden, amber, cream
+         - white → ivory, cream, off-white
+         - black → charcoal, dark gray
+         Example: "red apple" → "crimson apple"
+
+      3. Preservation Rules:
+         - Keep the object noun unchanged
+         - Keep all other attributes unchanged
+         - Only modify the color adjective
+
+      ## Attribute-Specific Constraints
+      - Color shift should be subtle, same color family
+      - Object identity must remain unchanged
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by changing COLOR attributes to different colors (moderate semantic distance).
+
+      ## Strategies
+      1. Identification: Find color adjectives in the prompt
+
+      2. Replacement Options (moderate distance - different but not opposite):
+         - red → orange, pink, purple, brown
+         - blue → purple, teal, cyan, gray
+         - green → teal, yellow-green, brown
+         - yellow → orange, lime, beige
+         - white → light gray, beige, pale blue
+         - black → navy, dark brown, dark green
+         Example: "red apple" → "yellow apple"
+
+      3. Preservation Rules:
+         - Keep the object noun unchanged
+         - Keep all other attributes unchanged
+         - Only modify the color adjective
+
+      ## Attribute-Specific Constraints
+      - Color should be noticeably different
+      - Result should still be plausible (yellow apple exists)
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by changing COLOR attributes to opposite/jarring colors (severe semantic distance).
+
+      ## Strategies
+      1. Identification: Find color adjectives in the prompt
+
+      2. Replacement Options (severe distance - opposite or jarring):
+         - red → blue, green, cyan
+         - blue → orange, yellow, red
+         - green → red, magenta, pink
+         - yellow → purple, blue, black
+         - white → black, dark gray
+         - black → white, bright yellow
+         Example: "red apple" → "blue apple"
+
+      3. Preservation Rules:
+         - Keep the object noun unchanged
+         - Keep all other attributes unchanged
+
+      ## Attribute-Specific Constraints
+      - Color should be dramatically different
+      - Result may be unusual but imaginable
+
+  shape:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by changing SHAPE/SIZE attributes slightly (mild semantic distance).
+
+      ## Strategies
+      1. Identification: Find shape or size adjectives in the prompt
+         - Look for: round, square, tall, short, large, small, thin, thick
+
+      2. Replacement Options (mild distance - slight variation):
+         - round → oval, slightly elongated
+         - square → rectangular, slightly rounded
+         - tall → high, elevated; short → low, compact
+         - large → big, sizable; small → little, compact
+         Example: "round table" → "oval table"
+
+      3. Preservation Rules:
+         - Keep the object noun unchanged
+         - Keep other attributes unchanged
+         - Only modify shape/size adjective
+
+      ## Attribute-Specific Constraints
+      - Change should be subtle
+      - Object should still be recognizable
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by changing SHAPE/SIZE attributes noticeably (moderate semantic distance).
+
+      ## Strategies
+      1. Identification: Find shape or size adjectives in the prompt
+
+      2. Replacement Options (moderate distance - clear difference):
+         - round → square, angular
+         - tall → short, wide; short → tall, narrow
+         - large → medium, moderate; small → medium, larger
+         - thin → thick, bulky; thick → thin, slender
+         Example: "round table" → "rectangular table"
+
+      3. Preservation Rules:
+         - Keep the object noun unchanged
+         - Keep other attributes unchanged
+
+      ## Attribute-Specific Constraints
+      - Change should be clearly visible
+      - Object should still be plausible
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by changing SHAPE/SIZE attributes dramatically (severe semantic distance).
+
+      ## Strategies
+      1. Identification: Find shape or size adjectives in the prompt
+
+      2. Replacement Options (severe distance - opposite or extreme):
+         - round → angular, irregular, jagged
+         - tall → squat, flat; short → towering, massive
+         - large → tiny, miniature; small → massive, enormous
+         - thin → bulky, massive; thick → paper-thin
+         Example: "small cottage" → "massive mansion"
+
+      3. Preservation Rules:
+         - Keep the object type recognizable
+         - Maintain grammatical correctness
+
+      ## Attribute-Specific Constraints
+      - Change should be dramatic
+      - May create unusual but imaginable result
+
+  state:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by changing STATE/CONDITION attributes slightly (mild semantic distance).
+
+      ## Strategies
+      1. Identification: Find state or condition adjectives in the prompt
+         - Look for: new, old, clean, dirty, open, closed, fresh, wilted
+
+      2. Replacement Options (mild distance - slight change):
+         - new → recent, nearly new; old → aged, vintage
+         - clean → tidy, neat; dirty → dusty, used
+         - fresh → day-old, slightly wilted
+         - open → ajar, partially open; closed → shut
+         Example: "fresh flowers" → "day-old flowers"
+
+      3. Preservation Rules:
+         - Keep the object noun unchanged
+         - Keep other attributes unchanged
+
+      ## Attribute-Specific Constraints
+      - Change should be subtle
+      - Object should remain plausible
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by changing STATE/CONDITION attributes noticeably (moderate semantic distance).
+
+      ## Strategies
+      1. Identification: Find state or condition adjectives in the prompt
+
+      2. Replacement Options (moderate distance - clear change):
+         - new → used, worn; old → newer, restored
+         - clean → dirty, messy; dirty → clean, spotless
+         - fresh → wilted, stale; wilted → fresh
+         - open → closed; closed → open
+         - happy → neutral, calm; sad → neutral
+         Example: "clean kitchen" → "messy kitchen"
+
+      3. Preservation Rules:
+         - Keep the object noun unchanged
+         - Keep other attributes unchanged
+
+      ## Attribute-Specific Constraints
+      - Change should be noticeable
+      - Object should remain plausible
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by changing STATE/CONDITION attributes dramatically (severe semantic distance - often opposite).
+
+      ## Strategies
+      1. Identification: Find state or condition adjectives in the prompt
+
+      2. Replacement Options (severe distance - opposite state):
+         - new → ancient, broken, ruined; old → brand new
+         - clean → filthy, destroyed; dirty → pristine
+         - fresh → rotten, decayed; wilted → blooming
+         - open → locked, sealed; closed → wide open
+         - happy → sad, angry, crying; calm → furious
+         Example: "fresh flowers" → "rotten, decayed flowers"
+
+      3. Preservation Rules:
+         - Keep the object type recognizable
+         - Maintain grammatical correctness
+
+      ## Attribute-Specific Constraints
+      - Change should be dramatic, often opposite
+      - May create stark contrast
+
+  emotion_action:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by changing EMOTION or ACTION attributes slightly (mild semantic distance).
+
+      ## Strategies
+      1. Identification: Find emotion or action words in the prompt
+         - Emotions: happy, sad, angry, calm, excited
+         - Actions: running, walking, sitting, standing, smiling
+
+      2. Replacement Options (mild distance - similar emotion/action):
+         - happy → content, pleased; sad → melancholy, down
+         - running → jogging, sprinting; walking → strolling
+         - smiling → grinning, beaming; crying → tearing up
+         - sitting → perched, resting; standing → posed
+         Example: "smiling woman" → "grinning woman"
+
+      3. Preservation Rules:
+         - Keep the subject unchanged
+         - Keep the setting unchanged
+
+      ## Attribute-Specific Constraints
+      - Change should be subtle
+      - Overall mood should be similar
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by changing EMOTION or ACTION attributes noticeably (moderate semantic distance).
+
+      ## Strategies
+      1. Identification: Find emotion or action words in the prompt
+
+      2. Replacement Options (moderate distance - different but related):
+         - happy → neutral, serious; sad → neutral, thoughtful
+         - running → walking, standing; walking → sitting
+         - smiling → neutral expression; crying → frowning
+         - jumping → standing; sleeping → sitting
+         Example: "running dog" → "walking dog"
+
+      3. Preservation Rules:
+         - Keep the subject unchanged
+         - Keep the setting unchanged
+
+      ## Attribute-Specific Constraints
+      - Change should be noticeable
+      - Action should still be plausible for subject
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by changing EMOTION or ACTION attributes dramatically (severe semantic distance - often opposite).
+
+      ## Strategies
+      1. Identification: Find emotion or action words in the prompt
+
+      2. Replacement Options (severe distance - opposite):
+         - happy → sad, crying, angry; sad → laughing, joyful
+         - running → standing still, lying down; sitting → jumping
+         - smiling → frowning, screaming; laughing → crying
+         - sleeping → running, dancing; calm → panicking
+         Example: "smiling child" → "crying child"
+
+      3. Preservation Rules:
+         - Keep the subject unchanged
+         - Keep the setting unchanged
+
+      ## Attribute-Specific Constraints
+      - Change should be dramatic, often opposite
+      - Creates clear emotional/action contrast
+
+  style:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by changing STYLE attributes slightly (mild semantic distance).
+
+      ## Strategies
+      1. Identification: Find style descriptors in the prompt
+         - Look for: realistic, cartoon, impressionist, minimalist, vintage, modern
+
+      2. Replacement Options (mild distance - similar style):
+         - realistic → photorealistic, lifelike, naturalistic
+         - impressionist → post-impressionist, painterly
+         - minimalist → simple, clean, sparse
+         - vintage → retro, classic, old-fashioned
+         Example: "impressionist painting" → "post-impressionist painting"
+
+      3. Preservation Rules:
+         - Keep the subject matter unchanged
+         - Keep composition unchanged
+
+      ## Attribute-Specific Constraints
+      - Style shift should be subtle
+      - Overall aesthetic should be similar
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by changing STYLE attributes noticeably (moderate semantic distance).
+
+      ## Strategies
+      1. Identification: Find style descriptors in the prompt
+
+      2. Replacement Options (moderate distance - different but related):
+         - realistic → stylized, semi-abstract, illustrated
+         - impressionist → expressionist, fauvism
+         - minimalist → moderate detail, balanced
+         - vintage → timeless, mid-century
+         Example: "realistic portrait" → "stylized portrait"
+
+      3. Preservation Rules:
+         - Keep the subject matter unchanged
+         - Keep composition unchanged
+
+      ## Attribute-Specific Constraints
+      - Style shift should be noticeable
+      - Subject should still be recognizable
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by changing STYLE attributes dramatically (severe semantic distance - opposite style).
+
+      ## Strategies
+      1. Identification: Find style descriptors in the prompt
+
+      2. Replacement Options (severe distance - opposite style):
+         - realistic → cartoon, abstract, surreal
+         - minimalist → baroque, ornate, cluttered, maximalist
+         - vintage → futuristic, ultra-modern, cyberpunk
+         - impressionist → photorealistic, hyperrealistic
+         - dark/moody → bright, cheerful, pastel
+         Example: "minimalist design" → "baroque ornate design"
+
+      3. Preservation Rules:
+         - Keep the subject matter unchanged
+         - Maintain recognizability
+
+      ## Attribute-Specific Constraints
+      - Style shift should be dramatic
+      - Creates clear stylistic contrast
+
+composition_interaction:
+  object_count:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by changing QUANTITY/COUNT slightly (mild semantic distance).
+
+      ## Strategies
+      1. Identification: Find numbers or quantity words in the prompt
+         - Look for: one, two, three, a, single, pair, few, several, many
+
+      2. Replacement Options (mild distance - ±1 or 2):
+         - one → two; two → three; three → two or four
+         - single → pair; pair → trio
+         - a few → several; several → a few
+         - many → several; several → many
+         Example: "two cats" → "three cats"
+
+      3. Preservation Rules:
+         - Keep object type unchanged
+         - Keep setting unchanged
+         - Keep all other attributes unchanged
+
+      ## Attribute-Specific Constraints
+      - Quantity change should be small (±1 or 2)
+      - Scene should remain plausible
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by changing QUANTITY/COUNT noticeably (moderate semantic distance).
+
+      ## Strategies
+      1. Identification: Find numbers or quantity words in the prompt
+
+      2. Replacement Options (moderate distance - noticeable change):
+         - one → several, a few; two → one, five
+         - single → group; pair → single or crowd
+         - few → many; many → few
+         Example: "pair of birds" → "single bird"
+
+      3. Preservation Rules:
+         - Keep object type unchanged
+         - Keep setting unchanged
+
+      ## Attribute-Specific Constraints
+      - Quantity change should be noticeable
+      - Scene should remain plausible
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by changing QUANTITY/COUNT dramatically (severe semantic distance).
+
+      ## Strategies
+      1. Identification: Find numbers or quantity words in the prompt
+
+      2. Replacement Options (severe distance - dramatic change):
+         - one → many, crowd of, hundreds of
+         - crowd → single, empty, none visible
+         - few → countless, swarm of; many → one, two
+         Example: "single tree" → "dense forest of hundreds of trees"
+
+      3. Preservation Rules:
+         - Keep object type unchanged
+         - Scene feel may change dramatically
+
+      ## Attribute-Specific Constraints
+      - Quantity change should be dramatic
+      - May significantly alter scene composition
+
+  spatial_position:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by changing SPATIAL POSITION slightly (mild semantic distance).
+
+      ## Strategies
+      1. Identification: Find position/location words in the prompt
+         - Look for: left, right, center, above, below, foreground, background, near, far
+
+      2. Replacement Options (mild distance - slight shift):
+         - left → far left, center-left; right → far right, center-right
+         - above → high above, slightly above; below → far below
+         - center → slightly off-center; foreground → mid-ground
+         - near → close to; far → distant
+         Example: "cat on the left" → "cat in the center-left"
+
+      3. Preservation Rules:
+         - Keep all objects present
+         - Keep object types unchanged
+         - Only modify position
+
+      ## Attribute-Specific Constraints
+      - Position shift should be subtle
+      - Composition should remain similar
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by changing SPATIAL POSITION noticeably (moderate semantic distance).
+
+      ## Strategies
+      1. Identification: Find position/location words in the prompt
+
+      2. Replacement Options (moderate distance - clear shift):
+         - left → center, right side; right → center, left side
+         - above → beside, level with; below → beside, next to
+         - foreground → middle distance; background → middle distance
+         - in front of → beside; behind → beside
+         Example: "bird above the tree" → "bird beside the tree"
+
+      3. Preservation Rules:
+         - Keep all objects present
+         - Keep object types unchanged
+
+      ## Attribute-Specific Constraints
+      - Position shift should be noticeable
+      - Spatial relationship clearly different
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by changing SPATIAL POSITION dramatically (severe semantic distance - often reversed).
+
+      ## Strategies
+      1. Identification: Find position/location words in the prompt
+
+      2. Replacement Options (severe distance - reversal):
+         - left → right; right → left
+         - above → below; below → above
+         - foreground → background; background → foreground
+         - in front of → behind; behind → in front of
+         - center → corner, edge; near → far away
+         Example: "sun in upper left" → "sun in lower right"
+
+      3. Preservation Rules:
+         - Keep all objects present
+         - Keep object types unchanged
+
+      ## Attribute-Specific Constraints
+      - Position should be reversed or dramatically different
+      - Creates clear spatial misalignment
+
+  interaction:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by changing INTERACTION/RELATIONSHIP slightly (mild semantic distance).
+
+      ## Strategies
+      1. Identification: Find interaction or relationship words in the prompt
+         - Look for: holding, touching, looking at, sitting on, standing near, next to
+
+      2. Replacement Options (mild distance - similar interaction):
+         - holding → gripping, grasping, clutching
+         - looking at → glancing at, gazing at
+         - sitting on → perched on, resting on
+         - next to → close to, beside; near → adjacent to
+         Example: "woman holding a book" → "woman gripping a book"
+
+      3. Preservation Rules:
+         - Keep all objects/subjects present
+         - Keep the general relationship type
+         - Only modify the specific interaction word
+
+      ## Attribute-Specific Constraints
+      - Interaction change should be subtle
+      - Relationship type should be similar
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by changing INTERACTION/RELATIONSHIP noticeably (moderate semantic distance).
+
+      ## Strategies
+      1. Identification: Find interaction or relationship words in the prompt
+
+      2. Replacement Options (moderate distance - different interaction):
+         - holding → touching, near, reaching for
+         - looking at → facing, turned toward
+         - sitting on → standing near, leaning against
+         - next to → near, in the same area
+         - in front of → beside; behind → beside
+         Example: "cat sitting on chair" → "cat standing near chair"
+
+      3. Preservation Rules:
+         - Keep all objects/subjects present
+         - Interaction should still be plausible
+
+      ## Attribute-Specific Constraints
+      - Interaction change should be noticeable
+      - Relationship clearly different but plausible
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by changing INTERACTION/RELATIONSHIP dramatically (severe semantic distance - often opposite).
+
+      ## Strategies
+      1. Identification: Find interaction or relationship words in the prompt
+
+      2. Replacement Options (severe distance - opposite or broken):
+         - holding → dropping, away from, not touching
+         - looking at → looking away from, ignoring
+         - sitting on → floating above, falling off
+         - next to → far from, separated from
+         - in front of → behind; behind → in front of
+         - together → apart, separated
+         Example: "person holding cup" → "person with hand near but not touching floating cup"
+
+      3. Preservation Rules:
+         - Keep all objects/subjects present
+         - May create unusual but imaginable scene
+
+      ## Attribute-Specific Constraints
+      - Interaction should be dramatically different or broken
+      - Creates clear relationship misalignment
+
+  occlusion:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by changing OCCLUSION relationships slightly (mild semantic distance).
+
+      ## Strategies
+      1. Identification: Find occlusion or visibility words in the prompt
+         - Look for: behind, in front of, hidden, visible, covered, blocking
+
+      2. Replacement Options (mild distance - slight change):
+         - behind → partially behind, mostly behind
+         - hidden → partially hidden, mostly visible
+         - covered → partially covered; visible → mostly visible
+         Example: "cat behind curtain" → "cat partially behind curtain"
+
+      3. Preservation Rules:
+         - Keep all objects present
+         - Keep spatial logic consistent
+
+      ## Attribute-Specific Constraints
+      - Occlusion change should be subtle
+      - Visibility slightly different
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by changing OCCLUSION relationships noticeably (moderate semantic distance).
+
+      ## Strategies
+      1. Identification: Find occlusion or visibility words in the prompt
+
+      2. Replacement Options (moderate distance - clear change):
+         - behind → beside, in front of; in front of → beside
+         - hidden → visible, exposed; visible → partially hidden
+         - covered → uncovered; blocking → beside
+         Example: "cat behind curtain" → "cat beside curtain"
+
+      3. Preservation Rules:
+         - Keep all objects present
+         - Maintain spatial plausibility
+
+      ## Attribute-Specific Constraints
+      - Occlusion change should be noticeable
+      - Visibility clearly different
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by reversing OCCLUSION relationships (severe semantic distance).
+
+      ## Strategies
+      1. Identification: Find occlusion or visibility words in the prompt
+
+      2. Replacement Options (severe distance - reversal):
+         - X behind Y → Y behind X; X covering Y → Y covering X
+         - hidden → fully visible, prominent; visible → completely hidden
+         - in front → behind; behind → in front
+         Example: "hand covering face" → "face in front of hand, hand behind"
+
+      3. Preservation Rules:
+         - Keep all objects present
+         - Reversal should be clear
+
+      ## Attribute-Specific Constraints
+      - Occlusion should be reversed
+      - Creates clear visibility misalignment
+
+external_knowledge:
+  geographic:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by generalizing GEOGRAPHIC/LANDMARK references (mild semantic distance - genericize).
+
+      ## Strategies
+      1. Identification: Find specific geographic or landmark references
+         - Look for: Eiffel Tower, Mount Fuji, Statue of Liberty, Grand Canyon, etc.
+
+      2. Replacement Options (mild distance - genericize):
+         - Eiffel Tower → Parisian iron tower, French landmark, tall metal tower
+         - Mount Fuji → Japanese mountain, snow-capped peak
+         - Statue of Liberty → New York monument, large statue
+         - Great Wall of China → ancient Chinese wall, long stone wall
+         - Grand Canyon → Arizona canyon, deep rocky gorge
+         Example: "Eiffel Tower at sunset" → "tall iron tower at sunset"
+
+      3. Preservation Rules:
+         - Keep the scene context unchanged
+         - Keep other elements unchanged
+         - Only genericize the specific landmark
+
+      ## Attribute-Specific Constraints
+      - Replace specific name with generic description
+      - General category should be preserved
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by replacing GEOGRAPHIC/LANDMARK references with similar alternatives (moderate semantic distance).
+
+      ## Strategies
+      1. Identification: Find specific geographic or landmark references
+
+      2. Replacement Options (moderate distance - similar landmark):
+         - Eiffel Tower → Tokyo Tower, Blackpool Tower, radio tower
+         - Mount Fuji → Mount Rainier, Matterhorn, snow mountain
+         - Statue of Liberty → Christ the Redeemer, large monument
+         - Great Wall → Hadrian's Wall, ancient fortification
+         - Grand Canyon → Bryce Canyon, deep valley
+         Example: "Eiffel Tower at sunset" → "Tokyo Tower at sunset"
+
+      3. Preservation Rules:
+         - Keep the scene context unchanged
+         - Keep other elements unchanged
+
+      ## Attribute-Specific Constraints
+      - Replace with similar type of landmark
+      - Should still make sense in context
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by replacing GEOGRAPHIC/LANDMARK references with completely different alternatives (severe semantic distance).
+
+      ## Strategies
+      1. Identification: Find specific geographic or landmark references
+
+      2. Replacement Options (severe distance - completely different):
+         - Eiffel Tower → Great Pyramid, skyscraper, windmill
+         - Mount Fuji → flat desert, ocean, urban skyline
+         - Statue of Liberty → Eiffel Tower, ancient ruins, modern sculpture
+         - Great Wall → modern highway, wooden fence, river
+         - Grand Canyon → green valley, flat plain, forest
+         Example: "Mount Fuji landscape" → "flat desert landscape"
+
+      3. Preservation Rules:
+         - Keep other scene elements unchanged
+         - Maintain grammatical correctness
+
+      ## Attribute-Specific Constraints
+      - Replace with completely different location type
+      - Creates clear geographic misalignment
+
+  brand:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by generalizing BRAND/LOGO references (mild semantic distance - genericize).
+
+      ## Strategies
+      1. Identification: Find brand names or logo references
+         - Look for: Nike, Apple, Mercedes, Coca-Cola, McDonald's, etc.
+
+      2. Replacement Options (mild distance - genericize):
+         - Nike → athletic brand, sports logo, swoosh-like symbol
+         - Apple → tech company logo, fruit symbol
+         - Mercedes → luxury car brand, star emblem
+         - Coca-Cola → soda brand, cola logo
+         - McDonald's → fast food logo, golden arches shape
+         Example: "Nike shoes" → "athletic brand shoes"
+
+      3. Preservation Rules:
+         - Keep the product type unchanged
+         - Keep other elements unchanged
+
+      ## Attribute-Specific Constraints
+      - Replace brand name with generic description
+      - Product category should be preserved
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by replacing BRAND/LOGO references with competitor alternatives (moderate semantic distance).
+
+      ## Strategies
+      1. Identification: Find brand names or logo references
+
+      2. Replacement Options (moderate distance - competitor brand):
+         - Nike → Adidas, Puma, Under Armour
+         - Apple → Samsung, Google, Microsoft
+         - Mercedes → BMW, Audi, Lexus
+         - Coca-Cola → Pepsi, Dr Pepper
+         - McDonald's → Burger King, Wendy's
+         Example: "Mercedes car" → "BMW car"
+
+      3. Preservation Rules:
+         - Keep the product type unchanged
+         - Keep other elements unchanged
+
+      ## Attribute-Specific Constraints
+      - Replace with competitor in same category
+      - Product type should remain the same
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by completely removing BRAND identity (severe semantic distance - full genericization).
+
+      ## Strategies
+      1. Identification: Find brand names or logo references
+
+      2. Replacement Options (severe distance - remove all brand identity):
+         - Nike swoosh → curved line, random checkmark, generic symbol
+         - Apple logo → fruit shape, generic circle, leaf shape
+         - Mercedes star → random star shape, geometric symbol
+         - Coca-Cola → generic text, random script, unreadable logo
+         - McDonald's arches → random arches, yellow curves
+         Example: "Coca-Cola bottle" → "generic soda bottle with unreadable label"
+
+      3. Preservation Rules:
+         - Keep the product type unchanged
+         - Remove all brand recognition
+
+      ## Attribute-Specific Constraints
+      - Remove all brand identity
+      - Product should be unbranded/generic
+
+  artistic_style:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by shifting ARTISTIC STYLE references to similar styles (mild semantic distance).
+
+      ## Strategies
+      1. Identification: Find artistic style or artist references
+         - Look for: Van Gogh, Monet, Picasso, Impressionist, Cubist, Art Nouveau
+
+      2. Replacement Options (mild distance - similar movement):
+         - Van Gogh style → Post-Impressionist brushwork, swirly painterly style
+         - Monet style → Impressionist style, soft brushwork
+         - Picasso Cubist → Abstract geometric, fragmented style
+         - Art Nouveau → Art Deco, decorative style
+         - Baroque → Rococo, ornate classical
+         Example: "Van Gogh starry night style" → "Post-Impressionist swirly brushwork"
+
+      3. Preservation Rules:
+         - Keep the subject matter unchanged
+         - Keep composition unchanged
+
+      ## Attribute-Specific Constraints
+      - Style shift should be subtle
+      - Same general artistic movement
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by shifting ARTISTIC STYLE references to different styles (moderate semantic distance).
+
+      ## Strategies
+      1. Identification: Find artistic style or artist references
+
+      2. Replacement Options (moderate distance - different movement):
+         - Impressionist → Expressionist, Fauvism
+         - Cubist → Surrealist, Abstract
+         - Art Nouveau → Victorian, Gothic
+         - Baroque → Renaissance, Neoclassical
+         - Van Gogh → Cezanne style, painterly but different
+         Example: "Impressionist landscape" → "Expressionist landscape"
+
+      3. Preservation Rules:
+         - Keep the subject matter unchanged
+         - Keep composition unchanged
+
+      ## Attribute-Specific Constraints
+      - Style shift should be noticeable
+      - Different but related artistic approach
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to create MISALIGNMENT by shifting ARTISTIC STYLE references to opposite styles (severe semantic distance).
+
+      ## Strategies
+      1. Identification: Find artistic style or artist references
+
+      2. Replacement Options (severe distance - opposite style):
+         - Impressionist → Photorealistic, Hyperrealistic, sharp digital
+         - Abstract → Classical Realism, detailed realistic
+         - Art Nouveau → Minimalist, Brutalist, stark modern
+         - Baroque → Modern Minimalist, simple clean
+         - Van Gogh style → digital render, CGI, photorealistic
+         - Painterly → sharp vector art, clean digital
+         Example: "Van Gogh style painting" → "photorealistic digital render"
+
+      3. Preservation Rules:
+         - Keep the subject matter unchanged
+         - Maintain recognizability
+
+      ## Attribute-Specific Constraints
+      - Style shift should be dramatic, often opposite
+      - Creates clear stylistic contrast

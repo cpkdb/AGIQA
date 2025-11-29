@@ -6,7 +6,7 @@
 
 # 配置参数
 SOURCE_PROMPTS="../data/example_prompts.json"          # 源prompt文件
-OUTPUT_DIR="/root/autodl-tmp/dataset_demo_60pairs"               # 输出目录
+OUTPUT_DIR="/root/autodl-tmp/dataset_demo_60pairs_v2"               # 输出目录
 NUM_NEGATIVES=3                                        # 每个正样本配对的负样本数量
 NUM_INFERENCE_STEPS=40                                 # SDXL推理步数
 GUIDANCE_SCALE=7.5                                     # CFG scale

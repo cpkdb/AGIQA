@@ -136,7 +136,8 @@ class DatasetGenerator:
         return self.degradation_generator.generate_negative_prompt(
             positive_prompt,
             subcategory,
-            severity
+            attribute=None,  # 随机选择属性
+            severity=severity
         )
 
     def _get_all_degradation_types(self) -> List[Dict]:

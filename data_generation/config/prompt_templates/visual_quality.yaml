@@ -1,0 +1,1162 @@
+# Visual Quality Degradation Prompt Templates
+# 按子类别分组，每个属性有 mild/moderate/severe 三个版本
+
+low_visual_quality:
+  blur:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of BLUR/FOCUS (mild level - subtle, barely noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add subtle blur descriptors to the whole image
+         - "slightly soft", "gentle focus", "with subtle haze"
+         Example: "a cat on a table" → "a slightly soft cat on a table"
+
+      2. Element-level: Add mild blur to specific subjects
+         - "softly focused [subject]", "[object] with gentle blur"
+         Example: "portrait of a woman" → "softly focused portrait of a woman"
+
+      3. Replacement-level: Introduce mild blur-causing conditions
+         - "with gentle bokeh effect", "through slightly steamy air"
+         Example: "coffee shop interior" → "coffee shop interior with gentle bokeh effect"
+
+      ## Attribute-Specific Constraints
+      - Focus on FOCUS LOSS, not detail/edge sharpness (that's low_sharpness)
+      - Motion blur needs movement context; lens blur needs depth context
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of BLUR/FOCUS (moderate level - clearly noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add clear blur descriptors affecting the whole image
+         - "out-of-focus", "soft-focus", "noticeably blurry"
+         Example: "a dog running" → "an out-of-focus, blurry dog running"
+
+      2. Element-level: Add blur to specific subjects with clear impact
+         - "blurred [subject]", "unfocused [object]", "[noun] with motion blur"
+         Example: "athlete sprinting" → "athlete sprinting with visible motion blur"
+
+      3. Replacement-level: Introduce conditions that cause noticeable blur
+         - "shot through foggy glass", "with camera shake", "captured with slow shutter"
+         - "photographed through rain-covered window", "with shallow depth of field blur"
+         Example: "city street" → "city street shot through foggy glass"
+
+      ## Attribute-Specific Constraints
+      - Distinguish from low_sharpness: blur = focus/motion problem, low_sharpness = detail/edge problem
+      - Motion blur implies movement; lens blur implies depth or camera error
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of BLUR/FOCUS (severe level - dramatic, immediately apparent). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add strong blur descriptors for dramatic effect
+         - "extremely blurry", "heavily defocused", "severely out of focus"
+         Example: "landscape photo" → "extremely blurry, heavily defocused landscape photo"
+
+      2. Element-level: Add severe blur to subjects
+         - "completely blurred [subject]", "indistinct [object]", "[noun] lost in motion blur"
+         Example: "racing car" → "racing car completely lost in severe motion blur"
+
+      3. Replacement-level: Introduce extreme blur-causing conditions
+         - "as if through frosted glass", "with extreme camera shake", "shot while falling"
+         - "through heavily fogged lens", "with catastrophic focus failure"
+         Example: "portrait" → "portrait as if shot through frosted glass"
+
+      ## Attribute-Specific Constraints
+      - Scene should still be recognizable but very blurry
+      - Should feel like severe camera error or extreme conditions
+
+  noise:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of DIGITAL NOISE (mild level - subtle, barely noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add subtle noise descriptors
+         - "with subtle digital noise", "slightly noisy", "with faint sensor grain"
+         Example: "night cityscape" → "night cityscape with subtle digital noise"
+
+      2. Element-level: Add noise to specific areas (typically shadows/dark areas)
+         - "with slightly noisy shadows", "with faint noise in dark areas"
+         Example: "indoor portrait" → "indoor portrait with slightly noisy shadows"
+
+      3. Replacement-level: Introduce mild noise-causing conditions
+         - "shot in slightly dim lighting", "captured with slightly high ISO"
+         Example: "evening street" → "evening street shot in slightly dim lighting"
+
+      ## Attribute-Specific Constraints
+      - Noise is DIGITAL sensor artifact (random colored/luminance speckles)
+      - Distinguish from grain: noise = digital/ugly, grain = film/organic/sometimes artistic
+      - Noise typically appears more in shadows and dark areas
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of DIGITAL NOISE (moderate level - clearly noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add visible noise descriptors
+         - "with visible digital noise", "noticeably noisy", "with sensor noise throughout"
+         Example: "concert photo" → "concert photo with visible digital noise throughout"
+
+      2. Element-level: Add noise to specific areas
+         - "with noisy shadows", "with speckled dark areas", "with color noise in [area]"
+         Example: "night portrait" → "night portrait with noisy shadows and color speckles"
+
+      3. Replacement-level: Introduce noise-causing conditions
+         - "shot at high ISO", "captured in low light with phone camera"
+         - "taken in dim conditions without flash"
+         Example: "indoor event" → "indoor event shot at high ISO in dim lighting"
+
+      ## Attribute-Specific Constraints
+      - Include both luminance noise (grainy) and color noise (colored speckles)
+      - Distinguish from grain: noise is digital artifact, grain is film texture
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of DIGITAL NOISE (severe level - dramatic, immediately apparent). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add heavy noise descriptors
+         - "with heavy digital noise", "extremely noisy", "with severe ISO noise"
+         Example: "night scene" → "extremely noisy night scene with severe digital artifacts"
+
+      2. Element-level: Add severe noise throughout
+         - "with noise obscuring details", "with heavy color noise everywhere"
+         - "with luminance noise destroying texture"
+         Example: "dark forest" → "dark forest with noise obscuring all fine details"
+
+      3. Replacement-level: Introduce extreme noise-causing conditions
+         - "shot with phone camera at night", "captured at maximum ISO"
+         - "taken in near darkness without proper equipment"
+         Example: "wildlife at dusk" → "wildlife shot with phone camera in near darkness"
+
+      ## Attribute-Specific Constraints
+      - Should feel like extreme low-light capture with inadequate equipment
+      - Distinguish from grain: noise is ugly digital artifact, not artistic film texture
+
+  grain:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of FILM GRAIN (mild level - subtle, barely noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add subtle film grain descriptors
+         - "with subtle film grain", "with light analog texture", "with gentle grain"
+         Example: "portrait" → "portrait with subtle film grain"
+
+      2. Element-level: Add grain to specific tonal areas
+         - "with grain visible in midtones", "with subtle grain in shadows"
+         Example: "black and white photo" → "black and white photo with subtle grain in shadows"
+
+      3. Replacement-level: Introduce film/vintage conditions
+         - "shot on fine grain film stock", "with vintage film texture"
+         - "captured on 35mm film"
+         Example: "street photography" → "street photography shot on fine grain 35mm film"
+
+      ## Attribute-Specific Constraints
+      - Grain is FILM texture (organic, silver halide particles)
+      - Distinguish from noise: grain = film/organic/artistic, noise = digital/random/ugly
+      - Grain has structure and can be aesthetically pleasing
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of FILM GRAIN (moderate level - clearly noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add visible film grain descriptors
+         - "with visible film grain", "with noticeable analog grain", "grainy film look"
+         Example: "cinematic shot" → "cinematic shot with visible film grain throughout"
+
+      2. Element-level: Add grain distribution description
+         - "with grain throughout the image", "with prominent grain in highlights and shadows"
+         Example: "moody portrait" → "moody portrait with prominent grain in shadows"
+
+      3. Replacement-level: Introduce specific film conditions
+         - "shot on high-speed film stock", "captured on Kodak Tri-X"
+         - "with pushed film processing", "on grainy 800 ISO film"
+         Example: "documentary photo" → "documentary photo shot on pushed Tri-X film"
+
+      ## Attribute-Specific Constraints
+      - Distinguish from noise: grain has structure, noise is random speckles
+      - Can reference specific film stocks for authenticity
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of FILM GRAIN (severe level - dramatic, immediately apparent). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add heavy grain descriptors
+         - "with heavy film grain", "extremely grainy", "with overwhelming grain texture"
+         Example: "night photograph" → "extremely grainy night photograph with heavy film texture"
+
+      2. Element-level: Add grain affecting detail visibility
+         - "with grain obscuring fine details", "with coarse grain throughout"
+         Example: "portrait" → "portrait with coarse grain obscuring skin texture"
+
+      3. Replacement-level: Introduce extreme film conditions
+         - "shot on expired high-speed film", "with heavily pushed processing"
+         - "on damaged film stock", "captured on 3200 ISO film pushed two stops"
+         Example: "concert photo" → "concert photo shot on expired 3200 ISO film"
+
+      ## Attribute-Specific Constraints
+      - Should feel like extreme film conditions or damaged/expired stock
+      - Distinguish from noise: even heavy grain has structure, noise is chaotic
+
+  exposure_issues:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of EXPOSURE (mild level - subtle, barely noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add subtle exposure descriptors
+         - Underexposed: "slightly dim", "subtly dark", "with slight shadow"
+         - Overexposed: "slightly bright", "with subtle highlight bloom"
+         Example: "outdoor portrait" → "slightly dim outdoor portrait"
+
+      2. Element-level: Add exposure issues to specific areas
+         - "with slightly lost shadow detail", "with subtle highlight clipping"
+         Example: "sunset scene" → "sunset scene with slightly lost shadow detail"
+
+      3. Replacement-level: Introduce mild exposure-affecting conditions
+         - "shot slightly against the light", "in slightly challenging lighting"
+         Example: "backlit portrait" → "portrait shot slightly against the light"
+
+      ## Attribute-Specific Constraints
+      - Exposure is about LIGHT QUANTITY (too much or too little)
+      - Distinguish from contrast: exposure = brightness level, contrast = tonal range
+      - Can be underexposed (dark) or overexposed (bright) - choose one direction
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of EXPOSURE (moderate level - clearly noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add clear exposure descriptors
+         - Underexposed: "underexposed", "too dark", "with lost shadow detail"
+         - Overexposed: "overexposed", "too bright", "with blown highlights"
+         Example: "beach scene" → "overexposed beach scene with blown out sky"
+
+      2. Element-level: Add exposure problems to specific areas
+         - "with crushed blacks in shadows", "with clipped highlights on [subject]"
+         - "with silhouetted [subject]", "with washed out [area]"
+         Example: "window portrait" → "window portrait with silhouetted face"
+
+      3. Replacement-level: Introduce exposure-affecting conditions
+         - "shot in harsh backlight", "captured without exposure compensation"
+         - "photographed against bright window"
+         Example: "indoor portrait" → "indoor portrait photographed against bright window"
+
+      ## Attribute-Specific Constraints
+      - Underexposure: lost shadow detail, dark muddy areas
+      - Overexposure: blown highlights, washed out bright areas
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of EXPOSURE (severe level - dramatic, immediately apparent). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add extreme exposure descriptors
+         - Underexposed: "severely underexposed", "nearly black", "extremely dark"
+         - Overexposed: "severely overexposed", "completely blown out", "washed out"
+         Example: "landscape" → "severely underexposed landscape, nearly lost in darkness"
+
+      2. Element-level: Add extreme exposure effects
+         - "with completely crushed blacks", "with totally blown highlights"
+         - "with [subject] lost in shadow", "with [area] completely white"
+         Example: "sunset portrait" → "sunset portrait with face completely lost in shadow"
+
+      3. Replacement-level: Introduce extreme exposure conditions
+         - "shot directly into the sun", "captured with completely wrong exposure"
+         - "photographed in extreme backlight without fill"
+         Example: "outdoor scene" → "outdoor scene shot directly into harsh sunlight"
+
+      ## Attribute-Specific Constraints
+      - Scene should still be somewhat recognizable
+      - Should feel like severe camera metering failure
+
+  low_contrast:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of CONTRAST (mild level - subtle, barely noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add subtle low contrast descriptors
+         - "with soft contrast", "slightly flat", "with gentle tonal range"
+         Example: "dramatic landscape" → "landscape with soft, gentle contrast"
+
+      2. Element-level: Modify contrast-related descriptions
+         - "with softened shadows", "with muted highlights"
+         Example: "portrait with dramatic lighting" → "portrait with softened, muted lighting"
+
+      3. Replacement-level: Introduce low contrast conditions
+         - "on an overcast day", "in soft diffused light", "through light haze"
+         Example: "mountain vista" → "mountain vista on a slightly overcast day"
+
+      ## Attribute-Specific Constraints
+      - Contrast is about TONAL RANGE (difference between darks and lights)
+      - Distinguish from exposure: contrast = range, exposure = overall brightness
+      - Low contrast = flat, lacking punch, compressed tonal range
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of CONTRAST (moderate level - clearly noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add clear low contrast descriptors
+         - "low contrast", "flat", "washed-out tones", "with compressed dynamic range"
+         Example: "vibrant sunset" → "flat, low contrast sunset with washed-out tones"
+
+      2. Element-level: Replace contrast-enhancing words
+         - "dramatic" → "flat", "bold" → "muted", "vivid" → "dull"
+         - "with muddy midtones", "lacking tonal separation"
+         Example: "bold portrait" → "flat portrait with muddy midtones"
+
+      3. Replacement-level: Introduce low contrast conditions
+         - "in heavy overcast", "through thick haze", "in foggy conditions"
+         - "with flat lighting", "under diffused cloudy sky"
+         Example: "cityscape" → "cityscape in heavy haze with flat lighting"
+
+      ## Attribute-Specific Constraints
+      - Image should look "flat" with blacks not being black, whites not being white
+      - Distinguish from exposure: low contrast affects range, not overall brightness
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of CONTRAST (severe level - dramatic, immediately apparent). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add extreme low contrast descriptors
+         - "extremely flat", "with no contrast", "completely washed out"
+         - "with severely compressed tonal range"
+         Example: "dramatic scene" → "extremely flat scene with no tonal contrast"
+
+      2. Element-level: Describe severe tonal compression
+         - "with no tonal separation", "with blacks appearing gray"
+         - "with whites appearing dull gray"
+         Example: "high contrast photo" → "photo with no tonal separation, all midtones"
+
+      3. Replacement-level: Introduce extreme low contrast conditions
+         - "through dense fog", "in thick smog", "with severe atmospheric haze"
+         Example: "mountain landscape" → "mountain landscape through dense fog"
+
+      ## Attribute-Specific Constraints
+      - Image should look very flat with almost no tonal variation
+      - Should feel like severe atmospheric conditions or processing error
+
+  low_sharpness:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of SHARPNESS/DETAIL (mild level - subtle, barely noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add subtle softness descriptors
+         - "with slightly soft details", "lacking crisp edges", "with gentle rendering"
+         Example: "detailed texture" → "texture with slightly soft details"
+
+      2. Element-level: Add softness to specific elements
+         - "with softened edges on [subject]", "with slightly undefined [details]"
+         Example: "sharp portrait" → "portrait with slightly softened facial details"
+
+      3. Replacement-level: Introduce mild sharpness-reducing conditions
+         - "shot with soft-focus filter", "with slight diffusion"
+         Example: "product photo" → "product photo with slight diffusion effect"
+
+      ## Attribute-Specific Constraints
+      - Sharpness is about EDGE DEFINITION and FINE DETAIL
+      - Distinguish from blur: low_sharpness = soft edges/lost details, blur = focus problem
+      - Affects micro-contrast and fine texture rendering
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of SHARPNESS/DETAIL (moderate level - clearly noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add clear softness descriptors
+         - "lacking sharpness", "with soft edges", "without crisp details"
+         Example: "detailed landscape" → "landscape lacking sharpness, with soft edges"
+
+      2. Element-level: Add softness affecting specific details
+         - "with lost fine details", "with undefined edges on [subject]"
+         - "with soft texture rendering", "lacking micro-contrast"
+         Example: "fabric texture" → "fabric texture with lost fine details and soft rendering"
+
+      3. Replacement-level: Introduce sharpness-reducing conditions
+         - "shot with cheap lens", "with heavy diffusion filter"
+         - "captured at low resolution then upscaled"
+         Example: "architecture photo" → "architecture photo shot with cheap soft lens"
+
+      ## Attribute-Specific Constraints
+      - Distinguish from blur: sharpness is about detail rendering, blur is about focus
+      - Affects texture, edges, and fine patterns
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of SHARPNESS/DETAIL (severe level - dramatic, immediately apparent). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add extreme softness descriptors
+         - "completely lacking sharpness", "with mushy details", "extremely soft"
+         Example: "detailed photo" → "extremely soft photo with mushy, undefined details"
+
+      2. Element-level: Describe severe detail loss
+         - "with no fine detail visible", "with completely soft edges"
+         - "with all texture lost", "with no edge definition"
+         Example: "intricate pattern" → "pattern with all fine detail lost, completely soft"
+
+      3. Replacement-level: Introduce extreme softness conditions
+         - "shot through vaseline-smeared lens", "with extreme diffusion"
+         - "heavily compressed and upscaled multiple times"
+         Example: "portrait" → "portrait shot through heavily diffused lens"
+
+      ## Attribute-Specific Constraints
+      - All fine textures and edges should appear soft/mushy
+      - Distinguish from blur: even in focus, details are not rendered sharply
+
+  color_distortion:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of COLOR ACCURACY (mild level - subtle, barely noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add subtle color cast descriptors
+         - "with slight warm tint", "with subtle cool cast", "with faint color shift"
+         Example: "neutral portrait" → "portrait with slight warm color tint"
+
+      2. Element-level: Add color issues to specific elements
+         - "with slightly off skin tones", "with subtly shifted [color]"
+         Example: "product photo" → "product photo with slightly off white balance"
+
+      3. Replacement-level: Introduce mild color-affecting conditions
+         - "under mixed lighting", "with slight white balance error"
+         Example: "indoor scene" → "indoor scene under slightly mixed lighting"
+
+      ## Attribute-Specific Constraints
+      - Color distortion includes: color cast, saturation issues, white balance errors
+      - Distinguish from unharmonious_colors (aesthetic): this is TECHNICAL color error
+      - Can affect overall tint or specific color channels
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of COLOR ACCURACY (moderate level - clearly noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add clear color problem descriptors
+         - "with yellow/green/magenta color cast", "with wrong white balance"
+         - "with unnatural color rendering"
+         Example: "daylight portrait" → "portrait with noticeable yellow color cast"
+
+      2. Element-level: Add color problems to specific areas
+         - "with greenish skin tones", "with oversaturated [color]"
+         - "with color fringing on edges", "with muddy [color] tones"
+         Example: "outdoor photo" → "outdoor photo with greenish, unnatural skin tones"
+
+      3. Replacement-level: Introduce color-distorting conditions
+         - "shot under fluorescent lights", "with incorrect white balance setting"
+         - "with chromatic aberration from cheap lens"
+         Example: "office scene" → "office scene shot under green fluorescent lights"
+
+      ## Attribute-Specific Constraints
+      - Can include: color cast, saturation problems, chromatic aberration
+      - Should feel like camera/processing error, not artistic choice
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of COLOR ACCURACY (severe level - dramatic, immediately apparent). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add extreme color problem descriptors
+         - "with severe color cast", "with completely wrong colors"
+         - "with garish unnatural color rendering"
+         Example: "natural scene" → "scene with severe green color cast, completely unnatural"
+
+      2. Element-level: Add extreme color problems
+         - "with alien-looking skin tones", "with posterized colors"
+         - "with severe chromatic aberration", "with color banding"
+         Example: "portrait" → "portrait with alien-looking magenta skin tones"
+
+      3. Replacement-level: Introduce extreme color conditions
+         - "with completely wrong white balance", "processed with corrupted color profile"
+         - "with severe color channel issues"
+         Example: "landscape" → "landscape with severely corrupted color rendering"
+
+      ## Attribute-Specific Constraints
+      - Colors should look clearly wrong/unnatural
+      - Should feel like severe technical failure
+
+
+aesthetic_quality:
+  poor_composition:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have degraded aesthetic quality specifically in terms of COMPOSITION (mild level - subtle, barely noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add subtle composition issue descriptors
+         - "slightly off-center", "with casual framing", "loosely composed"
+         Example: "well-composed portrait" → "slightly off-center portrait"
+
+      2. Element-level: Add positioning issues to subjects
+         - "with [subject] slightly to the edge", "with minor framing issues"
+         Example: "centered cat" → "cat positioned slightly awkwardly in frame"
+
+      3. Replacement-level: Introduce casual shooting conditions
+         - "shot casually", "with snapshot framing"
+         Example: "professional portrait" → "casually framed portrait"
+
+      ## Attribute-Specific Constraints
+      - Composition is about SPATIAL ARRANGEMENT (framing, balance, positioning)
+      - Do NOT degrade technical quality (blur, noise, etc.)
+      - Focus on: rule of thirds violations, balance issues, awkward cropping
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have degraded aesthetic quality specifically in terms of COMPOSITION (moderate level - clearly noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add clear composition problem descriptors
+         - "poorly composed", "awkwardly framed", "with unbalanced composition"
+         Example: "balanced landscape" → "poorly composed, unbalanced landscape"
+
+      2. Element-level: Add specific composition errors
+         - "with [subject] cut off at edges", "with too much empty space"
+         - "with cluttered background", "with distracting elements"
+         - "with tilted horizon", "with [subject] too small in frame"
+         Example: "portrait" → "portrait with subject's head cut off at top"
+
+      3. Replacement-level: Introduce amateur shooting conditions
+         - "shot without considering composition", "with snapshot mentality"
+         Example: "scenic view" → "scenic view with tilted horizon and awkward framing"
+
+      ## Attribute-Specific Constraints
+      - Include: off-center subjects, bad cropping, tilted horizons, cluttered frames
+      - Do NOT add technical defects - only spatial/framing issues
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have degraded aesthetic quality specifically in terms of COMPOSITION (severe level - dramatic, immediately apparent). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add extreme composition problem descriptors
+         - "terribly composed", "with chaotic framing", "completely unbalanced"
+         Example: "professional photo" → "terribly composed photo with chaotic framing"
+
+      2. Element-level: Add severe composition errors
+         - "with [subject] barely in frame", "with main subject cut in half"
+         - "with completely wrong framing", "with subject lost in clutter"
+         Example: "portrait" → "portrait with face half cut off, barely in frame"
+
+      3. Replacement-level: Introduce accidental shooting conditions
+         - "looks like accidental shot", "with random snapshot framing"
+         Example: "group photo" → "group photo with half the people cut off, accidental framing"
+
+      ## Attribute-Specific Constraints
+      - Should feel like accidental or completely amateur shot
+      - Subject should still be somewhat recognizable despite terrible framing
+
+  poor_lighting:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have degraded aesthetic quality specifically in terms of LIGHTING (mild level - subtle, barely noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add subtle unflattering lighting descriptors
+         - "with plain lighting", "with unremarkable light", "with flat illumination"
+         Example: "dramatically lit portrait" → "portrait with plain, flat lighting"
+
+      2. Element-level: Replace good lighting with mediocre
+         - "golden hour" → "afternoon light", "soft lighting" → "ordinary lighting"
+         Example: "sunset portrait" → "afternoon portrait with ordinary lighting"
+
+      3. Replacement-level: Introduce less ideal lighting conditions
+         - "under overcast sky", "with standard indoor lighting"
+         Example: "outdoor portrait" → "outdoor portrait under plain overcast sky"
+
+      ## Attribute-Specific Constraints
+      - Lighting aesthetic is about QUALITY of light (flattering vs unflattering)
+      - Distinguish from exposure: this is about light QUALITY, not QUANTITY
+      - Focus on: direction, softness, color temperature, mood
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have degraded aesthetic quality specifically in terms of LIGHTING (moderate level - clearly noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add unflattering lighting descriptors
+         - "with harsh lighting", "with unflattering light", "with flat boring light"
+         Example: "beautifully lit scene" → "scene with harsh, unflattering lighting"
+
+      2. Element-level: Add specific lighting problems
+         - "with harsh shadows on [face/subject]", "with unflattering overhead light"
+         - "with mixed color temperature", "with flat frontal flash"
+         Example: "portrait" → "portrait with harsh shadows under eyes from overhead light"
+
+      3. Replacement-level: Introduce unflattering lighting conditions
+         - "under harsh midday sun", "with direct on-camera flash"
+         - "under fluorescent office lights"
+         Example: "model photo" → "model photo shot under harsh midday sun"
+
+      ## Attribute-Specific Constraints
+      - Include: harsh shadows, flat light, wrong direction, mixed temperatures
+      - Do NOT confuse with exposure (brightness) - this is about light quality
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have degraded aesthetic quality specifically in terms of LIGHTING (severe level - dramatic, immediately apparent). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add extremely unflattering lighting descriptors
+         - "with terrible lighting", "with ugly harsh light", "with worst possible lighting"
+         Example: "professional photo" → "photo with terrible, ugly lighting"
+
+      2. Element-level: Add severe lighting problems
+         - "with raccoon eye shadows", "with ugly green color cast from lights"
+         - "with harsh unflattering shadows everywhere"
+         Example: "portrait" → "portrait with raccoon eye shadows from ugly overhead light"
+
+      3. Replacement-level: Introduce worst lighting conditions
+         - "with direct flash in dark room", "under harsh overhead fluorescent"
+         - "with multiple conflicting light sources"
+         Example: "event photo" → "event photo with harsh direct flash creating ugly shadows"
+
+      ## Attribute-Specific Constraints
+      - Should make subjects look bad while still being visible
+      - Focus on aesthetic ugliness, not technical exposure problems
+
+  unharmonious_colors:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have degraded aesthetic quality specifically in terms of COLOR HARMONY (mild level - subtle, barely noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add subtle color clash descriptors
+         - "with slightly mismatched colors", "with minor color discord"
+         Example: "harmonious scene" → "scene with slightly mismatched color tones"
+
+      2. Element-level: Add mild color conflicts
+         - "with [color1] not quite matching [color2]"
+         - "with slightly competing warm and cool tones"
+         Example: "coordinated outfit" → "outfit with slightly competing color tones"
+
+      3. Replacement-level: Introduce mild color discord
+         - "with colors that don't quite complement each other"
+         Example: "interior design" → "interior with colors that don't quite work together"
+
+      ## Attribute-Specific Constraints
+      - Color harmony is AESTHETIC (pleasing combinations vs clashing)
+      - Distinguish from color_distortion: harmony = aesthetic choice, distortion = technical error
+      - Focus on: complementary vs clashing, warm/cool balance, saturation consistency
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have degraded aesthetic quality specifically in terms of COLOR HARMONY (moderate level - clearly noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add color clash descriptors
+         - "with clashing colors", "with discordant color palette"
+         Example: "beautiful scene" → "scene with clashing, discordant colors"
+
+      2. Element-level: Add specific color conflicts
+         - "with [color1] clashing against [color2]"
+         - "with too many competing saturated colors"
+         Example: "fashion photo" → "fashion photo with orange clashing against pink"
+
+      3. Replacement-level: Introduce color discord conditions
+         - "with poorly chosen color scheme", "with random uncoordinated colors"
+         Example: "room interior" → "room interior with poorly chosen clashing color scheme"
+
+      ## Attribute-Specific Constraints
+      - Include: complementary color overload, saturation mismatches, temperature conflicts
+      - This is about aesthetic displeasure, not technical color errors
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have degraded aesthetic quality specifically in terms of COLOR HARMONY (severe level - dramatic, immediately apparent). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add extreme color clash descriptors
+         - "with garish clashing colors", "with painfully discordant palette"
+         Example: "elegant scene" → "scene with garish, painfully clashing colors"
+
+      2. Element-level: Add severe color conflicts
+         - "with every color fighting for attention"
+         - "with neon colors clashing violently"
+         Example: "design" → "design with neon pink, lime green, and orange all clashing"
+
+      3. Replacement-level: Introduce extreme color discord
+         - "with the worst possible color choices", "with deliberately ugly palette"
+         Example: "interior" → "interior with deliberately ugly, clashing color scheme"
+
+      ## Attribute-Specific Constraints
+      - Should feel like terrible aesthetic choices
+      - Colors should actively fight each other for attention
+
+  lack_of_visual_appeal:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have degraded aesthetic quality specifically in terms of VISUAL APPEAL (mild level - subtle, barely noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Replace appealing words with plain alternatives
+         - "beautiful" → "nice", "stunning" → "decent", "breathtaking" → "pleasant"
+         Example: "beautiful sunset" → "nice, pleasant sunset"
+
+      2. Element-level: Neutralize emotional descriptors
+         - "dramatic sky" → "ordinary sky", "magical atmosphere" → "normal atmosphere"
+         Example: "magical forest" → "ordinary forest scene"
+
+      3. Replacement-level: Remove special moments/conditions
+         - "at golden hour" → "in the afternoon", "at peak bloom" → "with some flowers"
+         Example: "cherry blossoms at peak bloom" → "cherry trees with some blossoms"
+
+      ## Attribute-Specific Constraints
+      - Visual appeal is about EMOTIONAL IMPACT and AESTHETIC INTEREST
+      - Do NOT add technical defects - just make it less interesting/special
+      - Focus on: removing drama, reducing uniqueness, making ordinary
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have degraded aesthetic quality specifically in terms of VISUAL APPEAL (moderate level - clearly noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Replace appealing words with bland alternatives
+         - "beautiful" → "ordinary", "stunning" → "unremarkable", "gorgeous" → "plain"
+         Example: "stunning landscape" → "ordinary, unremarkable landscape"
+
+      2. Element-level: Remove all special qualities
+         - "dramatic" → "flat", "vibrant" → "dull", "elegant" → "basic"
+         Example: "elegant ballroom" → "basic, plain ballroom"
+
+      3. Replacement-level: Replace special with mundane
+         - "rare golden hour light" → "typical daylight"
+         - "once-in-a-lifetime moment" → "everyday moment"
+         Example: "spectacular aurora" → "faint, barely visible aurora"
+
+      ## Attribute-Specific Constraints
+      - Remove all "wow factor" while keeping technical quality
+      - Should feel like a forgettable, unremarkable image
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have degraded aesthetic quality specifically in terms of VISUAL APPEAL (severe level - dramatic, immediately apparent). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Replace all appealing words with negative alternatives
+         - "beautiful" → "dull", "stunning" → "boring", "gorgeous" → "plain"
+         Example: "gorgeous vista" → "dull, boring, forgettable vista"
+
+      2. Element-level: Make everything mundane
+         - "majestic mountain" → "ordinary hill", "crystal clear water" → "murky pond"
+         Example: "majestic snow-capped peaks" → "ordinary gray hills"
+
+      3. Replacement-level: Replace with least interesting version
+         - "sunset over ocean" → "overcast sky over parking lot"
+         - "blooming garden" → "empty lot with weeds"
+         Example: "romantic Parisian cafe" → "generic fast food restaurant"
+
+      ## Attribute-Specific Constraints
+      - Remove all aesthetic appeal while maintaining plausibility
+      - Should feel like the least interesting version of the scene
+
+semantic_plausibility:
+  human_anatomy:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have degraded semantic plausibility specifically in terms of HUMAN ANATOMY (mild level - subtle, barely noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add subtle anatomy issue descriptors
+         - "with slightly unusual proportions", "with subtly off anatomy"
+         Example: "portrait of a man" → "portrait of a man with slightly unusual proportions"
+
+      2. Element-level: Add mild issues to specific body parts
+         - "with slightly odd hand positioning", "with subtly asymmetric features"
+         - "with slightly long arms", "with minor proportion issues"
+         Example: "woman waving" → "woman waving with slightly odd finger positioning"
+
+      3. Replacement-level: Suggest AI generation artifacts
+         - "with subtle AI generation artifacts", "with minor anatomical inconsistencies"
+         Example: "full body portrait" → "full body portrait with subtle proportion inconsistencies"
+
+      ## Attribute-Specific Constraints
+      - Anatomy issues are about BODY STRUCTURE (proportions, limbs, joints)
+      - Distinguish from facial_accuracy: anatomy = body, facial = face specifically
+      - Common AI issues: hands, fingers, limb proportions, joint angles
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have degraded semantic plausibility specifically in terms of HUMAN ANATOMY (moderate level - clearly noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add clear anatomy issue descriptors
+         - "with unnatural body proportions", "with visible anatomical errors"
+         Example: "standing figure" → "standing figure with unnatural body proportions"
+
+      2. Element-level: Add specific anatomy problems
+         - "with awkward hand anatomy", "with wrong number of fingers"
+         - "with twisted limb positions", "with impossible joint angles"
+         Example: "person holding cup" → "person holding cup with awkward, wrong finger count"
+
+      3. Replacement-level: Describe AI artifact patterns
+         - "with typical AI hand artifacts", "with limbs at impossible angles"
+         Example: "group of people" → "group of people with visible hand and limb artifacts"
+
+      ## Attribute-Specific Constraints
+      - Focus on: hands (extra/missing fingers), limb proportions, joint positions
+      - Should feel like AI generation artifacts, not fantasy/surreal art
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have degraded semantic plausibility specifically in terms of HUMAN ANATOMY (severe level - dramatic, immediately apparent). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add extreme anatomy issue descriptors
+         - "with grotesquely wrong anatomy", "with severely distorted body"
+         Example: "human figure" → "human figure with grotesquely distorted anatomy"
+
+      2. Element-level: Add severe anatomy problems
+         - "with melting, fused fingers", "with extra limbs"
+         - "with impossible twisted body", "with merged body parts"
+         Example: "person gesturing" → "person gesturing with melting hands showing extra fingers"
+
+      3. Replacement-level: Describe severe AI failures
+         - "with catastrophic anatomy failure", "with nightmare-fuel body distortion"
+         Example: "crowd scene" → "crowd scene with severely distorted, melting human forms"
+
+      ## Attribute-Specific Constraints
+      - Should feel like severe AI generation failure
+      - People should still be recognizable as human despite distortions
+
+  facial_accuracy:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have degraded semantic plausibility specifically in terms of FACIAL ACCURACY (mild level - subtle, barely noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add subtle facial issue descriptors
+         - "with slightly asymmetric features", "with subtly off facial proportions"
+         Example: "portrait" → "portrait with slightly asymmetric facial features"
+
+      2. Element-level: Add mild issues to specific facial features
+         - "with slightly misaligned eyes", "with subtly unnatural expression"
+         Example: "smiling woman" → "smiling woman with slightly unnatural smile"
+
+      3. Replacement-level: Suggest uncanny valley effect
+         - "with subtle uncanny valley feel", "with slightly artificial appearance"
+         Example: "realistic face" → "realistic face with subtle uncanny valley quality"
+
+      ## Attribute-Specific Constraints
+      - Facial accuracy is about FACE SPECIFICALLY (eyes, nose, mouth, proportions)
+      - Distinguish from human_anatomy: facial = face only, anatomy = body
+      - Focus on: eye alignment, facial symmetry, expression naturalness
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have degraded semantic plausibility specifically in terms of FACIAL ACCURACY (moderate level - clearly noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add clear facial issue descriptors
+         - "with unnatural facial features", "with obvious facial asymmetry"
+         Example: "close-up portrait" → "close-up portrait with unnatural facial features"
+
+      2. Element-level: Add specific facial problems
+         - "with misaligned eyes", "with unnatural teeth", "with plastic-looking skin"
+         - "with odd facial proportions", "with uncanny expression"
+         Example: "smiling portrait" → "smiling portrait with unnatural teeth and odd eye spacing"
+
+      3. Replacement-level: Describe uncanny valley
+         - "with clear uncanny valley appearance", "with almost-but-not-quite-human face"
+         Example: "realistic render" → "realistic render with uncanny valley facial features"
+
+      ## Attribute-Specific Constraints
+      - Focus on: eye alignment, facial symmetry, skin texture, expression
+      - Should trigger uncanny valley response
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have degraded semantic plausibility specifically in terms of FACIAL ACCURACY (severe level - dramatic, immediately apparent). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add extreme facial issue descriptors
+         - "with grotesquely distorted face", "with nightmare-inducing facial features"
+         Example: "portrait" → "portrait with grotesquely distorted facial features"
+
+      2. Element-level: Add severe facial problems
+         - "with melting facial features", "with eyes at wrong positions"
+         - "with multiple overlapping faces", "with warped, liquid features"
+         Example: "close-up" → "close-up with melting, warped facial features"
+
+      3. Replacement-level: Describe severe AI facial failure
+         - "with catastrophic facial generation failure"
+         Example: "group portrait" → "group portrait with severely distorted, melting faces"
+
+      ## Attribute-Specific Constraints
+      - Should feel like severe AI generation failure
+      - Face should still be recognizable as a face despite distortions
+
+  object_structure:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have degraded semantic plausibility specifically in terms of OBJECT STRUCTURE (mild level - subtle, barely noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add subtle structure issue descriptors
+         - "with slightly irregular edges", "with minor structural inconsistencies"
+         Example: "car on street" → "car on street with slightly irregular edges"
+
+      2. Element-level: Add mild issues to specific objects
+         - "with subtly warped [object]", "with slightly off [object] proportions"
+         Example: "bicycle" → "bicycle with slightly warped frame geometry"
+
+      3. Replacement-level: Suggest AI generation artifacts
+         - "with subtle object generation artifacts"
+         Example: "furniture" → "furniture with subtle structural inconsistencies"
+
+      ## Attribute-Specific Constraints
+      - Object structure is about PHYSICAL FORM of non-human objects
+      - Focus on: edges, proportions, symmetry, structural logic
+      - Common issues: wheels not round, buildings warped, furniture proportions off
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have degraded semantic plausibility specifically in terms of OBJECT STRUCTURE (moderate level - clearly noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add clear structure issue descriptors
+         - "with warped object geometry", "with impossible object structure"
+         Example: "room interior" → "room interior with warped furniture geometry"
+
+      2. Element-level: Add specific structural problems
+         - "with bent [object] that should be straight"
+         - "with [object] parts not connecting properly"
+         Example: "chair" → "chair with legs at impossible angles, not connecting to seat"
+
+      3. Replacement-level: Describe AI object failures
+         - "with typical AI object generation errors"
+         Example: "vehicle" → "vehicle with warped body panels and misaligned parts"
+
+      ## Attribute-Specific Constraints
+      - Focus on: geometry, connections, proportions, physical logic
+      - Should feel like AI generation artifacts, not artistic distortion
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have degraded semantic plausibility specifically in terms of OBJECT STRUCTURE (severe level - dramatic, immediately apparent). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add extreme structure issue descriptors
+         - "with melting, impossible object geometry"
+         Example: "building" → "building with melting, impossible architectural geometry"
+
+      2. Element-level: Add severe structural problems
+         - "with [object] appearing to melt", "with physics-defying [object] form"
+         Example: "car" → "car with melting body, wheels merging into frame"
+
+      3. Replacement-level: Describe catastrophic AI failures
+         - "with catastrophic object generation failure"
+         Example: "machinery" → "machinery with completely impossible, melting structure"
+
+      ## Attribute-Specific Constraints
+      - Objects should still be recognizable despite severe distortion
+      - Should feel like severe AI generation failure
+
+  confusing_geometry:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have degraded semantic plausibility specifically in terms of SPATIAL GEOMETRY (mild level - subtle, barely noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add subtle geometry issue descriptors
+         - "with subtle perspective inconsistencies", "with slightly off spatial depth"
+         Example: "room interior" → "room interior with subtle perspective inconsistencies"
+
+      2. Element-level: Add mild spatial issues
+         - "with slightly misaligned perspective lines"
+         - "with minor depth inconsistencies"
+         Example: "hallway" → "hallway with slightly confusing depth perception"
+
+      3. Replacement-level: Suggest spatial artifacts
+         - "with subtle spatial generation artifacts"
+         Example: "architectural photo" → "architectural photo with minor perspective issues"
+
+      ## Attribute-Specific Constraints
+      - Geometry is about SPATIAL RELATIONSHIPS (perspective, depth, scale)
+      - Distinguish from object_structure: geometry = space, structure = individual objects
+      - Focus on: vanishing points, horizon lines, relative scale, depth
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have degraded semantic plausibility specifically in terms of SPATIAL GEOMETRY (moderate level - clearly noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add clear geometry issue descriptors
+         - "with confusing perspective", "with conflicting vanishing points"
+         Example: "street scene" → "street scene with confusing, conflicting perspective"
+
+      2. Element-level: Add specific spatial problems
+         - "with objects at wrong relative scale"
+         - "with inconsistent depth relationships"
+         Example: "landscape" → "landscape with objects at impossible relative scales"
+
+      3. Replacement-level: Describe spatial paradoxes
+         - "with Escher-like spatial confusion"
+         Example: "staircase" → "staircase with confusing, paradoxical spatial relationships"
+
+      ## Attribute-Specific Constraints
+      - Focus on: perspective errors, scale inconsistencies, depth paradoxes
+      - Should feel like AI spatial reasoning failure
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have degraded semantic plausibility specifically in terms of SPATIAL GEOMETRY (severe level - dramatic, immediately apparent). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add extreme geometry issue descriptors
+         - "with impossible geometry", "with reality-breaking spatial paradoxes"
+         Example: "interior" → "interior with impossible, paradoxical geometry"
+
+      2. Element-level: Add severe spatial problems
+         - "with foreground appearing behind background"
+         - "with multiple conflicting horizons"
+         Example: "room" → "room with space folding impossibly, multiple horizons"
+
+      3. Replacement-level: Describe Escher-like impossibilities
+         - "with Escher-like impossible architecture"
+         Example: "building interior" → "building interior with Escher-like impossible staircases"
+
+      ## Attribute-Specific Constraints
+      - Should feel like reality-breaking impossible space
+      - Scene should still be somewhat parseable despite impossibilities
+
+  physical_plausibility:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have degraded semantic plausibility specifically in terms of PHYSICS (mild level - subtle, barely noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add subtle physics issue descriptors
+         - "with slightly off physics", "with subtle physical inconsistencies"
+         Example: "still life" → "still life with slightly off physical relationships"
+
+      2. Element-level: Add mild physics issues
+         - "with [object] slightly floating", "with shadows slightly misaligned"
+         Example: "cup on table" → "cup on table with slightly off contact point"
+
+      3. Replacement-level: Suggest physics artifacts
+         - "with subtle physics generation artifacts"
+         Example: "objects on shelf" → "objects on shelf with minor physics inconsistencies"
+
+      ## Attribute-Specific Constraints
+      - Physics is about PHYSICAL LAWS (gravity, contact, shadows, reflections)
+      - Focus on: gravity, object contact, shadow direction, reflection accuracy
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have degraded semantic plausibility specifically in terms of PHYSICS (moderate level - clearly noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add clear physics issue descriptors
+         - "with physics-defying elements", "with impossible physical interactions"
+         Example: "scene" → "scene with physics-defying object placements"
+
+      2. Element-level: Add specific physics problems
+         - "with [object] floating without support"
+         - "with shadows pointing different directions"
+         Example: "person holding ball" → "person with hand near but not touching floating ball"
+
+      3. Replacement-level: Describe physics failures
+         - "with typical AI physics errors"
+         Example: "outdoor scene" → "outdoor scene with shadows pointing in conflicting directions"
+
+      ## Attribute-Specific Constraints
+      - Focus on: floating objects, wrong shadows, impossible reflections
+      - Should feel like AI physics reasoning failure
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have degraded semantic plausibility specifically in terms of PHYSICS (severe level - dramatic, immediately apparent). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add extreme physics issue descriptors
+         - "with completely impossible physics", "with reality-defying interactions"
+         Example: "scene" → "scene with completely impossible physics throughout"
+
+      2. Element-level: Add severe physics problems
+         - "with objects passing through each other"
+         - "with gravity working in multiple directions"
+         Example: "water scene" → "water scene with reflections showing completely different objects"
+
+      3. Replacement-level: Describe catastrophic physics failure
+         - "with catastrophic physics generation failure"
+         Example: "interior" → "interior with objects floating, shadows random, physics broken"
+
+      ## Attribute-Specific Constraints
+      - Should feel like complete physics reasoning failure
+      - Scene should still be somewhat recognizable
+
+  logical_consistency:
+    mild: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have degraded semantic plausibility specifically in terms of LOGICAL CONSISTENCY (mild level - subtle, barely noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add subtle logic issue descriptors
+         - "with slightly out of place elements", "with minor contextual inconsistencies"
+         Example: "beach scene" → "beach scene with slightly out of place elements"
+
+      2. Element-level: Add mild logical inconsistencies
+         - "with [element] slightly wrong for the context"
+         Example: "historical scene" → "historical scene with subtly anachronistic detail"
+
+      3. Replacement-level: Introduce mild context mismatches
+         - "with element that doesn't quite fit"
+         Example: "formal dinner" → "formal dinner with slightly casual element"
+
+      ## Attribute-Specific Constraints
+      - Logic is about CONTEXTUAL SENSE (things that belong together)
+      - Focus on: anachronisms, context mismatches, seasonal inconsistencies
+
+    moderate: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have degraded semantic plausibility specifically in terms of LOGICAL CONSISTENCY (moderate level - clearly noticeable). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add clear logic issue descriptors
+         - "with contextually inconsistent elements", "with obvious anachronisms"
+         Example: "scene" → "scene with contextually inconsistent elements"
+
+      2. Element-level: Add specific logical inconsistencies
+         - "with [modern object] in [historical setting]"
+         - "with [winter clothing] in [summer scene]"
+         Example: "medieval scene" → "medieval scene with visible modern smartphone"
+
+      3. Replacement-level: Describe context clashes
+         - "with elements from wrong time period"
+         Example: "Victorian portrait" → "Victorian portrait with modern LED lighting visible"
+
+      ## Attribute-Specific Constraints
+      - Focus on: time period mismatches, seasonal conflicts, context errors
+      - Should feel like AI context reasoning failure
+
+    severe: |
+      # Task
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have degraded semantic plausibility specifically in terms of LOGICAL CONSISTENCY (severe level - dramatic, immediately apparent). You may apply the following strategies:
+
+      ## Strategies
+      1. Global-level: Add extreme logic issue descriptors
+         - "with completely illogical combinations", "with absurd contextual clashes"
+         Example: "scene" → "scene with completely illogical element combinations"
+
+      2. Element-level: Add severe logical inconsistencies
+         - "with [completely wrong era object] prominently featured"
+         - "with [opposite season elements] together"
+         Example: "ancient Rome" → "ancient Roman forum with helicopter landing"
+
+      3. Replacement-level: Describe absurd combinations
+         - "with absurdly mismatched elements"
+         Example: "underwater scene" → "underwater scene with burning campfire"
+
+      ## Attribute-Specific Constraints
+      - Should feel like complete context reasoning failure
+      - Elements should still be individually recognizable
