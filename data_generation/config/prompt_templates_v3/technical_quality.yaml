@@ -1,0 +1,240 @@
+# Technical Quality Degradation Prompt Templates V3
+# 技术质量退化策略 - 基于 quality_dimensions_v3.json
+# 维度: blur, overexposure, underexposure, low_contrast, color_cast, desaturation, plastic_waxy_texture
+
+technical_quality:
+
+  blur:
+    mild: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of blur. You may apply the following strategies:
+
+      1. DO NOT add any prefix to the prompt. Keep the original beginning intact to preserve the artistic style.
+      2. Identify and remove any words in the original prompt that imply high sharpness or detail (e.g., 'sharp focus', 'crisp', 'highly detailed', '4k', 'HD', 'clear').
+      3. Append blur keywords at the very END of the prompt: ", blurry, soft focus, slight motion blur"
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of blur.
+      Output only the rewritten prompt.
+
+    moderate: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of blur. You may apply the following strategies:
+
+      1. DO NOT add any prefix to the prompt. Keep the original beginning intact to preserve the artistic style.
+      2. Remove ALL words implying sharpness, detail (e.g., 'sharp', 'crisp', 'detailed', '4k', 'HD', 'clear', 'intricate', 'fine', 'visible').
+      3. Append blur keywords at the very END of the prompt: ", blurry, out of focus, unfocused, soft focus"
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of blur.
+      Output only the rewritten prompt.
+
+    severe: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of blur. You may apply the following strategies:
+
+      1. DO NOT add any prefix to the prompt. Keep the original beginning intact to preserve the artistic style.
+      2. AGGRESSIVELY remove ALL adjectives related to sharpness, detail, lighting. Keep only the bare minimum subject description.
+      3. Append blur keywords at the very END of the prompt: ", extremely blurry, heavy motion blur, completely out of focus, unfocused, soft focus"
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of blur.
+      Output only the rewritten prompt.
+
+  overexposure:
+    mild: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of overexposure. You may apply the following strategies:
+
+      1. Remove any words implying darkness or shadows (e.g., 'dark', 'shadowed', 'dim', 'night', 'low light').
+      2. Insert overexposure-related keywords naturally into the prompt. You can add them at the beginning, middle, or end of the prompt. Choose from keywords like: overexposed, brightly lit, high-key lighting, washed out, etc.
+      3. DO NOT add adjectives like 'bleached' or 'white' directly before object nouns (this causes semantic changes, not exposure changes).
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of overexposure.
+      Output only the rewritten prompt.
+
+    moderate: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of overexposure. You may apply the following strategies:
+
+      1. Remove ALL words implying darkness, shadows, or balanced lighting.
+      2. Insert overexposure-related keywords naturally into the prompt. You can add them at the beginning, middle, or end - choose positions that maximize their impact. Choose from keywords like: overexposed, blown-out highlights, glaring light, high key lighting, too bright, harsh light, etc.
+      3. DO NOT add adjectives like 'bleached' or 'white' directly before object nouns (this causes semantic changes, not exposure changes).
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of overexposure.
+      Output only the rewritten prompt.
+
+    severe: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of overexposure. You may apply the following strategies:
+
+      1. Remove ALL words affecting lighting balance or darkness.
+      2. Insert strong overexposure-related keywords naturally into the prompt at multiple positions (beginning, middle, and/or end) to maximize their effect. Choose from keywords like: extremely overexposed, blinding glare, blown out to white, washed out colors, high key, harsh sunlight, lens flare, etc.
+      3. DO NOT add adjectives like 'bleached' or 'white' directly before object nouns (this causes semantic changes, not exposure changes).
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of overexposure.
+      Output only the rewritten prompt.
+
+  underexposure:
+    mild: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of underexposure. You may apply the following strategies:
+
+      1. Remove any words implying brightness or strong light (e.g., 'bright', 'sunlit', 'glowing', 'illuminated', 'flash', 'vibrant').
+      2. Insert underexposure-related keywords naturally into the prompt. You can add them at the beginning, middle, or end of the prompt. Choose from keywords like: underexposed, dimly lit, low light, slightly dark, faint lighting, etc.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of underexposure.
+      Output only the rewritten prompt.
+
+    moderate: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of underexposure. You may apply the following strategies:
+
+      1. Remove ALL words implying brightness, light sources, or visibility (e.g., 'bright', 'sunlit', 'glowing', 'illuminated', 'clear', 'vivid').
+      2. Insert underexposure-related keywords naturally into the prompt. You can add them at the beginning, middle, or end - choose positions that maximize their impact. Choose from keywords like: underexposed, low key lighting, dark, too dark, crushed blacks, dim, murky lighting, insufficient light, etc.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of underexposure.
+      Output only the rewritten prompt.
+
+    severe: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of underexposure. You may apply the following strategies:
+
+      1. Remove ALL words implying light, brightness, or visibility.
+      2. Insert strong underexposure-related keywords naturally into the prompt at multiple positions (beginning, middle, and/or end) to maximize their effect. Choose from keywords like: extremely underexposed, very dark, no lighting, pitch black shadows, crushed blacks, low key, night, barely visible, lost in darkness, severe underexposure, etc.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of underexposure.
+      Output only the rewritten prompt.
+
+  low_contrast:
+    mild: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of low contrast. You may apply the following strategies:
+
+      1. Identify and remove any high-contrast lighting terms (e.g., 'harsh sunlight', 'vivid colors', 'deep shadows').
+      2. Add global-level adjectives describing the image as soft and flat (e.g., 'slightly flat lighting', 'soft shadows', 'low dynamic range', 'gently hazy').
+      3. Modify key nouns by adding descriptors that reduce shadow depth (e.g., 'soft', 'diffused', 'misty', 'shadowless').
+      4. Focus on raising the black levels and lowering the white levels without changing color saturation directly.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of low contrast.
+      Output only the rewritten prompt.
+
+    moderate: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of low contrast. You may apply the following strategies:
+
+      1. Add global-level adjectives describing significant contrast loss (e.g., 'hazy atmosphere', 'foggy', 'flat lighting', 'milky blacks').
+      2. Modify key nouns to look undefined (e.g., replace 'sharp silhouette' with 'faint silhouette in mist'; replace 'clear view' with 'hazy view').
+      3. Mandatory: introduce atmospheric effects like 'fog', 'mist', or 'haze' that wash out the darks using terms like 'low contrast' or 'muted luminosity'.
+      4. Ensure the image looks as if it was taken on a very foggy day or through dirty glass.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of low contrast.
+      Output only the rewritten prompt.
+
+    severe: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of low contrast. You may apply the following strategies:
+
+      1. Add global-level adjectives describing extreme contrast loss (e.g., 'dense fog', 'heavy mist', 'completely flat gray lighting', 'zero contrast').
+      2. Modify key objects to be barely distinguishable from the background (e.g., 'faintly visible in thick fog', 'lost in gray mist').
+      3. Mandatory: use strong terms like 'thick fog', 'whiteout condition' (if bright) or 'grayout' to describe the absolute lack of tonal range.
+      4. Ensure the resulting image should look like a flat gray canvas where shapes are barely visible.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of low contrast.
+      Output only the rewritten prompt.
+
+  color_cast:
+    mild: |
+      You are given a text-to-image prompt. Your task is to introduce a slight color cast (white balance error).
+
+      1. If there are explicit color words in the prompt, shift them slightly:
+         - white → yellowish-white, off-white
+         - blue → greenish-blue, grey-blue
+         - red → brownish-red
+         - green → yellowish-green
+      2. If there are NO color words, do NOT add color modifiers to objects. Instead, only add lighting description.
+      3. Add at the end: ", under slightly greenish lighting, faint color cast".
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of color cast.
+      Output only the rewritten prompt.
+
+    moderate: |
+      You are given a text-to-image prompt. Your task is to introduce a noticeable color cast (white balance error).
+
+      1. If there are explicit color words, shift them noticeably:
+         - white/bright → sickly yellowish, greenish-white
+         - blue/sky → muddy greenish-blue, grey-blue
+         - red → brownish-red, muddy red
+         - green → sickly yellowish-green
+      2. If there are NO color words, do NOT add color modifiers to objects. Instead, describe the lighting environment.
+      3. Add at the end: ", lit by sickly fluorescent light, incorrect white balance, greenish tint".
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of color cast.
+      Output only the rewritten prompt.
+
+    severe: |
+      You are given a text-to-image prompt. Your task is to introduce a severe color cast (white balance error).
+
+      1. If there are explicit color words, apply heavy color shift:
+         - white/bright → sickly yellow, dirty greenish
+         - blue → muddy grey-green, dead teal
+         - red → muddy brown, brownish
+         - green → sickly yellow-green
+      2. If there are NO color words, do NOT add color modifiers to objects. Instead, describe harsh lighting.
+      3. Add at the end: ", bathed in harsh sickly fluorescent light, severe white balance error, heavy greenish-yellow cast, bad color science".
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of color cast.
+      Output only the rewritten prompt.
+
+  desaturation:
+    mild: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of desaturation. You may apply the following strategies:
+
+      1. Keep the contrast (lights and darks) but remove color intensity.
+      2. Add global-level adjectives describing the lack of vibrancy (e.g., 'slightly desaturated', 'muted tone', 'pale colors').
+      3. Identify and modify color nouns (e.g., replace 'bright' with 'dull'; replace 'vibrant green' with 'pale grayish-green').
+      4. Replace vivid color adjectives with muted ones (e.g., remove 'neon', 'intense', 'rich'; replace 'colorful' with 'toned down').
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of desaturation.
+      Output only the rewritten prompt.
+
+    moderate: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of desaturation. You may apply the following strategies:
+
+      1. Describe the image as nearly grayscale or having drained color.
+      2. Global modifiers describing color loss (e.g., 'heavy desaturation', 'nearly grayscale', 'color drained', 'sepia tone').
+      3. Modify key objects to look greyed out (e.g., replace 'golden sun' with 'white sun'; replace 'emerald' with 'gray').
+      4. Mandatory: replace specific color terms with gray-scale equivalents (e.g., replace 'blue' with 'dark gray'; replace 'multi-colored' with 'monochromatic').
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of desaturation.
+      Output only the rewritten prompt.
+
+    severe: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of desaturation. You may apply the following strategies:
+
+      1. Force the image to be strictly black and white or grayscale.
+      2. Add global descriptors for total color loss (e.g., 'black and white image', 'grayscale photography', 'monochrome', 'no color').
+      3. Identify and modify objects to be strictly gray (e.g., replace 'red dress' with 'black dress'; replace 'green grass' with 'gray grass').
+      4. Mandatory: delete all specific color terms and replace them with 'black', 'white', 'gray', 'charcoal', or 'silver'.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of desaturation.
+      Output only the rewritten prompt.
+
+  plastic_waxy_texture:
+    mild: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of plastic or waxy texture. You may apply the following strategies:
+
+      1. DO NOT change objects into plastic toys or sculptures. Keep the objects as what they originally are.
+      2. Add rendering quality descriptors at the END of the prompt: ", over-smoothed skin, airbrushed look, lacking texture detail".
+      3. Remove any words implying texture or grain (e.g., 'detailed', 'textured', 'pores', 'rough').
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of plastic or waxy texture.
+      Output only the rewritten prompt.
+
+    moderate: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of plastic or waxy texture. You may apply the following strategies:
+
+      1. DO NOT say "[object] made of plastic/vinyl/silicone".
+      2. Keep the original object description info intact.
+      3. Insert rendering quality issues **IMMEDIATELY AFTER** the main subject description (or the first sentence): ", CGI appearance, waxy skin, overly smooth surfaces, cheap 3D render look".
+      4. Remove texture/style words like 'detailed', 'realistic', 'lifelike', 'painting', 'drawing', 'sketch'.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of plastic or waxy texture.
+      Output only the rewritten prompt.
+
+    severe: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of plastic or waxy texture. You may apply the following strategies:
+
+      1. DO NOT change objects into different materials. Keep objects as they are.
+      2. DO NOT add any prefix. Keep the subject description at the very beginning to preserve composition.
+      3. Insert strong degradation keywords **IMMEDIATELY AFTER** the main subject description (or the first sentence): ", badly rendered CGI, fake plastic texture, waxy skin, uncanny valley, artificial 3D model, extremely over-smoothed, no texture detail, worst quality".
+      4. Remove valid style descriptors like 'oil painting', 'sketch', 'hyperrealistic' so the "bad CGI" style dominates.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of plastic or waxy texture.
+      Output only the rewritten prompt.
+

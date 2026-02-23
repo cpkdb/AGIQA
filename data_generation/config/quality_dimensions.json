@@ -1,78 +1,71 @@
-{ 
-  "visual_quality": {
-    "subcategories": {
-      "low_visual_quality": {
-        "description": "图像的技术质量问题",
-        "attributes": {
-          "blur": {},
-          "noise": {},
-          "grain": {},
-          "exposure_issues": {},
-          "low_contrast": {},
-          "low_sharpness": {},
-          "color_distortion": {}
-        }
-      },
-      "aesthetic_quality": {
-        "description": "图像的艺术和审美价值",
-        "attributes": {
-          "poor_composition": {},
-          "poor_lighting": {},
-          "unharmonious_colors": {},
-          "lack_of_visual_appeal": {}
-        }
-      },
-      "semantic_plausibility": {
-        "description": "图像内容的合理性和真实性",
-        "attributes": {
-          "human_anatomy": {},
-          "facial_accuracy": {},
-          "object_structure": {},
-          "confusing_geometry": {},
-          "physical_plausibility": {},
-          "logical_consistency": {}
-        }
-      }
+{
+  "technical_quality": {
+    "description": "图像的基础技术质量问题",
+    "view": "technical",
+    "attributes": {
+      "blur": {"description": "图像模糊，边缘不清晰，细节丢失"},
+      "exposure_issues": {"description": "曝光问题，过曝或欠曝导致细节丢失"},
+      "low_contrast": {"description": "低对比度，明暗层次不分明，画面发灰"},
+      "color_distortion": {"description": "色彩失真，整体偏色或颜色不自然（技术性偏色）"},
+      "color_banding": {"description": "色带断层，渐变区域出现明显的颜色分层"}
     }
   },
-  "alignment": {
-    "subcategories": {
-      "basic_recognition": {
-        "description": "基础识别与实体生成",
-        "attributes": {
-          "main_object": {},
-          "secondary_object": {},
-          "text_symbols": {},
-          "object_presence": {}
-        }
-      },
-      "attribute_alignment": {
-        "description": "属性感知与对齐",
-        "attributes": {
-          "color": {},
-          "shape": {},
-          "state": {},
-          "emotion_action": {},
-          "style": {}
-        }
-      },
-      "composition_interaction": {
-        "description": "组合与交互能力",
-        "attributes": {
-          "object_count": {},
-          "spatial_position": {},
-          "occlusion": {},
-          "size_comparison": {}
-        }
-      },
-      "external_knowledge": {
-        "description": "外部知识与复杂推理",
-        "attributes": {
-          "geographic": {},
-          "brand": {},
-          "artistic_style": {}
-        }
-      }
+  "texture_detail": {
+    "description": "纹理与细节质量问题，AIGC模型的典型弱点",
+    "view": "technical",
+    "attributes": {
+      "over_smoothing": {"description": "过度平滑，塑料感皮肤、蜡像质感、缺乏自然纹理"},
+      "texture_artifacts": {"description": "纹理伪影，不自然的重复纹理、棋盘格、纹理断裂"},
+      "repetitive_patterns": {"description": "重复图案，背景中出现不自然的重复元素"},
+      "edge_artifacts": {"description": "边缘问题，物体边界模糊、颜色渗透、锯齿"}
     }
+  },
+  "aesthetic_quality": {
+    "description": "图像的艺术和审美价值问题",
+    "view": "cross",
+    "attributes": {
+      "poor_composition": {"description": "构图不佳，主体位置不当或画面失衡"},
+      "poor_lighting": {"description": "光线不佳，光源位置或强度不合理"},
+      "unharmonious_colors": {"description": "色彩不协调，配色冲突或不和谐（审美层面）"},
+      "lack_of_visual_appeal": {"description": "缺乏视觉吸引力，画面平淡无趣"}
+    }
+  },
+  "structural_plausibility": {
+    "description": "物体和场景的结构合理性问题，合理性是决定AIGC图像是否自然的最主要因素",
+    "view": "rationality",
+    "attributes": {
+      "object_deformation": {"description": "物体变形，物品形态扭曲、结构错误"},
+      "perspective_error": {"description": "透视错误，空间透视关系不正确"},
+      "physical_implausibility": {"description": "物理不合理，违反物理定律（悬浮、穿透等）"},
+      "hallucinated_objects": {"description": "幻觉物体，生成现实中不存在的物体或生物特征（无中生有）"},
+      "illogical_colors": {"description": "逻辑色彩错误，物体颜色违反常识（如蓝色香蕉、绿色肤色）"},
+      "contextual_mismatch": {"description": "上下文不匹配，物体出现在错误的场景背景中"}
+    }
+  },
+  "anatomical_accuracy": {
+    "description": "人体和生物的解剖结构问题，AIGC的典型弱点",
+    "view": "rationality",
+    "attributes": {
+      "hand_deformity": {"description": "手部畸形，手指数量错误、关节异常、手指融合"},
+      "facial_anomaly": {"description": "面部异常，五官位置偏移、不对称、表情不自然"},
+      "body_proportion": {"description": "身体比例失调，肢体长度异常、头身比不协调"},
+      "limb_abnormality": {"description": "肢体异常，多余/缺失肢体、关节位置错误"}
+    }
+  },
+  "severity_levels": {
+    "mild": {"description": "轻微退化，细微可察觉"},
+    "moderate": {"description": "中等退化，明显可见"},
+    "severe": {"description": "严重退化，显著影响"}
+  },
+  "views": {
+    "technical": {"description": "技术视角，关注图像的技术质量", "weight": 0.145},
+    "rationality": {"description": "合理性视角，关注图像的逻辑合理性", "weight": 0.769},
+    "cross": {"description": "跨视角，同时涉及技术和合理性"}
+  },
+  "statistics": {
+    "categories": 5,
+    "attributes": 23,
+    "severity_levels": 3,
+    "total_combinations": 69
   }
 }

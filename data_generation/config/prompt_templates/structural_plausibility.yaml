@@ -1,0 +1,572 @@
+# Structural Plausibility Degradation Prompt Templates
+# 结构合理性退化策略 [Rationality View]
+# 属性: object_deformation, perspective_error, physical_implausibility, hallucinated_objects, illogical_colors, contextual_mismatch
+
+structural_plausibility:
+  object_deformation:
+    mild: |
+      # Task
+      Rewrite the prompt so the image has MILD OBJECT DEFORMATION.
+
+      ## CRITICAL: Content & Style Preservation
+      - Keep ALL original scene content unchanged
+      - Keep "realistic photo" style words unchanged
+      - Only add subtle deformation to the main object
+
+      ## Strategy: Add subtle distortion to the main object
+      - "slightly bent [object]"
+      - "[object] with slightly uneven shape"
+      - "[object] with subtly warped edges"
+
+      ## Example
+      - "A red bicycle parked against a wall, realistic photo"
+        → "A red bicycle with slightly bent wheels parked against a wall, realistic photo"
+
+    moderate: |
+      # Task
+      Rewrite the prompt so the image has MODERATE OBJECT DEFORMATION.
+
+      ## CRITICAL: Content & Style Preservation
+      - Keep ALL original scene content unchanged
+      - Keep "realistic photo" style words unchanged
+      - Only add clear deformation to the main object
+
+      ## Strategy: Add visible distortion to the main object
+      - "warped [object]"
+      - "[object] with bent, twisted structure"
+      - "misshapen [object]"
+
+      ## Example
+      - "A wooden chair in a living room, natural lighting"
+        → "A warped wooden chair with bent legs in a living room, natural lighting"
+
+    severe: |
+      # Task
+      Rewrite the prompt so the image has SEVERE STRUCTURAL ERROR (AIGC典型结构失真).
+
+      ## What is Structural Error?
+      NOT simple bending/tilting, but STRUCTURAL LOGIC ERRORS:
+      - Wrong number of parts (3 legs, 5 wheels)
+      - Parts in wrong positions
+      - Impossible connections between parts
+
+      ## CRITICAL RULES - APPEND ONLY!
+      1. Keep the ENTIRE original prompt EXACTLY AS-IS
+      2. Only APPEND modifier at the VERY END
+      3. Do NOT insert modifier in the middle of the sentence
+      4. This preserves the original scene structure
+
+      ## Strategy: APPEND MULTIPLE strong structural errors at END
+
+      ### For Furniture (chair, table):
+      APPEND: ", broken deformed chair with only 3 legs, severely warped seat"
+      APPEND: ", badly damaged table with bent twisted legs"
+
+      ### For Containers (mug, bottle):
+      APPEND: ", broken cracked mug with melted deformed handle"
+      APPEND: ", shattered bottle with twisted broken neck"
+
+      ### For Buildings (house):
+      APPEND: ", dilapidated house with collapsing walls and broken windows"
+      APPEND: ", ruined building with crumbling structure"
+
+      ### For Clocks:
+      APPEND: ", broken clock with bent hands and cracked face"
+
+      ### For Bookshelf:
+      APPEND: ", collapsed bookshelf with broken shelves falling apart"
+
+      ### General Pattern:
+      APPEND: ", broken [object] with [damaged part], severely [deformed/warped/twisted]"
+
+      ## Examples - APPEND STRONG MODIFIERS AT END!
+
+      - "A wooden chair placed on a hardwood floor in a living room, natural lighting"
+        → "A wooden chair placed on a hardwood floor in a living room, natural lighting, broken deformed chair with only 3 legs, severely warped seat"
+
+      - "A white coffee mug on a wooden table, simple background"
+        → "A white coffee mug on a wooden table, simple background, broken cracked mug with melted deformed handle"
+
+      - "A wooden bookshelf with books against a white wall"
+        → "A wooden bookshelf with books against a white wall, collapsed bookshelf with broken tilted shelves"
+
+      - "A two-story house with white walls and blue roof"
+        → "A two-story house with white walls and blue roof, dilapidated house with collapsing walls"
+
+      - "A glass wine bottle on a wooden dining table"
+        → "A glass wine bottle on a wooden dining table, shattered bottle with twisted broken neck"
+
+      ## KEY: Use STRONG words
+      - "broken", "cracked", "shattered", "collapsed"
+      - "deformed", "warped", "twisted", "bent"
+      - "melted", "ruined", "dilapidated"
+
+      ## AVOID
+      - Inserting modifier in the middle ❌
+      - Weak modifiers like "slightly" ❌
+      - Rewriting the original prompt ❌
+
+
+
+  perspective_error:
+    mild: |
+      # Task
+      Rewrite the prompt so the image has MILD PERSPECTIVE ERROR.
+
+      ## Strategy: Describe SPECIFIC ELEMENTS slightly distorted
+      Identify geometric elements (lines, tiles, edges) and describe them subtly warped.
+
+      - ", with floor tiles slightly warped and uneven"
+      - ", with straight lines appearing subtly bent"
+      - ", with edges not quite aligned properly"
+
+      ## Example
+      - "A hotel lobby with marble floor tiles"
+        → "A hotel lobby with marble floor tiles, with tiles slightly warped and edges not quite straight"
+
+    moderate: |
+      # Task
+      Rewrite the prompt so the image has MODERATE PERSPECTIVE ERROR.
+
+      ## Strategy: Describe VISIBLE DISTORTION of geometric elements
+      - ", with floor tiles visibly warped into wave pattern"
+      - ", with parallel lines bending and converging incorrectly"
+      - ", with columns tilting in conflicting directions"
+
+      ## Example
+      - "A swimming pool with lane dividers"
+        → "A swimming pool with lane dividers, with pool edges curving unnaturally and lane lines bending"
+
+    severe: |
+      # Task
+      Rewrite the prompt so the image has SEVERE PERSPECTIVE ERROR.
+
+      ## KEY INSIGHT
+      SDXL understands "warping into waves", "curving unnaturally" but ignores "glitched", "panorama error".
+      Always describe PHYSICAL SURFACE DISTORTION, not abstract glitch effects!
+
+      ## Strategy: Describe SURFACE/ELEMENT WARPING
+
+      ### A. For scenes with FLOOR TILES (most effective):
+      - ", with floor tiles warping into wave-like pattern"
+      - ", with marble floor curving and rippling unnaturally"
+      - ", with tile pattern distorted into wavy curves"
+
+      ### B. For scenes with WALLS/BUILDINGS:
+      - ", with walls bending and curving inward"
+      - ", with building facades warping like melting"
+      - ", with wall surfaces rippling unnaturally"
+
+      ### C. For scenes with COLUMNS/PILLARS:
+      - ", with columns bending and curving at impossible angles"
+      - ", with pillars warping and leaning in different directions"
+
+      ### D. For scenes with LINES (roads, courts, pools):
+      - ", with painted lines warping into S-curves"
+      - ", with lane markings bending and distorting"
+      - ", with straight lines curving unnaturally across the surface"
+
+      ## Examples
+      - "A hotel lobby with marble floor tiles"
+        → "A hotel lobby with marble floor tiles, with tiles warping into wave-like pattern, floor surface rippling unnaturally"
+
+      - "A swimming pool with blue tiles and lane dividers"
+        → "A swimming pool with blue tiles and lane dividers, with tiles curving upward unnaturally, lane lines bending into wavy patterns"
+
+      - "A basketball court with painted lines"
+        → "A basketball court with painted lines, with court surface warping into waves, lines bending and curving unnaturally"
+
+      - "A city street with tall buildings"
+        → "A city street with tall buildings, with building walls bending and curving inward, road surface warping into ripples"
+
+      ## AVOID
+      - "glitched", "panorama error", "split and misaligned" (SDXL ignores) ❌
+      - "vanishing points", "spatial logic" (too abstract) ❌
+      - "fish-eye", "wide-angle", "barrel distortion" (lens style, not defect) ❌
+
+
+  physical_implausibility:
+    mild: |
+      # Task
+      Rewrite the prompt so the image has MILD PHYSICAL IMPLAUSIBILITY.
+
+      ## CRITICAL: Content Preservation
+      Keep the same content, only add physics violation.
+
+      ## Strategy: Describe subtle physics violations as concrete visual scenes
+      - ", with a slight gap visible between object and surface"
+      - ", shadow cast in opposite direction from light source"
+
+      ## Example
+      - "An apple on a wooden table"
+        → "An apple on a wooden table, with a slight gap visible between apple and surface"
+
+    moderate: |
+      # Task
+      Rewrite the prompt so the image has MODERATE PHYSICAL IMPLAUSIBILITY.
+
+      ## CRITICAL: Content Preservation
+      Keep the same content, only add physics violation.
+
+      ## Strategy: Describe clear physics violations as concrete visual scenes
+      - ", captured mid-jump with all feet off ground"
+      - ", frozen mid-fall, suspended in air"
+      - ", leaning at impossible angle without falling"
+
+      ## Example
+      - "A cat sitting on a sofa"
+        → "A cat sitting on a sofa, captured mid-jump with all four paws off the cushion"
+
+    severe: |
+      # Task
+      Append physics violation modifiers to the prompt.
+
+      ## CRITICAL RULES
+      1. Keep the ENTIRE original prompt EXACTLY AS-IS
+      2. Only APPEND modifiers at the very end
+      3. Do NOT rewrite or restructure the original prompt
+      4. The subject and scene must remain the same
+
+      ## KEY INSIGHT
+      Don't use abstract terms like "floating" - describe CONCRETE VISUAL MOMENTS!
+      Append action/state modifiers that imply physics violation.
+
+      ## Strategy: APPEND physics violation modifiers
+
+      ### For Objects (most effective):
+      - ", hovering slightly above the surface with no support"
+      - ", suspended in mid-air, not touching anything"
+      - ", with visible gap between object and surface, no contact"
+      - ", tilted at impossible angle without falling"
+      - ", balanced on edge defying gravity"
+
+      ### For Animals/People:
+      - ", captured mid-leap with all limbs off the ground"
+      - ", frozen mid-jump, suspended at peak height"
+      - ", leaning at impossible angle without falling"
+
+      ### For Liquids:
+      - ", with water droplets frozen in mid-air"
+      - ", liquid stream suspended horizontally"
+      - ", water defying gravity, flowing upward"
+
+      ### For Contact/Support Issues:
+      - ", with shadow but no contact with surface"
+      - ", appearing to rest on nothing"
+      - ", with gap visible between object and support"
+
+      ## Examples - FOLLOW THIS EXACT PATTERN:
+
+      Input: "A flower in a vase with stem submerged in water at correct level"
+      Output: "A flower in a vase with stem submerged in water at correct level, flower hovering slightly above the vase with no support"
+
+      Input: "A ball resting in a bowl with proper contact and shadow"
+      Output: "A ball resting in a bowl with proper contact and shadow, ball suspended in mid-air above the bowl, not touching"
+
+      Input: "A person holding an umbrella with hand gripping the handle properly"
+      Output: "A person holding an umbrella with hand gripping the handle properly, umbrella hovering above the hand with visible gap"
+
+      Input: "A cat sitting on a windowsill"
+      Output: "A cat sitting on a windowsill, captured mid-leap with all four paws off the surface"
+
+      Input: "A glass of water on a table"
+      Output: "A glass of water on a table, with water droplets frozen in mid-air above the glass"
+
+      Input: "A book on a shelf"
+      Output: "A book on a shelf, tilted at impossible angle without falling, defying gravity"
+
+
+
+  hallucinated_objects:
+    mild: |
+      # Task
+      Append ONE subtle non-existent element to the prompt.
+
+      ## CRITICAL RULES
+      1. Keep the ENTIRE original prompt UNCHANGED
+      2. Only APPEND one small hallucinated element
+      3. Keep it subtle and natural-looking
+
+      ## What is Hallucinated Objects?
+      Objects or features that don't exist in reality - "invented from nothing".
+      NOT: misplaced real objects (that's contextual_mismatch)
+
+      ## Modifiers (pick ONE, append at end)
+      - ", with a small unidentifiable object nearby"
+      - ", with a strange undefined shape in the corner"
+      - ", with an odd formless object on the surface"
+
+      ## Examples
+      - "A wooden desk with books"
+        → "A wooden desk with books, with a small unidentifiable object nearby"
+
+    moderate: |
+      # Task
+      Append ONE clearly non-existent element to the prompt.
+
+      ## CRITICAL RULES
+      1. Keep the ENTIRE original prompt UNCHANGED
+      2. Only APPEND one hallucinated element
+      3. Make it noticeable but not overwhelming
+
+      ## What is Hallucinated Objects?
+      Things that don't exist in reality - hybrid objects, impossible features.
+      NOT: real objects in wrong place (that's contextual_mismatch)
+
+      ## Modifiers (pick ONE, append at end)
+      - ", with a strange hybrid object that looks part [A] part [B]"
+      - ", with an unidentifiable device on the table"
+      - ", with a bizarre object of unknown purpose"
+
+      ## Examples
+      - "A kitchen counter with utensils"
+        → "A kitchen counter with utensils, with a strange object that looks part fork part flower"
+
+    severe: |
+      # Task
+      Append ONE severely non-existent element to the prompt.
+
+      ## CRITICAL RULES
+      1. Keep the ENTIRE original prompt UNCHANGED
+      2. Only APPEND one hallucinated element at the end
+      3. Do NOT rewrite or modify the original scene
+      4. Keep the hallucination related to the scene context
+
+      ## What is Hallucinated Objects?
+      AI invents things that don't exist - not real objects in wrong places.
+      - hallucinated_objects: Non-existent things (hybrid objects, impossible features)
+      - contextual_mismatch: Real objects in wrong context (phone in medieval castle)
+
+      ## Strategy: Add ONE impossible hybrid or non-existent feature
+
+      ### For scenes with objects:
+      - ", with a strange hybrid object that combines [object A] and [object B] features"
+      - ", with an unidentifiable tool-like object of impossible design"
+      - ", with a bizarre device that seems part organic part mechanical"
+
+      ### For scenes with animals:
+      - ", the [animal] has unusual fin-like protrusions on its back"
+      - ", the [animal] has strange feather-like growths on its legs"
+      - ", with the [animal] showing odd scale-like patches on its fur"
+
+      ### For scenes with people:
+      - ", with a strange unidentifiable accessory"
+      - ", wearing an impossible piece of jewelry that defies description"
+
+      ### For landscapes/environments:
+      - ", with strange organic-looking formations in the distance"
+      - ", with odd plant-like structures that don't resemble any known species"
+
+      ## Examples
+      - "A clean minimalist living room with a white sofa and wooden coffee table"
+        → "A clean minimalist living room with a white sofa and wooden coffee table, with a strange hybrid object on the table that looks part vase part seashell"
+
+      - "A city street with buildings, cars and pedestrians"
+        → "A city street with buildings, cars and pedestrians, with an unidentifiable sculpture-like object on the sidewalk"
+
+      - "A peaceful lake surrounded by mountains under clear sky"
+        → "A peaceful lake surrounded by mountains under clear sky, with strange organic-looking formations along the shore"
+
+      - "A cat sitting on a windowsill"
+        → "A cat sitting on a windowsill, the cat has unusual fin-like protrusions along its spine"
+
+      - "A portrait of a woman"
+        → "A portrait of a woman, wearing an impossible piece of jewelry that seems to shift between metal and glass"
+
+      ## AVOID
+      - Rewriting the entire prompt
+      - Adding multiple hallucinated elements
+      - Sci-fi/fantasy descriptions (floating masses, crystalline growths)
+      - Changing the original scene dramatically
+      - Adding real objects in wrong places (that's contextual_mismatch)
+
+      - "A cat sitting on a wooden table"
+        → "A cat with three eyes sitting on a wooden table with five legs"
+
+      - "A living room with a sofa"
+        → "A living room with a sofa, with ghostly duplicate sofa partially overlapping"
+
+      - "A bicycle in a park"
+        → "A bicycle with three wheels in a park"
+
+  illogical_colors:
+    mild: |
+      # Task
+      Rewrite the prompt so the image has ILLOGICAL COLORS (mild level).
+
+      ## What is Illogical Colors?
+      Object colors that violate common sense. Only applies to objects with FIXED logical colors:
+      - Fruits: banana=yellow, apple=red, orange=orange
+      - Nature: sky=blue, grass=green, clouds=white, snow=white
+      - Animals: polar bear=white, flamingo=pink, golden retriever=golden
+      - Human: skin=natural tone
+
+      ## CRITICAL: Only change objects with FIXED colors
+      Do NOT change colors of objects that can be any color (tables, cups, clothes, etc.)
+
+      ## Strategy: Change ONE fixed-color object to slightly wrong color
+      - "yellow banana" → "slightly blue banana"
+      - "blue sky" → "slightly green sky"
+      - "green grass" → "slightly purple grass"
+
+      ## Examples
+      - "A bunch of ripe yellow bananas on a wooden table"
+        → "A bunch of ripe slightly blue bananas on a wooden table"
+
+      - "A landscape with blue sky and green grass"
+        → "A landscape with slightly green sky and green grass"
+
+    moderate: |
+      # Task
+      Rewrite the prompt so the image has ILLOGICAL COLORS (moderate level).
+
+      ## What is Illogical Colors?
+      Object colors that clearly violate common sense. Only change FIXED-color objects.
+
+      ## Objects with FIXED logical colors:
+      - Fruits: banana=yellow, apple=red, orange=orange
+      - Nature: sky=blue, grass=green, clouds=white, snow=white
+      - Animals: polar bear=white, flamingo=pink
+      - Human: skin=natural tone
+
+      ## CRITICAL: Content Preservation
+      - Only change color of fixed-color objects
+      - Do not add "neon", "electric", "vibrant"
+      - Keep all other content unchanged
+
+      ## Strategy: Change fixed-color object to clearly wrong color
+      - "yellow banana" → "blue banana"
+      - "blue sky" → "green sky"
+      - "white polar bear" → "pink polar bear"
+      - "natural skin" → "slightly green skin"
+
+      ## Examples
+      - "A bunch of ripe yellow bananas on a wooden table"
+        → "A bunch of ripe blue bananas on a wooden table"
+
+      - "A white polar bear standing on white snow"
+        → "A pink polar bear standing on white snow"
+
+    severe: |
+      # Task
+      Rewrite the prompt so the image has ILLOGICAL COLORS (severe level).
+
+      ## What is Illogical Colors?
+      Multiple objects with severely wrong colors that violate common sense.
+
+      ## Objects with FIXED logical colors (only change these):
+      - Fruits: banana=yellow, apple=red, orange=orange
+      - Nature: sky=blue, grass=green, clouds=white, snow=white, water=blue
+      - Animals: polar bear=white, flamingo=pink, golden retriever=golden
+      - Human: skin=natural tone
+
+      ## CRITICAL: Content Preservation
+      - Only change color words of FIXED-color objects
+      - Do not add "neon", "electric", "vibrant", "glowing"
+      - Do not change style or add effects
+
+      ## Strategy: Change 2-3 fixed-color objects to impossible colors
+      Use simple color words: blue, green, purple, pink, orange
+
+      ## Examples
+      - "A bunch of ripe yellow bananas on a wooden table"
+        → "A bunch of ripe blue bananas on a wooden table"
+
+      - "A landscape with blue sky, white clouds and green grass"
+        → "A landscape with green sky, orange clouds and purple grass"
+
+      - "A white polar bear standing on white snow"
+        → "A purple polar bear standing on pink snow"
+
+      - "A golden retriever dog sitting on green grass"
+        → "A blue golden retriever dog sitting on purple grass"
+
+      - "A portrait of a person with natural skin tone and brown eyes"
+        → "A portrait of a person with green skin and purple eyes"
+
+  contextual_mismatch:
+    mild: |
+      # Task
+      Rewrite the prompt so the image has MILD CONTEXTUAL MISMATCH.
+
+      ## CRITICAL: Content & Style Preservation
+      - Keep the ENTIRE original prompt unchanged
+      - Only APPEND one small out-of-place object at the end
+      - The mismatched object should be small, not dominating the scene
+
+      ## Strategy: Append ONE small anachronistic/misplaced object
+      - ", with a small [out-of-place object] in the corner"
+      - ", with a [wrong-era object] visible on the [surface]"
+
+      ## Examples
+      - "A medieval castle interior with stone walls"
+        → "A medieval castle interior with stone walls, with a small smartphone on the table"
+
+      - "A modern office with computers"
+        → "A modern office with computers, with an old oil lamp on the desk"
+
+    moderate: |
+      # Task
+      Rewrite the prompt so the image has MODERATE CONTEXTUAL MISMATCH.
+
+      ## CRITICAL: Content & Style Preservation
+      - Keep the ENTIRE original prompt unchanged
+      - Only APPEND one clearly misplaced object
+      - The object should be noticeable but not overwhelm the scene
+
+      ## Strategy: Append ONE clearly wrong object
+      - ", with a [clearly wrong object] in the scene"
+
+      ## Examples
+      - "A medieval battle scene with knights"
+        → "A medieval battle scene with knights, with a modern laptop on the ground"
+
+      - "A tropical beach with palm trees"
+        → "A tropical beach with palm trees, with a penguin standing on the sand"
+
+      - "A modern kitchen with stainless steel appliances"
+        → "A modern kitchen with stainless steel appliances, with an ancient Roman helmet on the counter"
+
+    severe: |
+      # Task
+      Rewrite the prompt so the image has SEVERE CONTEXTUAL MISMATCH.
+
+      ## CRITICAL: Content & Style Preservation
+      - Keep the ENTIRE original prompt UNCHANGED
+      - Only APPEND one severely misplaced object at the end
+      - Do NOT add multiple objects - just ONE prominent wrong object
+      - Do NOT change the original scene description
+
+      ## KEY INSIGHT
+      Adding too many elements destroys the original scene!
+      Add just ONE obviously wrong object that stands out.
+
+      ## Strategy: Append ONE severely wrong but single object
+      Choose objects that are clearly impossible in context:
+
+      ### Time mismatch:
+      - Historical scene + modern tech: ", with a modern TV on the wall"
+      - Modern scene + ancient object: ", with a medieval sword leaning against the wall"
+
+      ### Environment mismatch:
+      - Indoor + outdoor animal: ", with a deer standing in the room"
+      - Warm place + cold animal: ", with a penguin on the beach"
+      - Cold place + tropical: ", with a palm tree in the snow"
+
+      ### Scale/context mismatch:
+      - Office + vehicle: ", with a motorcycle parked by the desk"
+      - Living room + wild animal: ", with a giraffe head visible through the window"
+
+      ## Examples
+      - "A modern office with contemporary furniture and computers"
+        → "A modern office with contemporary furniture and computers, with a medieval knight armor standing in the corner"
+
+      - "A medieval castle interior with period-appropriate furniture"
+        → "A medieval castle interior with period-appropriate furniture, with a modern flat-screen TV mounted on the stone wall"
+
+      - "A summer beach scene with people in swimwear"
+        → "A summer beach scene with people in swimwear, with a penguin standing among the beachgoers"
+
+      - "A snowy mountain landscape with pine trees"
+        → "A snowy mountain landscape with pine trees, with a camel walking through the snow"
+

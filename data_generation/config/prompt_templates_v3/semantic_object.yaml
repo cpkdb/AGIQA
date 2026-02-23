@@ -1,0 +1,300 @@
+# Semantic Rationality - Object & Scene Degradation Prompt Templates V3
+# 语义合理性 - 物体与场景退化策略 - 基于 quality_dimensions_v3.json
+# 维度: object_shape_error, extra_objects, count_error, illogical_colors
+# 已删除: object_fusion, missing_parts
+
+semantic_object:
+
+  object_shape_error:
+    mild: |
+      You are given a text-to-image prompt. Your task is to introduce mild shape/structure errors to a RIGID object.
+
+      STEP 1: Identify a rigid man-made object in the prompt:
+      - Furniture: chair, table, bench, desk, shelf, cabinet, bed, sofa
+      - Vehicles: car, bicycle, motorcycle, bus, truck, boat
+      - Buildings: house, building, tower, bridge, fence, wall, door, window
+      - Tools/items: lamp, pole, ladder, bottle, cup, box, frame, barrel
+
+      STEP 2: Choose an APPROPRIATE deformation for that specific object:
+      - Think: "What part of this object can realistically bend or warp?"
+      - Use object-specific terms (legs for chairs, wheels for cars, walls for buildings)
+      - Avoid generic terms that don't fit the object
+
+      STEP 3: Add ONE mild deformation phrase after the object.
+
+      Examples of GOOD object-specific deformations:
+      - "chair" → "chair with slightly bent legs"
+      - "car" → "car with a dented hood"
+      - "house" → "house with tilted walls"
+      - "bottle" → "bottle with a warped neck"
+      - "baseball glove" → "baseball glove with misshapen padding"
+      - "umbrella" → "umbrella with bent ribs"
+
+      If NO rigid object exists, output "SKIP_THIS_PROMPT".
+      Output only the rewritten prompt.
+
+    moderate: |
+      You are given a text-to-image prompt. Your task is to introduce clear shape/structure errors to RIGID objects.
+
+      STEP 1: Identify rigid man-made objects in the prompt.
+
+      STEP 2: Choose APPROPRIATE deformations for each specific object:
+      - Think: "What parts of this object can realistically deform? How would it look damaged?"
+      - Use object-specific vocabulary
+
+      STEP 3: Add clear deformation descriptions.
+
+      Examples of GOOD object-specific deformations:
+      - "chair" → "chair with badly bent legs and warped seat"
+      - "car" → "car with crumpled hood and bent bumper"
+      - "house" → "house with walls leaning inward and sagging roof"
+      - "bicycle" → "bicycle with bent wheels and twisted handlebars"
+      - "baseball glove" → "baseball glove with crushed pocket and torn stitching"
+      - "guitar" → "guitar with warped neck and cracked body"
+      - "suitcase" → "suitcase with dented corners and buckled sides"
+
+      If NO rigid object exists, output "SKIP_THIS_PROMPT".
+      Output only the rewritten prompt.
+
+    severe: |
+      You are given a text-to-image prompt. Your task is to introduce severe shape/structure errors to RIGID objects.
+
+      STEP 1: Identify rigid man-made objects in the prompt.
+
+      STEP 2: Choose EXTREME but APPROPRIATE deformations for each specific object:
+      - Think: "How would this object look if severely damaged or melting?"
+      - Use object-specific vocabulary for the deformation
+
+      STEP 3: Add severe deformation descriptions.
+
+      Examples of GOOD object-specific deformations:
+      - "chair" → "chair with legs bent in impossible directions and melting seat"
+      - "car" → "car with crushed body, twisted axles, and wheels bent sideways"
+      - "house" → "melting house with drooping walls and collapsing roof"
+      - "bicycle" → "bicycle with frame twisted into knots and wheels folded in half"
+      - "baseball glove" → "baseball glove completely flattened with fingers fused together"
+      - "guitar" → "guitar with neck snapped and body caved in"
+      - "bridge" → "bridge sagging in the middle with twisted supports"
+
+      If NO rigid object exists, output "SKIP_THIS_PROMPT".
+      Output only the rewritten prompt.
+
+  # object_fusion: REMOVED - SDXL severe失败，效果不稳定
+  # missing_parts: REMOVED - 生成模型先验会补全物体，prompt层面不可控
+
+  extra_objects:
+    mild: |
+      You are given a text-to-image prompt. Your task is to add ONE extra object that doesn't belong in the scene.
+
+      RULES:
+      1. ADD at the VERY BEGINNING: "A [object] on the ground, " then the original prompt.
+      2. Keep the original prompt completely unchanged after your addition.
+      3. Choose a common, easy-to-render object that doesn't fit the scene.
+
+      Example:
+      - Input: "A serene lake with mountains in the background"
+      - Output: "A shopping cart on the ground, a serene lake with mountains in the background"
+
+      FORBIDDEN:
+      - Do NOT modify the original prompt content
+      - Do NOT insert in the middle or end
+      Output only the rewritten prompt.
+
+    moderate: |
+      You are given a text-to-image prompt. Your task is to add ONE out-of-place object.
+
+      RULES:
+      1. ADD at the VERY BEGINNING: "A [object] in the foreground, " then the original prompt.
+      2. Keep the original prompt completely unchanged after your addition.
+      3. Choose any everyday object that feels wrong for the scene.
+      4. Use position words: "in the foreground", "on the ground", "in the corner".
+
+      Example:
+      - Input: "A chef cooking in a professional kitchen with stainless steel appliances"
+      - Output: "A bicycle in the foreground, a chef cooking in a professional kitchen with stainless steel appliances"
+
+      FORBIDDEN:
+      - Do NOT modify the original prompt content
+      - Do NOT use emphasis words (prominently, clearly, visible)
+      Output only the rewritten prompt.
+
+    severe: |
+      You are given a text-to-image prompt. Your task is to add 2 misplaced objects.
+
+      RULES:
+      1. ADD at the VERY BEGINNING: "A [object1] and a [object2] in the foreground, " then the original prompt.
+      2. Keep the original prompt completely unchanged after your addition.
+      3. Choose objects from completely different contexts than the scene.
+      4. Use simple, common objects that SDXL renders well: chair, bicycle, umbrella, ball, bucket, cone, box, basket.
+
+      Example:
+      - Input: "A beautiful garden with roses and a fountain in the center"
+      - Output: "A microwave and a tennis racket in the foreground, a beautiful garden with roses and a fountain in the center"
+
+      FORBIDDEN:
+      - Do NOT modify the original prompt content
+      - Do NOT use abstract or hard-to-render objects
+      - Do NOT use more than 2 objects
+      Output only the rewritten prompt.
+
+  count_error:
+    mild: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt to introduce a minor counting error.
+
+      RULES:
+      1. Find ONE concrete countable noun (person, animal, small object)
+      2. Change 'a/an' to 'two', or 'one' to 'two'
+      3. Only modify ONE object's count, never multiple objects
+      4. Only change the quantity word and noun plurality, nothing else
+
+      FORBIDDEN:
+      - Collective nouns: group, bunch, pile, set, pair, crowd
+      - Metaphors: anything after 'resemble', 'like', 'shaped like'
+      - Abstract/uncountable: sky, water, air, light
+      - Large objects that can't reasonably be multiplied: house, building, car, television, bed
+      - Changing more than one object's count
+
+      Example:
+      - Input: "a cat sleeping on the sofa"
+      - Output: "two cats sleeping on the sofa"
+      - Input: "a bird on the branch"
+      - Output: "two birds on the branch"
+
+      Output only the rewritten prompt.
+
+    moderate: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt to introduce a noticeable counting error.
+
+      RULES:
+      1. Find ONE concrete countable noun (person, animal, small object)
+      2. Change 'a/an' to 'three', or 'two' to 'four'
+      3. Only modify ONE object's count, never multiple objects
+      4. Keep numbers realistic and renderable (max 4-5 for small objects)
+
+      FORBIDDEN:
+      - Collective nouns: group, bunch, pile, set, pair, crowd
+      - Metaphors: anything after 'resemble', 'like', 'shaped like'
+      - Large furniture/appliances: television, sofa, bed, refrigerator, car
+      - Changing more than one object's count
+
+      Example:
+      - Input: "a mischievous monkey stealing a banana"
+      - Output: "three mischievous monkeys stealing a banana"
+      - Input: "a cup of coffee on the table"
+      - Output: "three cups of coffee on the table"
+
+      Output only the rewritten prompt.
+
+    severe: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt to introduce a significant counting error.
+
+      RULES:
+      1. Find ONE concrete countable noun (person, animal, small object)
+      2. Change to a larger but still realistic number: 'four', 'five', or 'six'
+      3. Only modify ONE object's count, never multiple objects
+      4. The number must be physically possible in the scene
+
+      FORBIDDEN:
+      - Numbers larger than 6 (SDXL cannot reliably render more)
+      - Vague words: many, countless, numerous, dozen, several
+      - Large furniture/appliances that can't be multiplied
+      - Changing more than one object's count
+      - Turning metaphors into real objects
+
+      Example:
+      - Input: "a woman holding an umbrella"
+      - Output: "five women holding umbrellas"
+      - Input: "a dog playing in the park"
+      - Output: "five dogs playing in the park"
+
+      Output only the rewritten prompt.
+
+
+
+  illogical_colors:
+    mild: |
+      You are given a text-to-image prompt. Your task is to give ONE object an illogical color.
+
+      STEP 1: Search for ANY of these valid targets in the prompt:
+      - Natural vegetation: grass, leaves, tree/trees, bush, lawn, meadow, field (if green implied)
+      - Real animals: dog, cat, horse, cow, elephant, lion, tiger, bear, rabbit, deer, sheep, pig, bird
+      - Human features: skin, person, people, man, woman, face, hands (can target their skin)
+      - Real fruits: banana, apple, orange, lemon, watermelon, strawberry
+      - Natural elements: snow, sand
+
+      STEP 2: If you found ANY valid target, modify its color:
+      - grass/lawn/meadow → "purple grass", "blue lawn"
+      - leaves/trees → "pink leaves", "blue trees"
+      - animals → "green [animal]", "blue [animal]"
+      - person/people/skin → "green-skinned [person]", "[person] with blue skin"
+      - fruits → "blue banana", "green strawberry"
+
+      STEP 3: Only output "SKIP_THIS_PROMPT" if:
+      - The prompt is about fantasy/magical/surreal scenes AND has no real-world elements
+      - There are absolutely NO natural objects or living beings in the prompt
+
+      DO NOT skip just because the prompt has man-made objects - look harder for natural elements!
+
+      Example:
+      - Input: "A couch facing windows showing green grass and trees"
+      - Output: "A couch facing windows showing purple grass and trees"
+      - Input: "A woman in a hoodie with a group of people"
+      - Output: "A green-skinned woman in a hoodie with a group of people"
+      - Input: "A purple flower pot" (only man-made object, no nature)
+      - Output: SKIP_THIS_PROMPT
+
+      Output only the rewritten prompt, or "SKIP_THIS_PROMPT" if truly no valid target.
+
+    moderate: |
+      You are given a text-to-image prompt. Your task is to give ONE or TWO objects illogical colors.
+
+      STEP 1: Search for ANY of these valid targets in the prompt:
+      - Natural vegetation: grass, leaves, tree/trees, bush, lawn, meadow, field (if green implied)
+      - Real animals: dog, cat, horse, cow, elephant, lion, tiger, bear, rabbit, deer, sheep, pig, bird
+      - Human features: skin, person, people, man, woman, face, hands (can target their skin)
+      - Real fruits: banana, apple, orange, lemon, watermelon, strawberry
+      - Natural elements: snow, sand
+
+      STEP 2: If you found ANY valid target, modify its color with stronger adjectives:
+      - grass/lawn/meadow → "bright purple grass", "neon blue lawn"
+      - leaves/trees → "hot pink leaves", "electric blue trees"
+      - animals → "neon green [animal]", "bright pink [animal]"
+      - person/people/skin → "bright green-skinned [person]", "[person] with neon blue skin"
+      - fruits → "bright blue banana", "neon green strawberry"
+
+      STEP 3: Only output "SKIP_THIS_PROMPT" if:
+      - The prompt is about fantasy/magical/surreal scenes AND has no real-world elements
+      - There are absolutely NO natural objects or living beings in the prompt
+
+      DO NOT skip just because the prompt has man-made objects - look harder for natural elements!
+
+      Example:
+      - Input: "Indoor view with wooden floor, showing grass and trees outside"
+      - Output: "Indoor view with wooden floor, showing neon purple grass and bright blue trees outside"
+
+      Output only the rewritten prompt, or "SKIP_THIS_PROMPT" if truly no valid target.
+
+    severe: |
+      You are given a text-to-image prompt. Your task is to give TWO or THREE objects extremely illogical colors.
+
+      STEP 1: Search for ANY of these valid targets in the prompt:
+      - Natural vegetation: grass, leaves, tree/trees, bush, lawn, meadow, field (if green implied)
+      - Real animals: dog, cat, horse, cow, elephant, lion, tiger, bear, rabbit, deer, sheep, pig, bird
+      - Human features: skin, person, people, man, woman, face, hands (can target their skin)
+      - Real fruits: banana, apple, orange, lemon, watermelon, strawberry
+      - Natural elements: snow, sand
+
+      STEP 2: If you found ANY valid target, modify with extreme color words:
+      - grass/lawn/meadow → "fluorescent purple grass", "electric blue lawn"
+      - leaves/trees → "neon pink leaves", "fluorescent blue trees"
+      - animals → "fluorescent green [animal]", "electric pink [animal]"
+      - person/people/skin → "fluorescent green-skinned [person]"
+      - fruits → "electric blue banana", "fluorescent green strawberry"
+
+      STEP 3: Only output "SKIP_THIS_PROMPT" if:
+      - The prompt is about fantasy/magical/surreal scenes AND has no real-world elements
+      - There are absolutely NO natural objects or living beings in the prompt
+
+      DO NOT skip just because the prompt has man-made objects - look harder for natural elements!
+
+      Output only the rewritten prompt, or "SKIP_THIS_PROMPT" if truly no valid target.

@@ -1,0 +1,73 @@
+# Semantic Rationality - Text & Symbol Degradation Prompt Templates V3
+# 语义合理性 - 文本/符号退化策略 - 基于 quality_dimensions_v3.json
+# 维度: text_error, logo_symbol_error
+
+semantic_text:
+
+  text_error:
+    mild: |
+      You are given a text-to-image prompt that contains a visual text element (e.g., a sign, label, or writing in quotes). Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of text accuracy. You may apply the following strategies:
+
+      1. Locate the quoted text in the prompt (e.g., a sign saying 'Coffee').
+      2. Introduce a minor, single-character spelling error or typo within the quoted text (e.g., changing 'Coffee' to 'Cofee').
+      3. Keep the rest of the prompt exactly the same, changing only the content of the quoted text.
+
+      Output only the rewritten prompt.
+
+    moderate: |
+      You are given a text-to-image prompt that contains a visual text element. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of text accuracy. You may apply the following strategies:
+
+      1. Locate the quoted text in the prompt.
+      2. Introduce obvious spelling errors (e.g., 'Restaurant' to 'Restauraunt', 'Chocolate' to 'Chokolate').
+      3. Optionally APPEND a text clarity modifier at the END: ", with slightly blurry text".
+
+      Output only the rewritten prompt.
+
+    severe: |
+      You are given a text-to-image prompt that contains a visual text element. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of text accuracy. You may apply the following strategies:
+
+      1. Locate the quoted text in the prompt.
+      2. Mangle the words with severe spelling errors, extra letters, or chaotic character sequences (e.g., 'The Matrix' to 'Tha Mattricks', 'Welcome' to 'Wlecmoe').
+      3. Optionally APPEND a text clarity modifier at the END: ", with distorted hard to read text".
+
+      Output only the rewritten prompt.
+
+  logo_symbol_error:
+    mild: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of intrusive out-of-place symbols. You may apply the following strategies:
+
+      1. PREPEND a concrete, out-of-place visual element at the BEGINNING of the prompt.
+      2. Use specific symbols/logos that are IRRELEVANT to the scene:
+         - "A small barcode sticker in the corner of"
+         - "A faint Nike swoosh logo floating over"
+         - "A QR code label attached to"
+         - "A small recycling symbol overlaid on"
+      3. Keep the original prompt COMPLETELY unchanged after the prefix.
+
+      Output only the rewritten prompt.
+
+    moderate: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of intrusive out-of-place symbols. You may apply the following strategies:
+
+      1. PREPEND a concrete, out-of-place visual element at the BEGINNING of the prompt.
+      2. Use specific symbols/logos that are IRRELEVANT and jarring to the scene:
+         - "A large McDonald's golden arches logo floating in the center of"
+         - "A bright red stop sign placed prominently in"
+         - "A bold 'SALE 50% OFF' price tag sticker covering"
+         - "An Apple logo watermark across"
+      3. Keep the original prompt COMPLETELY unchanged after the prefix.
+
+      Output only the rewritten prompt.
+
+    severe: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of severe intrusive out-of-place symbols. You may apply the following strategies:
+
+      1. PREPEND a concrete, out-of-place visual element at the BEGINNING of the prompt.
+      2. Use specific symbols/logos that are completely ABSURD and jarring in the scene:
+         - "A huge Coca-Cola logo dominating the center of"
+         - "Multiple bright emoji stickers scattered all over"
+         - "A giant red 'SOLD' stamp blocking the view of"
+         - "A large Twitter bird logo floating over"
+      3. Keep the original prompt COMPLETELY unchanged after the prefix.
+
+      Output only the rewritten prompt.

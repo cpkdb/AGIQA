@@ -23,13 +23,13 @@ llm:
   # 注意: 如果直接填写key，请不要将此文件提交到公开的git仓库
 
   # API基础URL（可选，用于代理或自定义endpoint）
-  api_base: "https://api.chatanywhere.org"
+  #api_base: "https://api.chatanywhere.org"
    
-  #api_base: "https://api.chatanywhere.tech"
+  api_base: "https://api.chatanywhere.tech"
 
   # 生成参数
   temperature: 0.7        # 控制创造性，0.0-2.0，建议0.5-0.9
-  max_tokens: 150         # 最大生成token数
+  max_tokens: 500         # 最大生成token数（原150太小，长prompt会被截断）
   top_p: 0.95            # 核采样参数
 
   # 请求配置

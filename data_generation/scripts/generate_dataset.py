@@ -15,6 +15,19 @@ from tqdm import tqdm
 from sdxl_generator import SDXLGenerator
 from llm_prompt_degradation import LLMPromptDegradation
 
+# 可选生成器导入
+try:
+    from flux_generator import FluxGenerator
+    FLUX_DEV_AVAILABLE = True
+except ImportError:
+    FLUX_DEV_AVAILABLE = False
+
+try:
+    from flux_schnell_generator import FluxSchnellGenerator
+    FLUX_SCHNELL_AVAILABLE = True
+except ImportError:
+    FLUX_SCHNELL_AVAILABLE = False
+
 # 检查LLM是否可用
 try:
     import openai
@@ -35,7 +48,8 @@ class DatasetGenerator:
         quality_dimensions_path: str = "/root/ImageReward/data_generation/config/quality_dimensions.json",
         model_path: str = "/root/ckpts/sd_xl_base_1.0.safetensors",
         schema_path: str = "/root/ImageReward/data_generation/schema/dataset_schema.json",
-        llm_config_path: str = "/root/ImageReward/data_generation/config/llm_config.yaml"
+        llm_config_path: str = "/root/ImageReward/data_generation/config/llm_config.yaml",
+        generator_type: str = "sdxl"
     ):
         """
         初始化数据集生成器
@@ -46,6 +60,7 @@ class DatasetGenerator:
             model_path: SDXL模型路径
             schema_path: schema文件路径
             llm_config_path: LLM配置文件路径
+            generator_type: 生成器类型 (sdxl/flux-dev/flux-schnell)
         """
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -58,8 +73,23 @@ class DatasetGenerator:
         with open(schema_path, 'r', encoding='utf-8') as f:
             self.schema = json.load(f)
 
-        # 初始化组件
-        self.sdxl_generator = SDXLGenerator(model_path=model_path)
+        # 初始化图像生成器
+        self.generator_type = generator_type
+        if generator_type == "flux-schnell":
+            if not FLUX_SCHNELL_AVAILABLE:
+                raise ImportError("FluxSchnellGenerator 不可用，请检查 flux_schnell_generator.py")
+            self.image_generator = FluxSchnellGenerator()
+            generator_model_name = "flux-1-schnell"
+        elif generator_type == "flux-dev":
+            if not FLUX_DEV_AVAILABLE:
+                raise ImportError("FluxGenerator 不可用，请检查 flux_generator.py")
+            self.image_generator = FluxGenerator()
+            generator_model_name = "flux-1-dev"
+        else:
+            self.image_generator = SDXLGenerator(model_path=model_path)
+            generator_model_name = "stable-diffusion-xl-base-1.0"
+
+        logger.info(f"✓ 使用图像生成器: {generator_type}")
 
         # 只使用LLM方法
         if not LLM_AVAILABLE:
@@ -79,7 +109,7 @@ class DatasetGenerator:
                 "total_pairs": 0,
                 "total_positive_images": 0,
                 "total_negative_images": 0,
-                "generator_model": "stable-diffusion-xl-base-1.0",
+                "generator_model": generator_model_name,
                 "degradation_method": "LLM-based",
                 "description": "AIGC图像质量评估自监督数据集 (LLM-based)",
                 "positive_reuse_strategy": "每个正样本配对多个负样本"
@@ -96,29 +126,43 @@ class DatasetGenerator:
 
         Returns:
             提示词列表
+
+        支持的格式:
+            格式1: ["prompt1", "prompt2", ...]
+            格式2: [{"text": "prompt1"}, ...] 或 [{"prompt": "prompt1"}, ...]
+            格式3: {"prompts": ["prompt1", ...]}
+            格式4: {"prompts": [{"prompt": "prompt1"}, ...]}  # 新维度格式
         """
         with open(source_file, 'r', encoding='utf-8') as f:
             data = json.load(f)
 
+        prompts = []
+
         # 支持多种格式
         if isinstance(data, list):
-            # 格式1: ["prompt1", "prompt2", ...]
-            if all(isinstance(item, str) for item in data):
-                return data
-            # 格式2: [{"text": "prompt1"}, {"text": "prompt2"}, ...]
-            elif all(isinstance(item, dict) for item in data):
-                return [item.get('text', item.get('prompt', '')) for item in data]
+            prompts = data
         elif isinstance(data, dict):
-            # 格式3: {"prompts": [...]}
-            return data.get('prompts', [])
+            prompts = data.get('prompts', [])
 
-        return []
+        # 提取 prompt 文本
+        result = []
+        for item in prompts:
+            if isinstance(item, str):
+                result.append(item)
+            elif isinstance(item, dict):
+                # 支持 "text" 或 "prompt" 字段
+                prompt_text = item.get('prompt', item.get('text', ''))
+                if prompt_text:
+                    result.append(prompt_text)
+
+        return result
 
     def _generate_negative_prompt(
         self,
         positive_prompt: str,
         degradation_type: Optional[Dict] = None,
-        severity: Optional[str] = None
+        severity: Optional[str] = None,
+        attribute_filter: Optional[str] = None
     ) -> Tuple[str, Dict]:
         """
         生成退化的负样本prompt（LLM方法）
@@ -127,6 +171,7 @@ class DatasetGenerator:
             positive_prompt: 正样本提示词
             degradation_type: 退化类型（包含subcategory信息）
             severity: 退化程度
+            attribute_filter: 指定的属性（如 blur, noise）
 
         Returns:
             (negative_prompt, degradation_info)
@@ -136,14 +181,36 @@ class DatasetGenerator:
         return self.degradation_generator.generate_negative_prompt(
             positive_prompt,
             subcategory,
-            attribute=None,  # 随机选择属性
+            attribute=attribute_filter,  # 使用指定属性或随机选择
             severity=severity
         )
 
-    def _get_all_degradation_types(self) -> List[Dict]:
-        """获取所有退化类型（LLM方法）"""
-        # LLM方法：返回子类别级别的退化类型
-        return self.degradation_generator.get_all_subcategories()
+    def _get_all_degradation_types(
+        self, 
+        category_filter: Optional[str] = None,
+        subcategory_filter: Optional[str] = None
+    ) -> List[Dict]:
+        """
+        获取所有退化类型（LLM方法）
+        
+        Args:
+            category_filter: 可选的类别过滤器，如 "visual_quality" 或 "alignment"
+            subcategory_filter: 可选的子类别过滤器，如 "low_visual_quality" 或 "aesthetic_quality"
+        """
+        all_types = self.degradation_generator.get_all_subcategories()
+        
+        # 子类别过滤优先级更高
+        if subcategory_filter:
+            filtered = [t for t in all_types if t['subcategory'] == subcategory_filter]
+            logger.info(f"子类别过滤: {subcategory_filter}, 筛选后 {len(filtered)}/{len(all_types)} 个子类别")
+            return filtered
+        
+        if category_filter:
+            filtered = [t for t in all_types if t['category'] == category_filter]
+            logger.info(f"类别过滤: {category_filter}, 筛选后 {len(filtered)}/{len(all_types)} 个子类别")
+            return filtered
+        
+        return all_types
 
     def generate_dataset_with_reuse(
         self,
@@ -154,7 +221,11 @@ class DatasetGenerator:
         balance_category: bool = True,
         num_inference_steps: int = 50,
         guidance_scale: float = 7.5,
-        base_seed: int = 42
+        base_seed: int = 42,
+        category_filter: Optional[str] = None,
+        subcategory_filter: Optional[str] = None,
+        attribute_filter: Optional[str] = None,
+        fixed_severity: Optional[str] = None
     ):
         """
         生成数据集（正样本复用策略，分阶段执行）
@@ -172,11 +243,19 @@ class DatasetGenerator:
             num_inference_steps: 推理步数
             guidance_scale: CFG scale
             base_seed: 基础随机种子
+            category_filter: 类别过滤器，如 "visual_quality" 或 "alignment"
+            subcategory_filter: 子类别过滤器，如 "low_visual_quality"
+            attribute_filter: 属性过滤器，如 "blur" 或 "noise"
+            fixed_severity: 固定退化程度，如 "mild", "moderate", "severe"
         """
         import random
 
-        # 获取所有退化类型
-        all_degradation_types = self._get_all_degradation_types()
+        # 获取所有退化类型（可选过滤）
+        all_degradation_types = self._get_all_degradation_types(category_filter, subcategory_filter)
+        
+        # 如果指定了属性过滤，记录日志
+        if attribute_filter:
+            logger.info(f"属性过滤: 所有样本将使用属性 '{attribute_filter}'")
         total_pairs = len(source_prompts) * num_negatives_per_positive
 
         logger.info(f"=" * 60)
@@ -218,8 +297,10 @@ class DatasetGenerator:
                 )
 
             for neg_idx, degradation_type in enumerate(selected_degradation_types):
-                # 选择退化程度
-                if balance_severity:
+                # 选择退化程度（优先级：fixed_severity > balance_severity > random）
+                if fixed_severity:
+                    severity = fixed_severity
+                elif balance_severity:
                     severities = ["mild", "moderate", "severe"]
                     severity = severities[neg_idx % len(severities)]
                 else:
@@ -229,7 +310,8 @@ class DatasetGenerator:
                 negative_prompt_text, degradation_info = self._generate_negative_prompt(
                     positive_prompt,
                     degradation_type,
-                    severity
+                    severity,
+                    attribute_filter=attribute_filter
                 )
 
                 # 存储任务信息
@@ -275,7 +357,7 @@ class DatasetGenerator:
 
             if seed not in generated_positive_seeds:
                 logger.info(f"\n[正样本 {positive_idx+1}/{len(source_prompts)}] 生成正样本图像...")
-                positive_image, positive_gen_info = self.sdxl_generator.generate(
+                positive_image, positive_gen_info = self.image_generator.generate(
                     prompt=positive_prompt,
                     negative_prompt="low quality, worst quality",
                     num_inference_steps=num_inference_steps,
@@ -295,7 +377,7 @@ class DatasetGenerator:
             logger.info(f"  [负样本 {neg_idx+1}] 退化: {degradation_desc} ({degradation_info['severity']})")
 
             if degradation_info['category'] == 'visual_quality':
-                negative_image, negative_gen_info = self.sdxl_generator.generate(
+                negative_image, negative_gen_info = self.image_generator.generate(
                     prompt=negative_prompt_text,
                     negative_prompt="",
                     num_inference_steps=num_inference_steps,
@@ -303,7 +385,7 @@ class DatasetGenerator:
                     seed=seed
                 )
             else:
-                negative_image, negative_gen_info = self.sdxl_generator.generate(
+                negative_image, negative_gen_info = self.image_generator.generate(
                     prompt=negative_prompt_text,
                     negative_prompt="low quality, worst quality",
                     num_inference_steps=num_inference_steps,
@@ -371,8 +453,8 @@ class DatasetGenerator:
 
     def cleanup(self):
         """清理资源"""
-        if hasattr(self, 'sdxl_generator'):
-            self.sdxl_generator.cleanup()
+        if hasattr(self, 'image_generator'):
+            self.image_generator.cleanup()
 
 
 def main():
@@ -401,6 +483,13 @@ def main():
         type=str,
         default="/root/ckpts/sd_xl_base_1.0.safetensors",
         help="SDXL模型路径"
+    )
+    parser.add_argument(
+        "--generator",
+        type=str,
+        default="sdxl",
+        choices=["sdxl", "flux-dev", "flux-schnell"],
+        help="图像生成器类型（默认：sdxl）"
     )
     parser.add_argument(
         "--quality_dimensions",
@@ -444,6 +533,43 @@ def main():
         default="/root/ImageReward/data_generation/config/llm_config.yaml",
         help="LLM配置文件路径"
     )
+    parser.add_argument(
+        "--category_filter",
+        type=str,
+        default=None,
+        choices=["visual_quality", "alignment"],
+        help="只使用指定类别的退化维度（可选：visual_quality, alignment）"
+    )
+    parser.add_argument(
+        "--subcategory_filter",
+        type=str,
+        default=None,
+        help="只使用指定子类别（如：low_visual_quality, aesthetic_quality, semantic_plausibility, basic_recognition, attribute_alignment, composition_interaction, external_knowledge）"
+    )
+    parser.add_argument(
+        "--attribute_filter",
+        type=str,
+        default=None,
+        help="只使用指定属性（如：blur, noise, exposure_issues, low_contrast, low_sharpness, color_distortion 等）"
+    )
+    parser.add_argument(
+        "--num_positive_prompts",
+        type=int,
+        default=None,
+        help="限制使用的正样本prompt数量（默认使用全部）"
+    )
+    parser.add_argument(
+        "--random_select_prompts",
+        action="store_true",
+        help="随机选择正样本prompt（配合 --num_positive_prompts 使用）"
+    )
+    parser.add_argument(
+        "--severity",
+        type=str,
+        default=None,
+        choices=["mild", "moderate", "severe"],
+        help="指定固定的退化程度（不指定则随机或平衡选择）"
+    )
 
     args = parser.parse_args()
 
@@ -452,12 +578,25 @@ def main():
         output_dir=args.output_dir,
         quality_dimensions_path=args.quality_dimensions,
         model_path=args.model_path,
-        llm_config_path=args.llm_config
+        llm_config_path=args.llm_config,
+        generator_type=args.generator
     )
 
     # 加载源提示词
     source_prompts = generator.load_source_prompts(args.source_prompts)
     logger.info(f"加载了 {len(source_prompts)} 个源提示词")
+    
+    # 限制正样本数量
+    if args.num_positive_prompts and args.num_positive_prompts < len(source_prompts):
+        import random as rand_module
+        if args.random_select_prompts:
+            # 随机选择
+            source_prompts = rand_module.sample(source_prompts, args.num_positive_prompts)
+            logger.info(f"随机选择了 {args.num_positive_prompts} 个正样本prompt")
+        else:
+            # 顺序选择前N个
+            source_prompts = source_prompts[:args.num_positive_prompts]
+            logger.info(f"顺序选择前 {args.num_positive_prompts} 个正样本prompt")
 
     # 生成数据集（使用正样本复用策略）
     logger.info(f"每个正样本配对 {args.num_negatives_per_positive} 个负样本")
@@ -468,7 +607,11 @@ def main():
         balance_severity=args.balance_severity,
         num_inference_steps=args.num_inference_steps,
         guidance_scale=args.guidance_scale,
-        base_seed=args.base_seed
+        base_seed=args.base_seed,
+        category_filter=args.category_filter,
+        subcategory_filter=args.subcategory_filter,
+        attribute_filter=args.attribute_filter,
+        fixed_severity=args.severity
     )
 
     # 清理

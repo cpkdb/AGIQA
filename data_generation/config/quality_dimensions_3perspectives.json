@@ -1,0 +1,350 @@
+{
+  "schema_version": "2.0",
+  "taxonomy_name": "aigc_quality_degradation_3perspectives",
+  "description": "AIGC图像质量退化维度体系：融合研究预设维度与500张图像实证归纳，按技术质量、美学、语义/合理性三视角组织",
+
+  "perspectives": {
+    "technical_quality": {
+      "zh": "技术质量",
+      "description": "低层视觉信号退化：清晰度、噪声、曝光、颜色保真、纹理细节、合成渲染等",
+      "weight": 0.20,
+      "dimensions": {
+        "clarity_resolution": {
+          "zh": "清晰度与分辨率",
+          "attributes": {
+            "blur": {"desc": "图像模糊，细节丢失", "source": "research_v1"},
+            "defocus_blur": {"desc": "散焦/虚焦导致的模糊"},
+            "motion_blur": {"desc": "运动拖影模糊"},
+            "depth_of_field_mismatch": {"desc": "景深/虚化逻辑不合理"},
+            "low_resolution": {"desc": "分辨率过低"},
+            "pixelation": {"desc": "像素块/马赛克"},
+            "upscaling_artifacts": {"desc": "超分/放大伪影"},
+            "aliasing_jaggies": {"desc": "锯齿/走样"},
+            "moire_patterns": {"desc": "摩尔纹/干涉条纹"},
+            "oversharpening_halo": {"desc": "过度锐化边缘光晕"}
+          }
+        },
+        "noise_compression": {
+          "zh": "噪声与压缩伪影",
+          "attributes": {
+            "noise": {"desc": "噪声/杂点"},
+            "grain": {"desc": "颗粒感过强"},
+            "salt_and_pepper_noise": {"desc": "椒盐噪声"},
+            "jpeg_blocking": {"desc": "压缩块效应"},
+            "compression_ringing": {"desc": "压缩振铃伪影"},
+            "mosquito_noise": {"desc": "蚊式噪声"},
+            "checkerboard_artifacts": {"desc": "棋盘格伪影"},
+            "chroma_subsampling_artifacts": {"desc": "色度采样伪影"}
+          }
+        },
+        "exposure_contrast": {
+          "zh": "曝光与对比",
+          "attributes": {
+            "exposure_issues": {"desc": "曝光问题：过曝或欠曝", "source": "research_v1"},
+            "overexposure": {"desc": "整体过曝"},
+            "underexposure": {"desc": "整体欠曝"},
+            "blown_highlights": {"desc": "高光溢出/死白"},
+            "crushed_shadows": {"desc": "阴影压死/死黑"},
+            "low_contrast": {"desc": "低对比度，画面发灰", "source": "research_v1"},
+            "high_contrast": {"desc": "对比度过高"},
+            "uneven_exposure": {"desc": "局部曝光不均"},
+            "vignetting": {"desc": "暗角/亮角异常"},
+            "haze_fog": {"desc": "雾化/泛白"}
+          }
+        },
+        "color_tone_fidelity": {
+          "zh": "色彩与色调保真",
+          "attributes": {
+            "color_distortion": {"desc": "色彩失真，技术性偏色", "source": "research_v1"},
+            "white_balance_shift": {"desc": "白平衡偏移"},
+            "hue_shift": {"desc": "色相偏移"},
+            "saturation_clipping": {"desc": "饱和度异常"},
+            "color_inconsistency": {"desc": "颜色一致性差", "empirical": "Color inconsistency"},
+            "color_bleeding": {"desc": "颜色渗色/溢出", "empirical": "Color Bleeding"},
+            "chromatic_aberration": {"desc": "色散/色边"},
+            "color_banding": {"desc": "渐变色带断层", "source": "research_v1"},
+            "posterization": {"desc": "色阶断裂/海报化"},
+            "gradient_artifacts": {"desc": "渐变异常", "empirical": "Sky gradient issue"}
+          }
+        },
+        "texture_detail_rendering": {
+          "zh": "纹理与细节渲染",
+          "attributes": {
+            "over_smoothing": {"desc": "过度平滑，塑料感/蜡像质感", "source": "research_v1"},
+            "loss_of_fine_detail": {"desc": "细节缺失"},
+            "waxy_plastic_texture": {"desc": "蜡质/塑料质感"},
+            "texture_artifacts": {"desc": "纹理伪影：棋盘格、断裂等", "source": "research_v1"},
+            "texture_tiling": {"desc": "纹理平铺重复"},
+            "repetitive_patterns": {"desc": "不自然重复元素", "source": "research_v1"},
+            "texture_discontinuity": {"desc": "纹理不连续", "empirical": "Texture discontinuity"},
+            "inconsistent_texture_scale": {"desc": "纹理尺度不一致"},
+            "fabric_pattern_discontinuity": {"desc": "织物花纹断裂", "empirical": "Fabric Pattern Discontinuity"},
+            "surface_shininess_artifact": {"desc": "高光/反光异常", "empirical": "Overly Shiny Armor"},
+            "edge_artifacts": {"desc": "边缘伪影：锯齿、抠图边等", "source": "research_v1"},
+            "edge_bleeding": {"desc": "边界渗色/脏边"}
+          }
+        },
+        "compositing_background": {
+          "zh": "合成与背景渲染",
+          "attributes": {
+            "cutout_edges": {"desc": "抠图边缘明显"},
+            "blending_seams": {"desc": "合成接缝/补丁感"},
+            "background_blur_artifacts": {"desc": "背景虚化伪影", "empirical": "Background Blurring"},
+            "background_blending_issue": {"desc": "前景背景融合失败", "empirical": "Background Blending Issue"},
+            "background_artifacts": {"desc": "背景伪影/碎片", "empirical": "Background Artifacts"},
+            "depth_map_artifacts": {"desc": "景深/深度图错误伪影"},
+            "inconsistent_depth_of_field": {"desc": "分层虚实关系异常"},
+            "overlay_effects_artifacts": {"desc": "叠加特效异常", "empirical": "Overlapping Effects"},
+            "photo_alignment_issue": {"desc": "画面整体对齐/错位异常", "empirical": "Photo Alignment Issue"},
+            "watermark_signature": {"desc": "水印/签名残留"}
+          }
+        }
+      }
+    },
+
+    "aesthetic_quality": {
+      "zh": "美学",
+      "description": "审美与艺术表达：构图、光影氛围、色彩风格、整体观感等",
+      "weight": 0.30,
+      "dimensions": {
+        "composition_framing": {
+          "zh": "构图与取景",
+          "attributes": {
+            "poor_composition": {"desc": "构图不佳，主体位置不当", "source": "research_v1"},
+            "awkward_cropping": {"desc": "裁切突兀"},
+            "subject_cut_off": {"desc": "主体被截断"},
+            "unbalanced_layout": {"desc": "画面重心不稳"},
+            "cluttered_scene": {"desc": "画面杂乱拥挤"},
+            "weak_focal_point": {"desc": "缺乏明确焦点"},
+            "poor_visual_hierarchy": {"desc": "视觉层级混乱"},
+            "distracting_background": {"desc": "背景抢戏"},
+            "lack_of_depth": {"desc": "纵深感不足"},
+            "misaligned_horizon": {"desc": "地平线/主轴倾斜"}
+          }
+        },
+        "lighting_atmosphere": {
+          "zh": "光影与氛围",
+          "attributes": {
+            "poor_lighting": {"desc": "光线不佳", "source": "research_v1"},
+            "flat_lighting": {"desc": "光照过平，缺乏塑形", "empirical": "Flat Lighting"},
+            "harsh_lighting": {"desc": "光照过硬/刺眼"},
+            "lighting_imbalance": {"desc": "亮度分配不均", "empirical": "Lighting Imbalance"},
+            "unflattering_shadows": {"desc": "阴影不美观"},
+            "inconsistent_mood": {"desc": "氛围不统一"},
+            "lighting_overemphasis": {"desc": "光效过度渲染", "empirical": "Lighting Overemphasis"},
+            "unconvincing_atmosphere": {"desc": "氛围效果不自然"}
+          }
+        },
+        "color_harmony_style": {
+          "zh": "色彩协调与风格",
+          "attributes": {
+            "unharmonious_colors": {"desc": "色彩不协调，配色冲突", "source": "research_v1"},
+            "poor_color_grading": {"desc": "调色不佳"},
+            "oversaturated_palette": {"desc": "调色过饱和"},
+            "dull_palette": {"desc": "调色过灰/过闷"},
+            "conflicting_color_temperature": {"desc": "色温冲突"},
+            "palette_incoherence": {"desc": "色彩不统一"},
+            "cheap_render_quality": {"desc": "廉价渲染质量，塑料感/CG感"},
+            "mixed_render_styles": {"desc": "混合风格突兀"},
+            "low_style_coherence": {"desc": "整体风格凝聚力弱"}
+          }
+        },
+        "overall_visual_appeal": {
+          "zh": "整体观感与吸引力",
+          "attributes": {
+            "lack_of_visual_appeal": {"desc": "缺乏视觉吸引力", "source": "research_v1"},
+            "blandness": {"desc": "平庸乏味"},
+            "low_aesthetic_quality": {"desc": "综合审美差"},
+            "amateurish_look": {"desc": "业余感强"},
+            "uncanny_aesthetic": {"desc": "诡异不适观感"},
+            "overprocessed_look": {"desc": "过度后期感"},
+            "low_realism": {"desc": "低真实感/假感"},
+            "low_creativity": {"desc": "创意与表现力不足"}
+          }
+        }
+      }
+    },
+
+    "semantic_rationality": {
+      "zh": "语义/合理性",
+      "description": "语义理解与现实合理性：解剖结构、物体属性、空间关系、物理光学、场景上下文、文本语义等",
+      "weight": 0.50,
+      "dimensions": {
+        "anatomy_biology": {
+          "zh": "解剖与生物合理性",
+          "attributes": {
+            "hand_deformity": {"desc": "手部畸形：结构错误、关节异常等", "source": "research_v1"},
+            "finger_count_error": {"desc": "手指数量错误"},
+            "fused_fingers": {"desc": "手指粘连/融合"},
+            "unnatural_hand_pose": {"desc": "手部姿态不自然", "empirical": "Unnatural Hand Position"},
+            "facial_anomaly": {"desc": "面部异常：五官偏移、不对称", "source": "research_v1"},
+            "facial_feature_misalignment": {"desc": "五官错位"},
+            "eye_anomaly": {"desc": "眼部异常"},
+            "expression_mismatch": {"desc": "表情与语境不符", "empirical": "Expression mismatch"},
+            "body_proportion": {"desc": "身体比例失调", "source": "research_v1"},
+            "limb_abnormality": {"desc": "肢体异常：多余/缺失肢体等", "source": "research_v1"},
+            "joint_anomaly": {"desc": "关节/骨骼结构异常"},
+            "unnatural_pose": {"desc": "姿态不可能或极不自然", "empirical": "Improbable posture"},
+            "animal_anatomy_error": {"desc": "动物解剖错误", "empirical": "Unnatural Dragon Anatomy"},
+            "duplicated_body_parts": {"desc": "重复身体部位"}
+          }
+        },
+        "object_integrity_attributes": {
+          "zh": "物体完整性与属性一致",
+          "attributes": {
+            "object_deformation": {"desc": "物体变形：形态扭曲、结构错误", "source": "research_v1"},
+            "broken_geometry": {"desc": "几何破碎/拓扑错误"},
+            "melted_objects": {"desc": "物体融化/塌陷"},
+            "fused_objects": {"desc": "物体融合"},
+            "missing_parts": {"desc": "部件缺失"},
+            "extra_parts": {"desc": "多余部件"},
+            "incorrect_object_shape": {"desc": "物体形状错误", "empirical": "Unnatural Book Shape"},
+            "incorrect_object_orientation": {"desc": "朝向/结构方向错误", "empirical": "Incorrect Wheelbarrow Orientation"},
+            "hallucinated_objects": {"desc": "幻觉物体：无中生有", "source": "research_v1"},
+            "missing_objects": {"desc": "关键物体缺失", "empirical": "Missing Backpack"},
+            "duplicated_objects": {"desc": "对象无意重复", "empirical": "Excessive Pens"},
+            "attribute_mismatch": {"desc": "属性不一致", "empirical": "Color mismatch in outfits"},
+            "illogical_colors": {"desc": "逻辑色彩错误：违背常识", "source": "research_v1"},
+            "material_mismatch": {"desc": "材质不合理"}
+          }
+        },
+        "spatial_geometry_positioning": {
+          "zh": "空间几何与位置关系",
+          "attributes": {
+            "perspective_error": {"desc": "透视错误", "source": "research_v1"},
+            "scale_inconsistency": {"desc": "尺度比例不一致", "empirical": "Inconsistent Shark Sizes"},
+            "alignment_error": {"desc": "对齐错误", "empirical": "Cup and Saucer Alignment"},
+            "object_placement_issues": {"desc": "物体放置不合理", "empirical": "Object Placement Issues"},
+            "improper_arrangement": {"desc": "排列/构成逻辑错误", "empirical": "Improper Element Arrangement"},
+            "incorrect_relative_position": {"desc": "相对位置错误", "empirical": "Guitar Position"},
+            "occlusion_error": {"desc": "遮挡关系错误"},
+            "penetration_overlap": {"desc": "穿透/重叠不合理"},
+            "floating_objects": {"desc": "悬浮缺支撑", "empirical": "Floating Objects"},
+            "background_depth_inconsistency": {"desc": "深度关系错误", "empirical": "Background Depth Issues"},
+            "viewpoint_inconsistency": {"desc": "视角不一致"},
+            "background_alignment_issue": {"desc": "背景几何对齐错误", "empirical": "Background Alignment Issue"}
+          }
+        },
+        "physical_plausibility_optics": {
+          "zh": "物理规律与光学一致性",
+          "attributes": {
+            "physical_implausibility": {"desc": "物理不合理：违反物理定律", "source": "research_v1"},
+            "gravity_violation": {"desc": "重力/支撑违背"},
+            "impossible_support_contact": {"desc": "接触关系不合理"},
+            "shadow_mismatch": {"desc": "阴影逻辑矛盾", "empirical": "Unnatural Snow Shadows"},
+            "missing_shadows": {"desc": "应有阴影缺失"},
+            "reflection_mismatch": {"desc": "反射/镜像不一致", "empirical": "Unnatural Reflection"},
+            "inconsistent_light_source": {"desc": "光源不一致", "empirical": "Inconsistent Light Source"},
+            "specular_highlight_inconsistency": {"desc": "高光逻辑不对"},
+            "refraction_transparency_error": {"desc": "透明/折射错误"},
+            "material_physics_error": {"desc": "材质物理行为错误"},
+            "impossible_interaction": {"desc": "交互不可能"}
+          }
+        },
+        "scene_context_consistency": {
+          "zh": "场景与上下文一致性",
+          "attributes": {
+            "contextual_mismatch": {"desc": "上下文不匹配", "source": "research_v1"},
+            "semantic_contradiction": {"desc": "语义矛盾", "empirical": "Semantic contradiction"},
+            "prompt_conflict": {"desc": "与提示词冲突", "empirical": "Semantic Prompt conflict"},
+            "semantic_confusion": {"desc": "语义混乱", "empirical": "Semantic Confusion"},
+            "unexpected_element": {"desc": "意外元素插入", "empirical": "Unexpected Element A"},
+            "missing_key_element": {"desc": "关键要素缺失", "empirical": "Missing Sword and Shield"},
+            "incorrect_scene_elements": {"desc": "场景要素错误"},
+            "background_discrepancy": {"desc": "背景语义不一致", "empirical": "Background Discrepancy"},
+            "scene_layout_error": {"desc": "场景布局错误", "empirical": "Furniture arrangement"},
+            "implausible_scene_design": {"desc": "场景设计不可信", "empirical": "Implausible Playground Design"},
+            "ambiguous_background_figures": {"desc": "背景人物/物体含糊", "empirical": "Blurry People in Background"},
+            "count_error_excessive_objects": {"desc": "数量错误", "empirical": "Excessive Pens"},
+            "time_season_inconsistency": {"desc": "时间/季节/天气冲突"},
+            "narrative_incoherence": {"desc": "叙事不连贯"}
+          }
+        },
+        "text_symbol_semantics": {
+          "zh": "文本与符号语义",
+          "attributes": {
+            "text_legibility": {"desc": "文字可读性差", "empirical": "Text Legibility"},
+            "gibberish_text": {"desc": "乱码文字"},
+            "unreadable_name": {"desc": "名称不可读", "empirical": "Unreadable Name"},
+            "incorrect_spelling": {"desc": "拼写错误"},
+            "incorrect_address_text": {"desc": "地址/数字信息错误", "empirical": "Incorrect Address"},
+            "iconography_error": {"desc": "图标/符号语义错误", "empirical": "Iconography Error"},
+            "logo_error": {"desc": "Logo/品牌标识错误"},
+            "typography_style_mismatch": {"desc": "字体/排版风格不一致"}
+          }
+        }
+      }
+    }
+  },
+
+  "severity_levels": {
+    "mild": {"description": "轻微退化：细微可察觉"},
+    "moderate": {"description": "中等退化：明显可见"},
+    "severe": {"description": "严重退化：显著影响"}
+  },
+
+  "mapping": {
+    "research_v1_to_v2": {
+      "technical_quality.blur": "technical_quality.clarity_resolution.blur",
+      "technical_quality.exposure_issues": "technical_quality.exposure_contrast.exposure_issues",
+      "technical_quality.low_contrast": "technical_quality.exposure_contrast.low_contrast",
+      "technical_quality.color_distortion": "technical_quality.color_tone_fidelity.color_distortion",
+      "technical_quality.color_banding": "technical_quality.color_tone_fidelity.color_banding",
+      "texture_detail.over_smoothing": "technical_quality.texture_detail_rendering.over_smoothing",
+      "texture_detail.texture_artifacts": "technical_quality.texture_detail_rendering.texture_artifacts",
+      "texture_detail.repetitive_patterns": "technical_quality.texture_detail_rendering.repetitive_patterns",
+      "texture_detail.edge_artifacts": "technical_quality.texture_detail_rendering.edge_artifacts",
+      "aesthetic_quality.poor_composition": "aesthetic_quality.composition_framing.poor_composition",
+      "aesthetic_quality.poor_lighting": "aesthetic_quality.lighting_atmosphere.poor_lighting",
+      "aesthetic_quality.unharmonious_colors": "aesthetic_quality.color_harmony_style.unharmonious_colors",
+      "aesthetic_quality.lack_of_visual_appeal": "aesthetic_quality.overall_visual_appeal.lack_of_visual_appeal",
+      "structural_plausibility.object_deformation": "semantic_rationality.object_integrity_attributes.object_deformation",
+      "structural_plausibility.perspective_error": "semantic_rationality.spatial_geometry_positioning.perspective_error",
+      "structural_plausibility.physical_implausibility": "semantic_rationality.physical_plausibility_optics.physical_implausibility",
+      "structural_plausibility.hallucinated_objects": "semantic_rationality.object_integrity_attributes.hallucinated_objects",
+      "structural_plausibility.illogical_colors": "semantic_rationality.object_integrity_attributes.illogical_colors",
+      "structural_plausibility.contextual_mismatch": "semantic_rationality.scene_context_consistency.contextual_mismatch",
+      "anatomical_accuracy.hand_deformity": "semantic_rationality.anatomy_biology.hand_deformity",
+      "anatomical_accuracy.facial_anomaly": "semantic_rationality.anatomy_biology.facial_anomaly",
+      "anatomical_accuracy.body_proportion": "semantic_rationality.anatomy_biology.body_proportion",
+      "anatomical_accuracy.limb_abnormality": "semantic_rationality.anatomy_biology.limb_abnormality"
+    },
+    "empirical_500_to_v2": {
+      "Anatomical_Defects": ["semantic_rationality.anatomy_biology"],
+      "Texture_Issues": ["technical_quality.texture_detail_rendering"],
+      "Lighting_Issues": [
+        "technical_quality.exposure_contrast",
+        "aesthetic_quality.lighting_atmosphere",
+        "semantic_rationality.physical_plausibility_optics"
+      ],
+      "Semantic_Inconsistencies": ["semantic_rationality.scene_context_consistency"],
+      "Color_Issues": [
+        "technical_quality.color_tone_fidelity",
+        "aesthetic_quality.color_harmony_style",
+        "semantic_rationality.object_integrity_attributes"
+      ],
+      "Object_Positioning_Errors": ["semantic_rationality.spatial_geometry_positioning"],
+      "Background_Inconsistencies": [
+        "technical_quality.compositing_background",
+        "semantic_rationality.scene_context_consistency"
+      ],
+      "Unique_Issues": [
+        "semantic_rationality.text_symbol_semantics",
+        "technical_quality.compositing_background"
+      ]
+    }
+  },
+
+  "statistics": {
+    "perspectives": 3,
+    "dimension_groups": 16,
+    "total_attributes": 168,
+    "research_v1_preserved": 23,
+    "empirical_dimensions_mapped": 8,
+    "coverage": {
+      "technical": 60,
+      "aesthetic": 35,
+      "semantic": 73
+    }
+  }
+}

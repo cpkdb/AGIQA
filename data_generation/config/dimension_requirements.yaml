@@ -1,0 +1,62 @@
+# dimension_requirements.yaml
+# 维度-标签兼容性规则
+# 基于 quality_dimensions_v3.json 的 prompt_strategy 和 semantic_tag_requirements.json 推导
+#
+# required_tags: 至少一个必须匹配才兼容（OR 逻辑）
+# preferred_tags: 优先选择，但非必需
+# 无条目的维度 = 无特殊要求，任意 prompt 均可
+
+hand_malformation:
+  required_tags: ["has_hand"]
+  preferred_tags: ["has_person"]
+
+face_asymmetry:
+  required_tags: ["has_face"]
+
+expression_mismatch:
+  required_tags: ["has_face"]
+  preferred_tags: ["has_person"]
+
+body_proportion_error:
+  required_tags: ["has_person"]
+  preferred_tags: ["has_full_body"]
+
+extra_limbs:
+  required_tags: ["has_person"]
+
+impossible_pose:
+  required_tags: ["has_person"]
+  preferred_tags: ["has_full_body"]
+
+animal_anatomy_error:
+  required_tags: ["has_animal"]
+
+object_fusion:
+  required_tags: ["has_multiple_objects"]
+
+reflection_error:
+  required_tags: ["has_reflective_surface"]
+
+text_error:
+  required_tags: ["has_text"]
+
+logo_symbol_error:
+  required_tags: ["has_logo_or_symbol", "has_text"]
+
+count_error:
+  preferred_tags: ["has_countable_objects"]
+
+object_shape_error:
+  preferred_tags: ["has_structured_object"]
+
+scale_inconsistency:
+  preferred_tags: ["has_multiple_objects"]
+
+penetration_overlap:
+  preferred_tags: ["has_multiple_objects"]
+
+scene_layout_error:
+  preferred_tags: ["has_indoor_scene"]
+
+plastic_waxy_texture:
+  preferred_tags: ["has_person", "has_face"]

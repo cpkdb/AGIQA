@@ -7,10 +7,7 @@
 2. 可处理复杂的对齐度(alignment)退化
 3. 语言流畅，上下文感知
 
-输入层级：
-- 子类别(subcategory)级别：low_visual_quality, aesthetic_quality, semantic_plausibility,
-  basic_recognition, attribute_alignment, composition_interaction, external_knowledge
-- 属性(attribute)级别：blur, noise, color, shape 等具体属性
+
 
 支持通过 YAML 配置文件加载精细化的 prompt 模板
 """
@@ -21,6 +18,7 @@ import time
 import logging
 import yaml
 import random
+import threading
 from typing import Dict, List, Tuple, Optional
 from pathlib import Path
 import re
@@ -60,7 +58,9 @@ class LLMPromptDegradation:
         self.dimensions = self._load_quality_dimensions()
 
         # 初始化LLM客户端
-        self.client = self._init_llm_client()
+        # 注意：该类可能在多线程下使用（为了并行请求 LLM），这里用 thread-local client
+        self._client_local = threading.local()
+        self._client_config = self._init_llm_client_config()
 
         # 退化程度分布（与关键词方法保持一致）
         self.severity_distribution = {
@@ -125,8 +125,8 @@ class LLMPromptDegradation:
         with open(self.quality_dimensions_path, 'r', encoding='utf-8') as f:
             return json.load(f)
 
-    def _init_llm_client(self):
-        """初始化LLM客户端"""
+    def _init_llm_client_config(self) -> Dict:
+        """初始化LLM客户端所需配置（线程安全）"""
         provider = self.config['llm']['provider']
 
         if provider == "openai":
@@ -143,29 +143,63 @@ class LLMPromptDegradation:
             logger.info(f"初始化 OpenAI 客户端 - Model: {self.config['llm']['model']}")
             if base_url:
                 logger.info(f"使用自定义 API Base: {base_url}")
-                return OpenAI(api_key=api_key, base_url=base_url)
+                return {"provider": "openai", "api_key": api_key, "base_url": base_url}
             else:
-                return OpenAI(api_key=api_key)
+                return {"provider": "openai", "api_key": api_key, "base_url": None}
         else:
             raise ValueError(f"不支持的LLM provider: {provider}")
 
+    def _get_client(self):
+        """获取线程本地的 LLM client（避免多线程共享同一个 http client 的潜在问题）"""
+        client = getattr(self._client_local, "client", None)
+        if client is not None:
+            return client
+
+        cfg = self._client_config
+        if cfg["provider"] == "openai":
+            if cfg.get("base_url"):
+                client = OpenAI(api_key=cfg["api_key"], base_url=cfg["base_url"])
+            else:
+                client = OpenAI(api_key=cfg["api_key"])
+        else:
+            raise ValueError(f"不支持的provider: {cfg['provider']}")
+
+        self._client_local.client = client
+        return client
+
     def _build_subcategory_descriptions(self) -> Dict[str, Dict]:
         """
-        构建子类别描述信息
-        从quality_dimensions.json提取每个子类别的详细信息
+        构建类别描述信息
+        从quality_dimensions.json提取每个类别的详细信息
+        
+        新结构（扁平化）:
+        {
+            "technical_quality": {
+                "description": "...",
+                "attributes": { "blur": {...}, ... }
+            }
+        }
         """
         descriptions = {}
 
-        for category, category_data in self.dimensions.items():
-            for subcategory, subcategory_data in category_data.get('subcategories', {}).items():
-                attributes = subcategory_data.get('attributes', {})
+        # 跳过非类别字段
+        skip_keys = {'severity_levels', 'statistics'}
 
-                descriptions[subcategory] = {
-                    'category': category,
-                    'description': subcategory_data.get('description', ''),
-                    'attributes': list(attributes.keys()),
-                    'attribute_details': attributes
-                }
+        for category, category_data in self.dimensions.items():
+            if category in skip_keys:
+                continue
+            if not isinstance(category_data, dict):
+                continue
+                
+            attributes = category_data.get('attributes', {})
+            
+            # 新结构：category 直接作为 subcategory 使用
+            descriptions[category] = {
+                'category': category,
+                'description': category_data.get('description', ''),
+                'attributes': list(attributes.keys()),
+                'attribute_details': attributes
+            }
 
         return descriptions
 
@@ -177,7 +211,7 @@ class LLMPromptDegradation:
             模板字典，结构为: {subcategory: {attribute: {severity: prompt}}}
         """
         templates = {}
-        template_dir = Path(self.llm_config_path).parent / "prompt_templates"
+        template_dir = Path(self.llm_config_path).parent / "prompt_templates_v3"
 
         if not template_dir.exists():
             logger.warning(f"Prompt 模板目录不存在: {template_dir}")
@@ -207,19 +241,8 @@ class LLMPromptDegradation:
 
         return templates
 
-    # 通用原则（所有属性共享，拼接在 specific_instructions 后面）
-    COMMON_PRINCIPLES = """
-# Degradation Principles
-1. Modifications must be based on replacing or adding adjectives/modifiers to achieve degradation
-2. Each generation should randomly select or combine different modification methods within this dimension, not using fixed examples
-3. Other unspecified quality dimensions should remain unaffected
-4. Ensure the generated prompt is linguistically natural and structurally complete
-
-# Output Principles
-1. Return only the modified prompt
-2. Ensure degradation occurs in the user-specified quality dimension
-3. Each call must select different modification methods within this quality dimension to avoid repetitive outputs
-"""
+    # 通用原则（已弃用，控制权移交至 YAML 模板）
+    COMMON_PRINCIPLES = ""
 
     def _build_system_prompt_cache(self):
         """
@@ -235,14 +258,14 @@ class LLMPromptDegradation:
         """
         logger.info("正在预构建 System Prompt 缓存...")
 
-        # 1. 从 YAML 模板加载属性级别的 prompts（拼接通用原则）
+        # 1. 从 YAML 模板加载属性级别的 prompts
         attribute_count = 0
         for subcategory, attributes in self.prompt_templates.items():
             for attribute, severities in attributes.items():
                 for severity, prompt in severities.items():
                     cache_key = f"{subcategory}_{attribute}_{severity}"
-                    # YAML 模板 + 通用原则
-                    self.system_prompt_cache[cache_key] = prompt + self.COMMON_PRINCIPLES
+                    # 直接使用 YAML 模板，不再拼接通用原则
+                    self.system_prompt_cache[cache_key] = prompt
                     attribute_count += 1
 
         logger.info(f"属性级别缓存: {attribute_count} 个 prompts")
@@ -302,16 +325,23 @@ Modify the prompt to introduce {severity} level issues in the {subcategory} dime
         positive_prompt: str,
         subcategory: str,
         attribute: Optional[str] = None,
-        severity: str = "moderate"
+        severity: str = "moderate",
+        failed_negative_prompt: Optional[str] = None,
+        feedback: Optional[str] = None,
+        judge_scores: Optional[Dict] = None,
+        model_id: str = "sdxl",
+        prompt_signature: Optional[Dict] = None,
     ) -> Tuple[str, Dict]:
         """
         使用LLM生成退化的负样本提示词
 
         Args:
             positive_prompt: 正样本提示词
-            subcategory: 子类别名称（如 low_visual_quality）
+            subcategory: 子类别名称（如 technical_quality）
             attribute: 具体属性（如 blur, noise）- 可选，不指定则随机选择
             severity: 退化程度 (mild, moderate, severe)
+            failed_negative_prompt: [重试时] 上次失败的 negative prompt
+            feedback: [重试时] 失败原因描述
 
         Returns:
             (负样本提示词, 退化信息字典)
@@ -346,14 +376,41 @@ Modify the prompt to introduce {severity} level issues in the {subcategory} dime
                 self._build_system_prompt(subcategory, severity)
             )
 
-        # Build User Prompt (精简版，核心信息由 System Prompt 提供)
+        # Build User Prompt
         dimension_desc = f"{subcategory}"
         if selected_attribute:
             dimension_desc = f"{subcategory} -> {selected_attribute}"
 
-        user_prompt = f"""**Input**: {positive_prompt}
+        if failed_negative_prompt and feedback:
+            # 重试模式：附加失败信息
+            scores_section = ""
+            if judge_scores:
+                scores_section = f"\n**Judge Scores**: content_preservation={judge_scores.get('content_preservation', 'N/A')}, style_consistency={judge_scores.get('style_consistency', 'N/A')}, degradation_intensity={judge_scores.get('degradation_intensity', 'N/A')}, dimension_accuracy={judge_scores.get('dimension_accuracy', 'N/A')}"
+            user_prompt = f"""**Input**: {positive_prompt}
 **Dimension**: {dimension_desc}
-**Severity**: {severity}"""
+**Severity**: {severity}
+
+⚠️ PREVIOUS ATTEMPT FAILED:
+**Failed Negative Prompt**: {failed_negative_prompt}
+**Failure Reason**: {feedback}{scores_section}
+
+IMPORTANT INSTRUCTIONS:
+1. If the failed prompt contains style anchors at the beginning (e.g., "realistic style, photorealistic", "illustration style, digital art"), you MUST preserve them exactly in your output.
+2. Only modify the degradation-related parts of the prompt.
+3. Keep the same rendering style as indicated by the style anchors.
+
+Please fix the above issue and generate a corrected negative prompt."""
+        else:
+            # 首次生成
+            style_lock = ""
+            if prompt_signature and prompt_signature.get("tags"):
+                # 简单风格推断
+                tags = prompt_signature["tags"]
+                if any(t in tags for t in ("has_person", "has_face", "has_hand")):
+                    style_lock = "\n**Style Lock**: This prompt likely depicts people/portraits. Do NOT change the rendering style."
+            user_prompt = f"""**Input**: {positive_prompt}
+**Dimension**: {dimension_desc}
+**Severity**: {severity}{style_lock}"""
 
         # 调用LLM API
         try:
@@ -372,7 +429,8 @@ Modify the prompt to introduce {severity} level issues in the {subcategory} dime
                 "subcategory": subcategory,
                 "attribute": selected_attribute,
                 "severity": severity,
-                "method": "llm"
+                "method": "llm",
+                "is_retry": failed_negative_prompt is not None
             }
 
             return negative_prompt, degradation_info
@@ -399,7 +457,8 @@ Modify the prompt to introduce {severity} level issues in the {subcategory} dime
         for attempt in range(max_retries):
             try:
                 if provider == "openai":
-                    response = self.client.chat.completions.create(
+                    client = self._get_client()
+                    response = client.chat.completions.create(
                         model=self.config['llm']['model'],
                         messages=[
                             {"role": "system", "content": system_prompt},
@@ -444,9 +503,9 @@ Modify the prompt to introduce {severity} level issues in the {subcategory} dime
         Returns:
             验证并修复后的负样本
         """
-        # 移除可能的前缀
+        # 移除可能的前缀（包括 markdown 格式）
         negative_prompt = re.sub(
-            r'^(negative prompt|输出|结果)[:：]\s*',
+            r'^(\*{0,2}(corrected\s+)?(negative prompt|modified prompt|output|result|输出|结果|修改后)\*{0,2})[:：]\s*',
             '',
             negative_prompt,
             flags=re.IGNORECASE
@@ -549,6 +608,96 @@ Modify the prompt to introduce {severity} level issues in the {subcategory} dime
                 continue
 
         return results
+
+
+class StrategyOptimizer:
+    """Stage 2: 模板选择与微调
+
+    三级查找:
+    1. KnowledgeBase 中已验证变体（成功率高）
+    2. YAML 基础模板
+    3. 动态回退模板
+    """
+
+    def __init__(
+        self,
+        degrader: 'LLMPromptDegradation',
+        knowledge_base=None,
+        constraints_path: str = None,
+    ):
+        self.degrader = degrader
+        self.kb = knowledge_base
+
+        if constraints_path is None:
+            constraints_path = str(Path(degrader.llm_config_path).parent / "template_constraints.yaml")
+        self._raw_constraints = {}
+        self.constraints = {}
+        if Path(constraints_path).exists():
+            with open(constraints_path, "r", encoding="utf-8") as f:
+                self._raw_constraints = yaml.safe_load(f) or {}
+            # 兼容两种格式: 嵌套 dimensions: {...} 或平铺
+            dims = self._raw_constraints.get("dimensions", self._raw_constraints)
+            for k, v in dims.items():
+                if isinstance(v, dict) and v.get("evolution_enabled", False):
+                    self.constraints[k] = v
+
+    def select_template(
+        self,
+        dimension: str,
+        severity: str,
+        model_id: str = "sdxl",
+        prompt_signature: Dict = None,
+    ) -> Optional[str]:
+        """
+        选择最优策略模板。
+
+        Returns:
+            system_prompt 字符串，或 None（使用默认查找逻辑）
+        """
+        # Level 1: KnowledgeBase 有高成功率的策略 → 使用 YAML 模板（稳定）
+        # （暂不做变体存储，直接走 Level 2）
+
+        # Level 2: YAML 基础模板
+        subcategory = self._find_subcategory(dimension)
+        if subcategory:
+            cache_key = f"{subcategory}_{dimension}_{severity}"
+            sp = self.degrader.system_prompt_cache.get(cache_key)
+            if sp:
+                return sp
+
+            # 子类别级别回退
+            cache_key = f"{subcategory}_{severity}"
+            sp = self.degrader.system_prompt_cache.get(cache_key)
+            if sp:
+                return sp
+
+        # Level 3: 动态回退
+        return None
+
+    def _find_subcategory(self, dimension: str) -> Optional[str]:
+        """根据维度找所属子类别"""
+        for subcat, attrs in self.degrader.prompt_templates.items():
+            if dimension in attrs:
+                return subcat
+        for subcat, info in self.degrader.subcategory_descriptions.items():
+            if dimension in info.get("attributes", []):
+                return subcat
+        return None
+
+    def check_guardrails(self, dimension: str, template_text: str) -> bool:
+        """检查模板是否满足防漂移约束"""
+        c = self.constraints.get(dimension)
+        if not c:
+            return True
+
+        text_lower = template_text.lower()
+        for kw in c.get("must_keep", []):
+            if kw.lower() not in text_lower:
+                return False
+        for kw in c.get("must_avoid", []):
+            if kw.lower() in text_lower:
+                return False
+        return True
 
 
 if __name__ == "__main__":

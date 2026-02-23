@@ -1,0 +1,420 @@
+# Anatomical Accuracy Degradation Prompt Templates
+# 解剖准确性退化策略 [Rationality View] - AIGC的典型弱点
+# 属性: hand_deformity, facial_anomaly, body_proportion, limb_abnormality
+
+anatomical_accuracy:
+  hand_deformity:
+    mild: |
+      # Task
+      Rewrite the prompt to trigger MILD HAND DEFORMITY.
+
+      ## Applicability
+      If NO hand in prompt: Return original prompt UNCHANGED.
+
+      ## CRITICAL RULES
+      1. Keep the ENTIRE original prompt EXACTLY as is
+      2. Only APPEND ONE modifier at the end
+
+      ## Modifiers (MUST use specific numbers - most effective for SDXL)
+      ONLY use these:
+      - ", the hand has 4 fingers"
+      - ", with four fingers"
+
+      ## Example
+      "A photo of a hand on table" → "A photo of a hand on table, the hand has 4 fingers"
+
+      ## AVOID
+      - Abstract descriptions like "crooked", "bent", "stiff" (SDXL ignores these) ❌
+      - Multiple modifiers ❌
+
+    moderate: |
+      # Task
+      Rewrite the prompt to trigger MODERATE HAND DEFORMITY.
+
+      ## Applicability
+      If NO hand in prompt: Return original prompt UNCHANGED.
+
+      ## CRITICAL RULES
+      1. Keep the ENTIRE original prompt EXACTLY as is
+      2. Only APPEND ONE modifier at the end
+
+      ## Modifiers (MUST use specific numbers - most effective for SDXL)
+      ONLY use these:
+      - ", the hand has 6 fingers"
+      - ", with six fingers"
+      - ", with 6 fingers on the hand"
+
+      ## Example
+      "A photo of a hand holding cup" → "A photo of a hand holding cup, the hand has 6 fingers"
+
+      ## AVOID
+      - Abstract descriptions like "fused", "webbed" (less reliable) ❌
+      - Multiple modifiers ❌
+
+    severe: |
+      # Task
+      Rewrite the prompt to trigger SEVERE HAND DEFORMITY.
+
+      ## Applicability
+      If NO hand in prompt: Return original prompt UNCHANGED.
+
+      ## CRITICAL RULES
+      1. Keep the ENTIRE original prompt EXACTLY as is
+      2. Only APPEND ONE modifier at the end
+
+      ## Modifiers (MUST use specific numbers - most effective for SDXL)
+      ONLY use these - they work best:
+      - ", the hand has 7 fingers"
+      - ", the hand has 8 fingers"
+      - ", with seven fingers"
+      - ", with 8 fingers on the hand"
+
+      ## Example
+      "A realistic photo of a hand writing" → "A realistic photo of a hand writing, the hand has 7 fingers"
+
+      ## AVOID
+      - Abstract descriptions like "backwards-bending", "wildly different lengths" (SDXL ignores) ❌
+      - "fused", "mutated", "deformed" (unreliable or triggers style change) ❌
+      - Multiple modifiers ❌
+      
+      Structural:
+      - ", with fingers of wildly different lengths"
+      - ", with backwards-bending fingers"
+
+      ## Example
+      Original → Original + one modifier
+
+      ## AVOID
+      - Multiple separate modifiers ❌
+      - Horror words: "mutated", "mangled", "grotesque" ❌
+      - Changing original content ❌
+
+      - "Photo of a child's hand placed flat on a desk, realistic, soft natural light"
+        → "Photo of a child's hand placed flat on a desk, realistic, soft natural light, the hand has 7 fingers"
+
+      - "A photo of a hand holding a white coffee mug, realistic skin texture"
+        → "A photo of a hand holding a white coffee mug, realistic skin texture, the hand has 7 fingers"
+
+      ## KEY INSIGHT
+      The contradiction between "5 fingers clearly visible" and "the hand has 7 fingers" 
+      forces SDXL to generate anatomical errors while keeping the realistic style.
+
+      ## WRONG - DO NOT DO THIS
+      ❌ ", with 7 fingers on one hand and fused fingers" (too many modifiers)
+      ❌ ", with mutated hand" (triggers style change)
+      ❌ Removing "realistic" or "photo" from original prompt
+
+      ## AVOID
+      - Changing original prompt content ❌
+      - Multiple modifiers ❌
+      - Horror/fantasy vocabulary ❌
+
+  facial_anomaly:
+    mild: |
+      # Task
+      Append quality degradation modifiers to trigger MILD facial anomaly.
+
+      ## CRITICAL RULES
+      1. Keep the ENTIRE original prompt UNCHANGED
+      2. Only APPEND modifiers at the end
+      3. Use technical quality terms that affect face rendering
+
+      ## KEY INSIGHT
+      SDXL ignores descriptive facial defect terms like "asymmetric eyes".
+      Instead, use QUALITY DEGRADATION terms that indirectly cause facial issues.
+
+      ## Modifiers (pick ONE)
+      - ", low quality face"
+      - ", poorly rendered face"
+      - ", amateur photo quality"
+
+      ## Examples
+      - "A portrait of a woman with red hair"
+        → "A portrait of a woman with red hair, low quality face"
+
+    moderate: |
+      # Task
+      Append quality degradation modifiers to trigger MODERATE facial anomaly.
+
+      ## CRITICAL RULES
+      1. Keep the ENTIRE original prompt UNCHANGED
+      2. Only APPEND modifiers at the end
+
+      ## KEY INSIGHT
+      SDXL ignores "mismatched eyes", "asymmetric face" etc.
+      Use quality/rendering terms instead.
+
+      ## Modifiers (pick ONE)
+      - ", bad face rendering, distorted features"
+      - ", poorly generated face, wrong proportions"
+      - ", low quality AI generated face"
+      - ", badly rendered facial features"
+
+      ## Examples
+      - "A portrait of a woman"
+        → "A portrait of a woman, bad face rendering, distorted features"
+
+    severe: |
+      # Task
+      Append facial asymmetry modifiers to trigger SEVERE facial anomaly.
+
+      ## CRITICAL RULES
+      1. Keep the ENTIRE original prompt EXACTLY AS-IS
+      2. Only APPEND modifiers at the very end
+      3. Do NOT rewrite or change the original prompt
+
+      ## KEY INSIGHT
+      Use MEDICAL/ANATOMICAL terms for PRECISE facial asymmetry control!
+      These terms break SDXL's symmetry constraints and create realistic-looking anomalies.
+
+      ## Strategy: Use ANATOMICAL ASYMMETRY terms
+
+      ## Modifiers (pick ONE set and append)
+
+      ### Best - Facial Paralysis Terms (most effective for asymmetry):
+      - ", severe facial asymmetry, Bell's palsy symptoms, one eye drooping, mouth sagging on one side"
+      - ", hemifacial paralysis, right eye half-closed, twisted lip, distorted expression"
+      - ", facial nerve damage, drooping eyelid, uneven mouth, asymmetric features"
+      - ", one-sided facial droop, ptosis on left eye, crooked smile"
+
+      ### Good - Eye Asymmetry:
+      - ", ptosis, one eye drooping and half-closed, uneven eyelids"
+      - ", lazy eye, one eye looking different direction, misaligned gaze"
+      - ", uneven eye opening, one eye squinting, asymmetric eyes"
+
+      ### Good - Mouth/Expression Asymmetry:
+      - ", crooked mouth, lips twisted to one side, uneven smile"
+      - ", mouth sagging on one side, asymmetric lip position"
+      - ", one corner of mouth drooping, uncoordinated facial muscles"
+
+      ### Good - Overall Facial Distortion:
+      - ", facial muscle weakness on one side, unbalanced features"
+      - ", asymmetric facial structure, one cheek lower than other"
+      - ", uneven facial proportions, lopsided appearance"
+
+      ## Examples - FOLLOW THIS EXACT PATTERN:
+
+      Input: "A realistic color photo portrait of a young woman with long brown hair, looking at the camera"
+      Output: "A realistic color photo portrait of a young woman with long brown hair, looking at the camera, severe facial asymmetry, Bell's palsy symptoms, one eye drooping, mouth sagging on one side"
+
+      Input: "A realistic color photo portrait of a woman with dark skin and natural hair"
+      Output: "A realistic color photo portrait of a woman with dark skin and natural hair, hemifacial paralysis, right eye half-closed, twisted lip, distorted expression"
+
+      Input: "A realistic color photo portrait of an Asian man wearing glasses"
+      Output: "A realistic color photo portrait of an Asian man wearing glasses, ptosis, one eye drooping and half-closed, uneven eyelids"
+
+      Input: "A realistic color photo close-up of a child's face with big blue eyes"
+      Output: "A realistic color photo close-up of a child's face with big blue eyes, facial nerve damage, drooping eyelid, uneven mouth, asymmetric features"
+
+      Input: "A photo of a man smiling"
+      Output: "A photo of a man smiling, crooked mouth, lips twisted to one side, uneven smile"
+
+      Input: "A portrait of an elderly woman"
+      Output: "A portrait of an elderly woman, one-sided facial droop, ptosis on left eye, crooked smile"
+
+      ## WHY THIS WORKS
+      Medical terms like "Bell's palsy", "ptosis", "hemifacial paralysis" precisely describe
+      facial asymmetry that SDXL can render. The result looks like a realistic anatomical
+      anomaly, not a horror monster or AI glitch.
+
+      ## AVOID - DO NOT USE THESE:
+      - Horror terms: "deformed", "disfigured", "mutated", "mutation" ❌
+      - Monster terms: "ugly", "gross", "malformed", "grotesque" ❌
+      - Scene-changing: "double exposure", "merging faces" ❌
+      - Vague terms SDXL ignores: "asymmetric face" alone (need specific details) ❌
+      - Uncanny valley terms: "wax figure", "mannequin" (different effect) ❌
+
+
+
+  body_proportion:
+    mild: |
+      # Task
+      Rewrite the prompt so the image has MILD BODY PROPORTION issues.
+
+      ## CRITICAL: Preserve photo-realistic style
+      - Do NOT use any style words (chibi, cartoon, caricature, etc.)
+      - Only append physical proportion descriptions
+
+      ## Strategy: Append subtle visible proportion issue
+      - ", with slightly long arms"
+      - ", with slightly short legs"
+      - ", with slightly large head"
+
+      ## Examples
+      - "A woman in a red dress standing in a park"
+        → "A woman in a red dress standing in a park, with slightly long arms"
+
+    moderate: |
+      # Task
+      Rewrite the prompt so the image has MODERATE BODY PROPORTION issues.
+
+      ## CRITICAL: Preserve photo-realistic style
+      - Do NOT use any style words
+      - Use concrete visual descriptions of proportion errors
+
+      ## Strategy: Append visible proportion descriptions
+      - ", with long arms hanging below the knees"
+      - ", with short stubby legs"
+      - ", with oversized head"
+      - ", with very long neck"
+
+      ## Examples
+      - "A man in a business suit walking"
+        → "A man in a business suit walking, with long arms hanging below the knees"
+
+    severe: |
+      # Task
+      Rewrite the prompt to create SEVERE BODY PROPORTION issues.
+
+      ## KEY INSIGHT
+      要打破 SDXL 的默认人体比例认知，必须**同时指定多个冲突的比例描述**！
+      单一描述（如只说 "short legs"）效果不明显，需要组合多个方向的变形。
+
+      ## CRITICAL RULES
+      1. Keep ALL scene content unchanged (location, clothing, action)
+      2. INSERT proportion modifiers RIGHT AFTER the person description
+      3. Use MULTIPLE CONFLICTING proportion descriptions together (2-3个组合)
+
+      ## Strategy: COMBINE MULTIPLE proportion abnormalities
+
+      ## Effective Combination Formula:
+      "[subject] with [HEAD abnormality], [LEG abnormality], [ARM abnormality]"
+
+      ### Component A - Head (pick one):
+      - "huge head"
+      - "oversized head relative to body"
+
+      ### Component B - Legs (MUST use extreme words):
+      - "tiny short legs" ✅ (most effective)
+      - "extremely short stubby legs" ✅
+
+      ### Component C - Arms (MUST use extreme words):
+      - "abnormally long arms" ✅ (most effective)
+      - "arms reaching down to ankles" ✅
+
+      ## APPEND at end (REQUIRED):
+      - ", distorted body proportions"
+
+      ## Examples:
+
+      - "A full body photo of a woman in a summer dress walking on a beach"
+        → "A full body photo of a woman with huge head, tiny short legs, abnormally long arms, in a summer dress walking on a beach, distorted body proportions"
+
+      - "A full body photo of a businessman in a suit standing in an office"
+        → "A full body photo of a businessman with oversized head relative to body, extremely short stubby legs, abnormally long arms, in a suit standing in an office, distorted body proportions"
+
+      - "A full body photo of a man leaning against a wall"
+        → "A full body photo of a man with huge head, tiny short legs, arms reaching down to ankles, leaning against a wall, distorted body proportions"
+
+      - "A full body photo of an athlete standing on a track"
+        → "A full body photo of an athlete with oversized head relative to body, tiny short legs, abnormally long arms, standing on a track, distorted body proportions"
+
+      ## WHY THIS WORKS
+      ✅ Multiple conflicting descriptions force SDXL to break its default body ratio
+      ✅ "huge head" + "short legs" + "long arms" = maximum proportion distortion
+      ✅ "weird proportions" reinforces the overall abnormality
+
+      ## AVOID
+      - Single modifier alone ❌ (not strong enough)
+      - Style words: "chibi", "cartoon" ❌
+      - Animal comparisons: "gorilla-like" ❌
+      - Medical terms: "dwarfism" ❌
+      - Modifier at sentence end only ❌
+
+  limb_abnormality:
+    mild: |
+      # Task
+      Append ONE modifier to trigger MILD limb abnormality while keeping the scene UNCHANGED.
+
+      ## CRITICAL RULES
+      1. Keep the ENTIRE original prompt EXACTLY as is
+      2. Only APPEND ONE modifier at the end
+      3. Scene, person, clothing, environment must remain identical
+
+      ## Modifiers (pick ONE)
+      - ", with slightly bent knees"
+      - ", with arms slightly raised"
+      - ", legs positioned awkwardly"
+      - ", with stiff arm posture"
+
+      ## Example
+      "A man sitting on a park bench" → "A man sitting on a park bench, with slightly bent knees"
+
+    moderate: |
+      # Task
+      Append ONE modifier to trigger MODERATE limb abnormality while keeping the scene UNCHANGED.
+
+      ## CRITICAL RULES
+      1. Keep the ENTIRE original prompt EXACTLY as is
+      2. Only APPEND ONE modifier at the end
+      3. Scene, person, clothing, environment must remain identical
+
+      ## Modifiers (pick ONE)
+      - ", with unusually long arms"
+      - ", with short stubby legs"
+      - ", arms bent at odd angles"
+      - ", with disproportionate limbs"
+      - ", legs appearing too thin"
+
+      ## Example
+      "A woman standing in a garden" → "A woman standing in a garden, with unusually long arms"
+
+    severe: |
+      # Task
+      Append ONE modifier to trigger SEVERE limb abnormality while keeping the scene UNCHANGED.
+
+      ## CRITICAL RULES
+      1. Keep the ENTIRE original prompt EXACTLY as is
+      2. Only APPEND ONE modifier at the end
+      3. Scene, person, clothing, environment must remain identical
+
+      ## KEY INSIGHT
+      For limb abnormality, the most effective approach is to specify WRONG NUMBER of limbs
+      or IMPOSSIBLE limb configurations, similar to how hand_deformity uses finger counts.
+
+      ## Strategy A: WRONG LIMB COUNT (Most Effective - like finger count for hands)
+      - ", the person has 3 legs"
+      - ", with 3 arms visible"
+      - ", showing 4 legs"
+      - ", the figure has 3 arms"
+
+      ## Strategy B: LIMB LENGTH/PROPORTION
+      - ", with arms reaching below the knees"
+      - ", with extremely short legs"
+      - ", arms twice normal length"
+      - ", with tiny short arms"
+
+      ## Strategy C: WRONG JOINT POSITION
+      - ", with backwards bending knees"
+      - ", elbows bending the wrong way"
+      - ", with double-jointed arms"
+      - ", knees bending backwards"
+
+      ## Strategy D: LIMB DUPLICATION HINT
+      - ", with overlapping arm shadows showing extra limbs"
+      - ", motion blur showing multiple leg positions"
+      - ", double exposure effect on arms"
+
+      ## Examples
+      - "A man in jeans sitting on a park bench, casual pose"
+        → "A man in jeans sitting on a park bench, casual pose, the person has 3 legs"
+
+      - "A woman in a dress standing in a garden"
+        → "A woman in a dress standing in a garden, with 3 arms visible"
+
+      - "A person jogging in the park"
+        → "A person jogging in the park, with arms reaching below the knees"
+
+      - "A chef standing in a kitchen"
+        → "A chef standing in a kitchen, with backwards bending knees"
+
+      ## WHY THIS WORKS
+      ✅ "3 legs" / "3 arms" → Direct count like finger count, forces SDXL to render extra limb
+      ✅ "arms reaching below knees" → Specific visual description of proportion error
+      ✅ "backwards bending knees" → Concrete impossible anatomy
+
+      ## AVOID
+      - Changing the scene or adding new people ❌
+      - Vague words: "abnormal", "wrong", "weird" ❌
+      - Horror vocabulary: "mutated", "deformed" ❌
+      - Multiple modifiers ❌

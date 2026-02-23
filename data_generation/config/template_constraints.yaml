@@ -1,0 +1,119 @@
+# Template Constraints (防漂移约束)
+# 定义哪些维度允许策略进化，以及进化时的 guardrails
+#
+# must_keep: 进化后的模板必须保留的关键词/短语
+# must_avoid: 进化后的模板必须避免的关键词/短语
+# max_variation_ratio: 相对于 base_template 的最大变化比例 (0.0-1.0)
+
+defaults:
+  max_variation_ratio: 0.3
+  evolution_enabled: false
+
+dimensions:
+  # === Technical Quality ===
+  blur:
+    evolution_enabled: true
+    must_keep:
+      - "blur"
+      - "out of focus"
+    must_avoid:
+      - "sharp"
+      - "high resolution"
+      - "crystal clear"
+
+  overexposure:
+    evolution_enabled: true
+    must_keep:
+      - "bright"
+      - "overexposed"
+    must_avoid:
+      - "dark"
+      - "moody"
+
+  underexposure:
+    evolution_enabled: true
+    must_keep:
+      - "dark"
+      - "underexposed"
+    must_avoid:
+      - "bright"
+      - "vivid"
+
+  color_cast:
+    evolution_enabled: true
+    must_keep:
+      - "color"
+      - "tint"
+    must_avoid:
+      - "natural colors"
+      - "accurate colors"
+
+  # === Aesthetic Quality ===
+  awkward_framing:
+    evolution_enabled: false
+    incompatible_models:
+      - sdxl  # content_drift: SDXL对构图/透视改写不敏感
+
+  unbalanced_layout:
+    evolution_enabled: false
+    incompatible_models:
+      - sdxl  # insufficient_effect: SDXL无法执行布局偏移指令
+
+  lighting_imbalance:
+    evolution_enabled: false
+    incompatible_models:
+      - sdxl  # content_drift: SDXL光照改写导致内容漂移
+
+  # === Semantic Rationality ===
+  extra_objects:
+    evolution_enabled: false
+    incompatible_models:
+      - sdxl  # content_drift + style_drift: SDXL 4/4失败
+
+  illogical_colors:
+    evolution_enabled: false
+    incompatible_models:
+      - sdxl  # content_drift: SDXL 4/4失败
+
+  floating_objects:
+    evolution_enabled: false
+    incompatible_models:
+      - sdxl  # style_drift: 添加悬浮描述触发风格漂移
+
+  penetration_overlap:
+    evolution_enabled: false
+    incompatible_models:
+      - sdxl  # positive_incompatible: 需要写实风格prompt
+
+  context_mismatch:
+    evolution_enabled: false
+    incompatible_models:
+      - sdxl  # content_drift: 改变场景时主体也变
+
+  time_inconsistency:
+    evolution_enabled: false
+    incompatible_models:
+      - sdxl  # content_drift: 不遵从时间矛盾描述
+
+  scene_layout_error:
+    evolution_enabled: false
+    incompatible_models:
+      - sdxl  # content_drift: moderate即失败
+
+  hand_malformation:
+    evolution_enabled: true
+    must_keep:
+      - "hand"
+      - "finger"
+    must_avoid:
+      - "perfect hands"
+      - "detailed hands"
+
+  face_asymmetry:
+    evolution_enabled: true
+    must_keep:
+      - "face"
+      - "asymmetric"
+    must_avoid:
+      - "symmetrical"
+      - "perfect face"

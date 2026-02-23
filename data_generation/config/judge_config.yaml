@@ -1,0 +1,46 @@
+# VLM Judge 配置文件
+# 用于基于 Visual-LLM 的图像对质量判别
+
+vlm:
+  # API提供商
+  provider: "google"
+
+  # 模型选择
+  # Gemini: gemini-3-pro-preview, gemini-3-flash-preview，gemini-3-flash-preview-nothinking
+  model: "gemini-3-flash-preview-nothinking"
+
+  # API密钥配置
+  api_key: "sk-OFeNoWrvYQr52dKoSWefZZOdweq4hQLiigkSGSDtTxWiGyU7"
+  
+  # API基础URL（使用 OpenAI 兼容代理时填写，通常需要 /v1 后缀）
+  api_base: "https://api.chatanywhere.org"
+  #api_base: "https://api.chatanywhere.tech/v1"
+
+  # 生成参数
+  temperature: 0.2
+  max_tokens: 800
+  top_p: 0.9
+
+  # 请求配置
+  timeout: 90
+  max_retries: 3
+  retry_delay: 2
+
+# 判别逻辑配置
+judge:
+  # 严格模式：true=只接受 obvious, false=接受 moderate+obvious
+  strict_mode: false
+
+  # 接受的退化程度
+  accept_levels:
+    - moderate
+    - obvious
+
+  # 是否在控制台输出详细判别结果
+  verbose_logging: true
+
+# 日志配置
+logging:
+  log_api_calls: false
+  save_judge_results: true
+  results_dir: "outputs/judge_results"

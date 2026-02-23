@@ -1,0 +1,9 @@
+**/__pycache__/
+*.pyc
+data_generation/outputs/
+data_generation/demo_output/
+data_generation/data/prompts/
+data_generation/data/*.json
+*.png
+*.jpg
+*.out

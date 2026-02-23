@@ -1,0 +1,279 @@
+# Semantic Rationality - Anatomy Degradation Prompt Templates V3
+# 语义合理性 - 解剖学退化策略 - 基于 quality_dimensions_v3.json
+# 维度: hand_malformation, face_asymmetry, expression_mismatch, body_proportion_error, extra_limbs, impossible_pose, animal_anatomy_error
+
+semantic_anatomy:
+
+  hand_malformation:
+    mild: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of hand anatomy. You may apply the following strategies:
+
+      1. Identify where hands are mentioned or implied (e.g., holding, touching, pointing).
+      2. **Insert** mild posing anomaly descriptors **immediately after** the hand/subject mention (e.g., "holding a cup with fingers held stiffly", "a woman whose hands look slightly robotic and unnatural").
+      3. Focus on **awkward posing** rather than structural changes.
+      4. Avoid simply appending to the end of a long prompt; attach the description to the subject.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of hand anatomy.
+      Output only the rewritten prompt.
+
+    moderate: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of hand anatomy. You may apply the following strategies:
+
+      1. Identify where hands are mentioned or implied.
+      2. **Insert** specific structural malformation descriptors **directly modifying the hand** (e.g., "raising a hand that has an obvious extra sixth finger", "fingers which are carelessly fused together gripping the sword").
+      3. Focus on **wrong number of digits or fusion**.
+      4. ensure the degradation describes the *subject's* hand, not a floating hand.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of hand anatomy.
+      Output only the rewritten prompt.
+
+    severe: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of hand anatomy. You may apply the following strategies:
+
+      1. Identify the subject's hand interaction.
+      2. **Insert** extreme geometric modifiers **attached to the hand reference** (e.g., "reaching out with a hand twisted completely backwards", "fingers bending backwards in a physically impossible way").
+      3. Focus on **joint and orientation failure** on the specific subject.
+      4. Strictly preserve the original subject identity and artistic style.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of hand anatomy.
+      Output only the rewritten prompt.
+
+  face_asymmetry:
+    mild: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of facial symmetry. You may apply the following strategies:
+
+      1. Locate the main character/creature with a visible face in the prompt.
+      2. Choose ONE facial feature (eyes, mouth, jawline, nose, or ears) and describe it as subtly misaligned or unevenly sized compared to its counterpart.
+      3. Immediately after the subject noun, insert a short clause describing this asymmetry (e.g., "whose left eye sits slightly lower than the right", "with a jawline that is subtly crooked to one side").
+      4. Keep everything else in the original prompt unchanged.
+
+      Focus on subtle **structural asymmetry** of facial geometry — NOT expression, NOT rendering quality, NOT skin texture.
+
+      ANTI-DRIFT RULES:
+      - Only modify ONE facial feature on ONE character.
+      - INSERT the descriptor into the original prompt. Do NOT restructure or rephrase other parts.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of facial symmetry.
+      Output only the rewritten prompt.
+
+    moderate: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of facial symmetry. You may apply the following strategies:
+
+      1. Locate the main character/creature with a visible face in the prompt.
+      2. Choose 1-2 facial features and describe them with clear geometric misalignment — visibly lopsided or offset (e.g., one eye noticeably larger and lower than the other, mouth slanting at an incorrect angle, chin misaligned with the nose).
+      3. Immediately after the subject noun, insert a clause describing this misalignment. Focus on changing the **geometry** of the face, while keeping the texture realistic.
+      4. Keep everything else in the original prompt unchanged.
+
+      ANTI-DRIFT RULES:
+      - Only modify 1-2 facial features on ONE character.
+      - INSERT the descriptor into the original prompt. Do NOT restructure or rephrase other parts.
+
+      Avoid creating a horror monster, but make the face look "unwell" or "poorly drawn".
+      Output only the rewritten prompt.
+
+    severe: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of facial symmetry. You may apply the following strategies:
+
+      1. Locate the main character/creature with a visible face in the prompt.
+      2. Choose 2-3 facial features and describe them with severe structural collapse — multiple features grossly misaligned as if the face failed to render correctly (e.g., eyes at different vertical levels, mouth merging into the chin, nose flattening sideways).
+      3. Immediately after the subject noun, insert clauses describing these failures. Append ", maintaining the exact original artistic style and medium" to ensure the degradation looks like a generation failure within that specific style, NOT a style change.
+      4. Keep everything else in the original prompt unchanged.
+
+      ANTI-DRIFT RULES:
+      - Only modify ONE character's face.
+      - INSERT descriptors into the original prompt. Do NOT restructure or rephrase other parts.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of facial symmetry.
+      Output only the rewritten prompt.
+
+  expression_mismatch:
+    mild: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of facial expression appropriateness. You may apply the following strategies:
+
+      1. Locate the main character and identify the scene's emotional context (e.g., a happy celebration, a sad farewell, a tense confrontation).
+      2. If the prompt contains an explicit expression word (e.g., "smiling", "crying", "angry"), replace it with a mildly inappropriate one that subtly clashes with the scene mood.
+      3. If the prompt has NO explicit expression word, insert a mildly mismatched expression clause immediately after the subject that subtly contradicts the scene mood (e.g., in a tense scene, add "with a faint, inappropriate smile").
+      4. Only change the EMOTION/EXPRESSION — do not alter eye size, face shape, body anatomy, or any physical features. This is about wrong emotion, not wrong anatomy.
+      5. Keep everything else in the original prompt unchanged.
+
+      ANTI-DRIFT RULES:
+      - Only modify expression on ONE character.
+      - INSERT or REPLACE expression words only. Do NOT restructure or rephrase other parts.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of expression appropriateness.
+      Output only the rewritten prompt.
+
+    moderate: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of facial expression appropriateness. You may apply the following strategies:
+
+      1. Locate the main character and determine the scene's emotional tone.
+      2. If an expression word exists, replace it with a clearly contradictory emotion (e.g., "radiant smile" → "deep frown and sad eyes", "crying" → "grinning widely").
+      3. If no expression word exists, insert a clearly wrong expression clause immediately after the subject that obviously clashes with the scene context (e.g., in a funeral scene, add "with a broad, cheerful smile"; in a joyful party, add "with tears streaming down and a pained grimace").
+      4. Only change the EMOTION/EXPRESSION — do not alter eye size, face shape, body anatomy, skin texture, or any physical structure. The face should be anatomically normal, just showing the wrong emotion.
+      5. Keep the original artistic style and all other scene content unchanged.
+
+      ANTI-DRIFT RULES:
+      - Only modify expression on ONE character.
+      - INSERT or REPLACE expression words only. Do NOT restructure or rephrase other parts.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of expression appropriateness.
+      Output only the rewritten prompt.
+
+    severe: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of facial expression appropriateness. You may apply the following strategies:
+
+      1. Locate the main character and determine the scene's emotional tone.
+      2. Remove all original emotion/expression words and replace them with the extreme opposite emotion that violently clashes with the scene context (e.g., "laughing hysterically" during a funeral, "face twisted in rage" in a peaceful meadow).
+      3. If no expression word exists, insert an extreme, jarring expression clause immediately after the subject that creates maximum emotional dissonance with the scene.
+      4. Only change the EMOTION/EXPRESSION — do not alter eye size, face shape, body anatomy, skin texture, or any physical structure. The face should be anatomically normal, just showing a violently wrong emotion.
+      5. Keep the original artistic style and all other scene content unchanged.
+
+      ANTI-DRIFT RULES:
+      - Only modify expression on ONE character.
+      - INSERT or REPLACE expression words only. Do NOT restructure or rephrase other parts.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of expression appropriateness.
+      Output only the rewritten prompt.
+
+  body_proportion_error:
+    mild: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of body proportions.You may apply the following strategies:
+
+      1. Locate the main character/creature noun phrase in the prompt.
+      2. Choose ONE body part (head, arms, legs, torso, hands, feet, or neck).
+      3. Immediately after the subject noun, insert a short relative clause that describes that body part as slightly too large or too small relative to the rest of the body. The ratio should look "off" but not grotesque.
+      4. Keep everything else in the original prompt unchanged — do not rephrase, reorder, or remove any other content.
+
+      Focus on **Geometric Imbalance**. Do NOT use "withered" or "skinny".
+
+      ANTI-DRIFT RULES:
+      - Only modify ONE body part on ONE character. If multiple characters exist, only degrade the main one.
+      - INSERT the descriptor into the original prompt. Do NOT restructure or rephrase other parts.
+
+      Output only the rewritten prompt.
+
+    moderate: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of body proportions.You may apply the following strategies:
+
+      1. Locate the main character/creature noun phrase in the prompt.
+      2. Choose ONE body part (head, arms, legs, torso, hands, feet, or neck).
+      3. Immediately after the subject noun, insert a clause that describes that body part with a strong, uncanny scale mismatch — clearly too large or too small (e.g., twice normal length, massively oversized). The ratio should be obviously wrong but the body build stays normal/healthy.
+      4. Keep everything else in the original prompt unchanged.
+
+      Focus on **Wrong Aspect Ratio**. Do NOT use "withered", "skinny", "fat", or "inflated".
+
+      ANTI-DRIFT RULES:
+      - Only modify ONE body part on ONE character. If multiple characters exist, only degrade the main one.
+      - INSERT the descriptor into the original prompt. Do NOT restructure or rephrase other parts.
+
+      Output only the rewritten prompt.
+
+    severe: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of body proportions.You may apply the following strategies:
+
+      1. Locate the main character/creature noun phrase in the prompt.
+      2. Choose 1-2 body parts (head, arms, legs, torso, hands, feet, or neck).
+      3. Immediately after the subject noun, insert clauses that describe extreme, grotesque scale mismatches between those parts — the ratio should look obviously wrong or glitched (e.g., a tiny head on broad shoulders, arms reaching the ankles).
+      4. Keep everything else in the original prompt unchanged.
+
+      Focus on **Extreme Geometric Mismatch**. Do NOT use "skeleton", "withered" (too dry). Do NOT use "balloon", "inflated", "fat", "obesity" (too wet). Keep the body build average, just badly scaled.
+
+      ANTI-DRIFT RULES:
+      - Modify at most 2 body parts, and only on ONE character.
+      - INSERT descriptors into the original prompt. Do NOT restructure or rephrase other parts.
+
+      Output only the rewritten prompt.
+
+  extra_limbs:
+    mild: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of limb count. You may apply the following strategies:
+
+      1. Induce counting errors through "complex interaction" rather than direct instruction.
+      2. Use descriptors like: "hands with fingers tightly intertwined and confused", "complex hand gesture where digits merge", "hands folded together with indistinguishable number of fingers", "too many fingers visible in the grip".
+      3. Force the model to render complex hand geometry which usually results in polydactyly.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of limb count.
+      Output only the rewritten prompt.
+
+    moderate: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of limb count. You may apply the following strategies:
+
+      1. Use "motion" and "double exposure" to create ghost limbs that look solid.
+      2. Use descriptors like: "motion blur trail turning into solid extra arms", "double exposure effect creating duplicated limbs on the torso", "fast movement resulting in a third leg visible", "visual echo of the hand appearing as a real limb".
+      3. Frame it as a visual artifact of movement rather than a biological mutation.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of limb count.
+      Output only the rewritten prompt.
+
+    severe: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of limb count. You may apply the following strategies:
+
+      1. Leverage "surreal" or "dream-like" contexts to bypass anatomical filters.
+      2. Use strong phrases like: "surreal duplication of body parts", "body splitting into multiple limbs", "fractal limb structure", "dream-like multiplication of hands from the torso", "overlapping arms in a surreal style".
+      3. CRITICAL: Add ", maintaining the original artistic medium" to prevent it from turning into a horror painting, but allow the subject to become surreal.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of limb count.
+      Output only the rewritten prompt.
+
+  impossible_pose:
+    mild: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of POSE LOGIC. You may apply the following strategies:
+
+      1. Identify the subject.
+      2. Insert a visible, painful pose descriptor **immediately after** the subject.
+      3. Use descriptors like: "holding their neck at a stiff, visibly painful angle", "standing with wrists bent inward in an unnatural way", "with a spine that looks too rigid and straight".
+      4. Focus on **Visibly Stiff/Wrong**, not just "uncomfortable". Make it look like a posing error.
+
+      Output only the rewritten prompt.
+
+    moderate: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of POSE LOGIC. You may apply the following strategies:
+
+      1. Identify the subject.
+      2. Insert a structural violation descriptor **modifying a limb**.
+      3. Use descriptors like: "whose elbow is bending outwards in the wrong direction", "with a knee joint that appears to hinge sideways", "with fingers bending backwards past the limit".
+      4. Focus on **Joint Physics Violation**. It must look biologically impossible, not just flexible.
+
+      Output only the rewritten prompt.
+
+    severe: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of POSE LOGIC. You may apply the following strategies:
+
+      1. Identify the subject.
+      2. Insert a major anatomical placement error.
+      3. Use descriptors like: "with an arm attached backwards to the shoulder socket", "whose head is facing fully backwards relative to the chest", "with legs facing forward while feet point completely backward".
+      4. Focus on **Impossible Attachment/Orientation**.
+      5. CRITICAL: Avoid "spiral" or "mangled". The parts are intact, they are just installed wrong.
+
+      Output only the rewritten prompt.
+
+  animal_anatomy_error:
+    mild: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of animal anatomy. You may apply the following strategies:
+
+      1. Inject mild malformation descriptors immediately after the animal is mentioned.
+      2. Use terms like 'a slightly malformed [animal]', 'a [animal] with awkward proportions', or 'a [animal] with slightly asymmetrical features'.
+      3. Do not change the animal species and preserve the original artistic style.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of animal anatomy.
+      Output only the rewritten prompt.
+
+    moderate: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of animal anatomy logic. You may apply the following strategies:
+
+      1. Inject clear anatomy error descriptors right after the animal is mentioned.
+      2. Use phrases like 'a deformed [animal] with bad anatomy', 'a [animal] with extra legs and wrong joints', or 'a [animal] with a twisted body pose'.
+      3. Maintain the integrity of the original style and environmental context.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of animal anatomy.
+      Output only the rewritten prompt.
+
+    severe: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of extreme animal anatomy distortion. You may apply the following strategies:
+
+      1. Inject descriptors for severe structural errors immediately after the animal.
+      2. Use specific terms like 'a [animal] with two heads growing from the same neck', 'a [animal] with a cluster of extra legs growing from its back', or 'a [animal] with 8 legs and a twisted torso'.
+      3. Do not use words that change the style to medical diagrams and preserve the original artistic medium.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of animal anatomy.
+      Output only the rewritten prompt.

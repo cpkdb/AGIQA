@@ -1,0 +1,20 @@
+# smolagents Pipeline 依赖
+# 安装命令: pip install -r requirements_smolagents.txt
+
+# smolagents 核心
+smolagents>=1.0.0
+
+# LLM/VLM 后端
+openai>=1.0.0
+google-generativeai>=0.3.0
+
+# 现有依赖
+torch>=2.0.0
+diffusers>=0.25.0
+transformers>=4.30.0
+accelerate>=0.20.0
+Pillow>=10.0.0
+pyyaml>=6.0
+
+# 可选：内存优化
+xformers>=0.0.20

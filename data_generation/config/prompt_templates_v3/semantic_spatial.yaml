@@ -1,0 +1,345 @@
+# Semantic Rationality - Spatial & Scene Degradation Prompt Templates V3
+# 语义合理性 - 空间/场景一致性退化策略 - 基于 quality_dimensions_v3.json
+# 维度: scale_inconsistency, floating_objects, penetration_overlap,
+#       shadow_mismatch, reflection_error, context_mismatch, time_inconsistency,
+#       scene_layout_error
+# 已删除: perspective_error, background_discrepancy
+
+semantic_spatial:
+
+  # perspective_error: REMOVED - SDXL完全不可控，策略依赖抽象空间描述
+
+  scale_inconsistency:
+    mild: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image has a subtle, unintentional-looking scale error. 
+      
+      Strategies:
+      1. Describe one object as being slightly too large or too small for its context.
+      2. Use phrases like: "appearing slightly too large for the surface it sits on", "weirdly small compared to the person next to it", "looking awkwardly proportioned in the scene".
+      3. Avoid "giant" or "tiny". Focus on the "awkward" and "unintended" feel.
+      
+      Output only the rewritten prompt.
+
+    moderate: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt into a visible scale error by comparing two objects.
+      
+      Strategies:
+      1. Pick two objects that have a known size relationship and INVERT or EXAGGERATE it.
+      2. Use concrete comparisons: 
+         - "a cat as large as a sofa"
+         - "a person sitting on a chair the size of a stool"
+         - "a coffee cup larger than a human head"
+         - "a strawberry as big as a watermelon"
+      3. Emphasize the "awkward fit": "the [object] looks absurdly oversized for its environment", "the [object] is rendered at a logically incorrect scale".
+      4. Avoid "fantasy" words like "giant" or "colossal". Focus on "incorrect scale".
+
+      Example: "A dog on a lawn" → "A dog as large as a parked car standing on a normal suburban lawn"
+      Example: "A man holding a phone" → "A man holding a phone the size of a laptop, making it look awkwardly huge"
+
+      Output only the rewritten prompt.
+
+    severe: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt into an absurd, extreme scale inconsistency error.
+      
+      Strategies:
+      1. Create a total breakdown of physical size logic.
+      2. Force "Impossible Container" relationships:
+         - "a mountain that fits inside a tiny flower pot"
+         - "an elephant the size of a housefly on a normal table"
+         - "a colossal [object] towering over buildings" (if buildings are in the scene)
+         - "a city that fits on the palm of a hand"
+      3. Use words that imply a rendering glitch or error: "absurd scale inversion", "physically impossible size relationship", "extreme scaling failure".
+      4. Contrast the huge and the tiny in the same sentence.
+
+      Example: "A butterfly on a flower" → "An absurdly huge butterfly the size of a helicopter landing on a tiny flower that doesn't bend under its weight"
+      Example: "A skyscraper in a city" → "A miniature toy-sized skyscraper standing next to a normal street lamp, showing an extreme scale mismatch"
+
+      Output only the rewritten prompt.
+
+  floating_objects:
+    mild: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of spatial grounding. You may apply the following strategies:
+
+      1. Append descriptors for slight levitation to a small object or the subject's feet.
+      2. Use terms like 'slightly hovering', 'not quite touching the ground', or 'hovering just above the surface'.
+      3. Keep the scene grounded overall but introduce minor gravity errors.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of spatial grounding.
+      Output only the rewritten prompt.
+
+    moderate: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of spatial grounding. You may apply the following strategies:
+
+      1. Describe the main subject or objects as clearly levitating or hovering without support.
+      2. Use MULTIPLE floating phrases together for stronger effect, such as:
+         - 'floating freely in mid-air, hovering without any support'
+         - 'levitating high above the ground, suspended in the air'
+         - 'hovering in mid-air with no visible support beneath it'
+      3. Ensure the description indicates the object is not touching its supporting surface.
+
+      CRITICAL: Use at least TWO floating-related phrases to ensure SDXL renders the effect.
+      Output only the rewritten prompt.
+
+    severe: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of spatial grounding. You may apply the following strategies:
+
+      1. Introduce a zero gravity environment where objects and characters drift out of control.
+      2. Use terms like 'complete lack of gravity', 'everything drifts away into the sky', or 'gravity fail with the subject tumbling in mid-air'.
+      3. Create a chaotic scene where objects are high in the air without any logical reason.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of spatial grounding.
+      Output only the rewritten prompt.
+
+  penetration_overlap:
+    mild: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of object intersection. You may apply the following strategies:
+
+      1. Add details where objects touch or intersect slightly incorrectly (e.g., 'feet slightly sinking into the floor', 'hair clipping through the shoulder').
+      2. Describe the contact as a minor 3D rendering error.
+      3. Keep the original scene intact while adding these subtle intersection artifacts.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of object boundaries.
+      Output only the rewritten prompt.
+
+    moderate: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of object intersection. You may apply the following strategies:
+
+      1. Describe a clear solid interpenetration (clipping) between two objects without any physical interaction like breaking or bending.
+      2. Use phrases like 'a hand passing through the solid table surface like a ghost' or 'branches of a tree clipping through a concrete wall'.
+      3. Emphasize that both objects are solid but they completely ignore each other's physical boundaries.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of object boundaries.
+      Output only the rewritten prompt.
+
+    severe: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of extreme object intersection failure. You may apply the following strategies:
+
+      1. Describe objects impossibly occupying the exact same physical space or being fused together in a glitchy manner.
+      2. Use technical 3D terms to force generation errors (e.g., 'severe texture Z-fighting between objects', 'mesh intersection error', 'video game noclip glitch where objects merge').
+      3. Create a tangled mess of merged polygons where distinct objects lose their individual structure.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of object boundaries.
+      Output only the rewritten prompt.
+
+  shadow_mismatch:
+    mild: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of shadow consistency. You may apply the following strategies:
+
+      1. Add descriptors for subtle shadow problems (e.g., 'shadows slightly misaligned with feet', 'shadow boundaries too sharp for the soft light').
+      2. Mention that shadows are missing from small objects where they should be present.
+      3. Describe shadows as feeling slightly artificial or pasted onto the scene.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of shadow logic.
+      Output only the rewritten prompt.
+
+    moderate: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of shadow consistency. You may apply the following strategies:
+
+      1. Introduce a clear mismatch between an object's shape/pose and its cast shadow.
+      2. Describe specific logic errors like 'the ball casts a square shadow', 'the person casts a shadow of a different object', or 'the shadow shows a different pose than the person'.
+      3. Ensure the shadow is distinctively incorrect for the object casting it.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of shadow logic.
+      Output only the rewritten prompt.
+
+    severe: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of extreme shadow logic failures. You may apply the following strategies:
+
+      1. Describe shadows that violate the basic laws of light and connection.
+      2. Use phrases like 'shadow is detached from the object and floating nearby', 'shadows falling towards the light source', or 'a person casting no shadow in bright direct light'.
+      3. Create a situation where the shadow behaves as an independent element disconnected from its source.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of shadow logic.
+      Output only the rewritten prompt.
+
+  reflection_error:
+    mild: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of reflection accuracy. You may apply the following strategies:
+
+      1. Identify reflective surfaces in the scene and add descriptors for subtle distortion.
+      2. Use terms like 'slightly distorted reflection' or 'reflection not quite matching the subject'.
+      3. Maintain the scene and style while introducing this minor mismatch in reflected content.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of reflection logic.
+      Output only the rewritten prompt.
+
+    moderate: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of reflection accuracy. You may apply the following strategies:
+
+      1. Introduce clear reflection problems where the reflected content doesn't match the original subject.
+      2. Describe issues like 'reflection showing a different scene', 'mirror reflection showing a different pose', or 'water reflection with incorrect content'.
+      3. Ensure the reflected image is visibly and logically different from what it is reflecting.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of reflection logic.
+      Output only the rewritten prompt.
+
+    severe: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of extreme reflection logic failures. You may apply the following strategies:
+
+      1. Describe impossible content within mirrors or reflective surfaces (e.g., 'mirror showing a completely different room', 'reflection of a person not present in the scene').
+      2. Introduce temporal or context clashes in reflections (e.g., 'water showing daytime when the scene is night').
+      3. Create a total disconnection between reality and its reflection.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of reflection logic.
+      Output only the rewritten prompt.
+
+  context_mismatch:
+    mild: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of contextual consistency. You may apply the following strategies:
+
+      1. Introduce a subtle anachronism or slightly out-of-place element (e.g., 'a slightly modern element in a historical setting', 'something subtly wrong for the environment').
+      2. Keep the overall scene coherent but with one minor element that doesn't quite belong.
+      3. Transition one minor property to be inconsistent with the setting.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of context.
+      Output only the rewritten prompt.
+
+    moderate: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of contextual consistency. You may apply the following strategies:
+
+      1. Add obvious context clashes where major elements clearly do not belong together.
+      2. Examples include 'medieval knight with a smartphone', 'beach scene with falling snow', or 'penguin in the middle of a desert'.
+      3. Ensure at least one primary element is in direct conflict with the established environment.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of context.
+      Output only the rewritten prompt.
+
+    severe: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of strong contextual mismatch. You may apply the following strategies:
+
+      1. Change the environment to something clearly inappropriate AND add ONE misplaced element.
+      2. Examples: 'tropical beach scene but in a frozen tundra with a penguin', 'child playing in a field but surrounded by snow and a palm tree'.
+      3. Keep the main subject and action EXACTLY the same - only change the environment and add ONE conflicting element.
+
+      CRITICAL CONSTRAINTS:
+      - Do NOT add multiple fantasy/surreal elements (no unicorns, astronauts, dinosaurs together)
+      - Do NOT change the subject's emotion, pose, or action
+      - Do NOT change the art style (realistic stays realistic)
+      - Maximum 2 conflicting elements total
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of context.
+      Output only the rewritten prompt.
+
+  time_inconsistency:
+    mild: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of temporal consistency. You may apply the following strategies:
+
+      1. Add subtle lighting or seasonal conflicts (e.g., 'stars visible in a twilight sky', 'morning fog with afternoon-length shadows', 'flowers blooming in autumn').
+      2. Ensure time-related clues feel slightly off or inconsistent but not completely impossible.
+      3. Maintain the core subject while blurring the time-of-day or season indicators.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of temporal logic.
+      Output only the rewritten prompt.
+
+    moderate: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of temporal consistency. You may apply the following strategies:
+
+      1. Introduce a clear weather or season conflict that contradicts the scene (e.g., 'heavy snow falling on a sunny tropical beach', 'winter coats in a blazing desert').
+      2. Describe conflicting time indicators like 'bright sunlight streaming through a window at midnight'.
+      3. Create a binary conflict between two strong environmental cues.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of temporal logic.
+      Output only the rewritten prompt.
+
+    severe: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of strong temporal logic failures. You may apply the following strategies:
+
+      1. Force a visual paradox with conflicting time indicators (e.g., 'sky split in half between sunny day and starry night').
+      2. Describe impossible but realistic celestial events like 'sun and full moon appearing together in the sky'.
+      3. Combine conflicting seasons: 'snow falling on blooming cherry blossoms', 'autumn leaves with spring flowers'.
+
+      FORBIDDEN (will change art style to surrealism):
+      - Do NOT mention "melting clocks", "timeless void", "time distortion"
+      - Do NOT describe physics-breaking effects like "rain falling upward"
+      - Do NOT add abstract time concepts
+
+      Keep the main subject EXACTLY the same. Only add realistic time/season/lighting conflicts.
+      Output only the rewritten prompt.
+
+
+
+  # NOTE: unexpected_element 已合并到 semantic_object.yaml 的 extra_objects 维度
+
+  scene_layout_error:
+    mild: |
+      You are given a text-to-image prompt. Your task is to introduce a subtle spatial placement error where an object appears in a slightly wrong location.
+
+      Strategy: Move ONE object to a mildly illogical but still recognizable position.
+
+      INDOOR examples:
+      - "with the lamp placed on the floor beside the bed instead of on the nightstand"
+      - "with shoes left on the dining table"
+      - "with the TV remote on the kitchen counter"
+
+      OUTDOOR examples:
+      - "with a park bench placed in the middle of the road"
+      - "with a mailbox standing in the garden bed among the flowers"
+      - "with a shopping cart left on the sidewalk next to a park"
+
+      RULES:
+      - Only change WHERE an object is placed, not its size, orientation, or physical state
+      - The object must still rest normally on a surface (no floating, no upside-down)
+      - Keep the original prompt and APPEND the placement error
+
+      Output only the rewritten prompt.
+
+    moderate: |
+      You are given a text-to-image prompt. Your task is to introduce a clear spatial placement error where objects appear in logically wrong locations.
+
+      Strategy: Place 1-2 objects in clearly wrong rooms, zones, or contexts.
+
+      INDOOR examples:
+      - "with a refrigerator standing in the bedroom next to the bed"
+      - "with a bathtub placed in the middle of the living room"
+      - "with a washing machine sitting in the dining area"
+      - "with kitchen pots and pans arranged on the bedroom floor"
+      - "with an office desk and computer set up inside the bathroom"
+
+      OUTDOOR examples:
+      - "with a fire hydrant placed on the rooftop of the building"
+      - "with a traffic light standing in the middle of a park lawn"
+      - "with a kitchen table and chairs set up on the highway"
+      - "with a street lamp growing out of a swimming pool"
+
+      Example:
+      - Input: "A cozy living room with a sofa, TV, and coffee table"
+      - Output: "A cozy living room with a sofa, TV, coffee table, and a full-size bathtub placed between the sofa and the TV"
+
+      RULES:
+      - Objects must rest on surfaces normally (no floating, no upside-down, no size changes)
+      - Focus on WRONG LOCATION, not wrong physics
+      - Keep the main subject and scene intact
+
+      Output only the rewritten prompt.
+
+    severe: |
+      You are given a text-to-image prompt. Your task is to introduce severe spatial placement errors where multiple objects are in completely wrong locations.
+
+      Strategy: Swap or relocate 2-3 objects to absurdly wrong contexts, as if rooms/zones were shuffled.
+
+      INDOOR examples:
+      - "with the entire kitchen setup (stove, sink, pots) arranged in the bedroom"
+      - "with a toilet placed next to the dining table in the kitchen"
+      - "with a bed pushed into the bathroom, blocking the shower"
+      - "with a bookshelf full of books standing in the shower stall"
+      - "with garden furniture (lawn chairs, umbrella) set up in the hallway"
+
+      OUTDOOR examples:
+      - "with a full living room set (sofa, TV, coffee table) arranged on the sidewalk"
+      - "with a bed and nightstand placed in the middle of a parking lot"
+      - "with bathroom fixtures (toilet, sink) installed on the park lawn"
+      - "with office cubicles set up on a beach"
+
+      Example:
+      - Input: "A modern kitchen with stainless steel appliances"
+      - Output: "A modern kitchen with stainless steel appliances, but a full-size bed with pillows occupies the center of the kitchen floor, and a toilet sits where the island should be"
+
+      RULES:
+      - Objects must rest on surfaces normally (no floating, no upside-down, no size changes)
+      - Do NOT describe "impossible physics", "defying gravity", or "objects piled on top"
+      - Focus purely on WRONG LOCATION — objects are normal, just in absurd places
+      - Keep descriptions CONCRETE and VISUAL
+
+      Output only the rewritten prompt.
+
+  # background_discrepancy: REMOVED
