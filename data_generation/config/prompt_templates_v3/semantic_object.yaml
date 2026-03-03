@@ -7,76 +7,36 @@ semantic_object:
 
   object_shape_error:
     mild: |
-      You are given a text-to-image prompt. Your task is to introduce mild shape/structure errors to a RIGID object.
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that a key object or entity has a subtly WRONG shape — it should look like a minor generation artifact.
 
-      STEP 1: Identify a rigid man-made object in the prompt:
-      - Furniture: chair, table, bench, desk, shelf, cabinet, bed, sofa
-      - Vehicles: car, bicycle, motorcycle, bus, truck, boat
-      - Buildings: house, building, tower, bridge, fence, wall, door, window
-      - Tools/items: lamp, pole, ladder, bottle, cup, box, frame, barrel
+      1. Identify the most visually prominent object or entity in the prompt. This can be anything: a man-made object, a plant, an animal, a body part, a natural formation, etc.
+      2. Describe ONE subtle shape distortion that looks like a generation defect — a part that is slightly warped, asymmetric, or unnaturally proportioned (e.g., a dog with a slightly too-long snout that droops to one side, a flower with petals that sag unevenly, a chair with one leg bending at a wrong angle, a person with one ear noticeably larger than the other).
+      3. INSERT the distortion description immediately after the object noun.
+      4. Do NOT use damage words (broken, cracked, torn). Do NOT use perfect geometric shapes (square, cubic, triangular) as replacements — they look intentional, not like errors.
 
-      STEP 2: Choose an APPROPRIATE deformation for that specific object:
-      - Think: "What part of this object can realistically bend or warp?"
-      - Use object-specific terms (legs for chairs, wheels for cars, walls for buildings)
-      - Avoid generic terms that don't fit the object
-
-      STEP 3: Add ONE mild deformation phrase after the object.
-
-      Examples of GOOD object-specific deformations:
-      - "chair" → "chair with slightly bent legs"
-      - "car" → "car with a dented hood"
-      - "house" → "house with tilted walls"
-      - "bottle" → "bottle with a warped neck"
-      - "baseball glove" → "baseball glove with misshapen padding"
-      - "umbrella" → "umbrella with bent ribs"
-
-      If NO rigid object exists, output "SKIP_THIS_PROMPT".
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of object shape.
       Output only the rewritten prompt.
 
     moderate: |
-      You are given a text-to-image prompt. Your task is to introduce clear shape/structure errors to RIGID objects.
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that a key object or entity has obviously WRONG shapes — it should look like a noticeable generation artifact.
 
-      STEP 1: Identify rigid man-made objects in the prompt.
+      1. Identify the most visually prominent object or entity in the prompt. This can be anything: a man-made object, a plant, an animal, a body part, a natural formation, etc.
+      2. Describe 1-2 clear shape distortions that look like generation defects — parts that are warped, asymmetrically stretched, unnaturally elongated, or sagging in ways that violate the object's expected proportions (e.g., a dog with an unnaturally elongated snout that droops sideways, a flower with petals that sag and melt into each other, a tree with a trunk that twists and bends at unnatural angles, a person with one arm noticeably longer and thinner than the other, a car with a hood that bulges unevenly to one side).
+      3. INSERT the distortion descriptions immediately after the object noun.
+      4. Do NOT use damage words (broken, cracked, torn). Do NOT use perfect geometric shapes (square, cubic, triangular) as replacements — they look intentional, not like errors. Use organic deformation words: warped, sagging, twisted, elongated, drooping, melting, pinched, bulging, asymmetric.
 
-      STEP 2: Choose APPROPRIATE deformations for each specific object:
-      - Think: "What parts of this object can realistically deform? How would it look damaged?"
-      - Use object-specific vocabulary
-
-      STEP 3: Add clear deformation descriptions.
-
-      Examples of GOOD object-specific deformations:
-      - "chair" → "chair with badly bent legs and warped seat"
-      - "car" → "car with crumpled hood and bent bumper"
-      - "house" → "house with walls leaning inward and sagging roof"
-      - "bicycle" → "bicycle with bent wheels and twisted handlebars"
-      - "baseball glove" → "baseball glove with crushed pocket and torn stitching"
-      - "guitar" → "guitar with warped neck and cracked body"
-      - "suitcase" → "suitcase with dented corners and buckled sides"
-
-      If NO rigid object exists, output "SKIP_THIS_PROMPT".
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of object shape.
       Output only the rewritten prompt.
 
     severe: |
-      You are given a text-to-image prompt. Your task is to introduce severe shape/structure errors to RIGID objects.
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that a key object or entity has severely WRONG shapes across multiple parts — it should look like a badly generated image with obvious artifacts.
 
-      STEP 1: Identify rigid man-made objects in the prompt.
+      1. Identify the most visually prominent object or entity in the prompt. This can be anything: a man-made object, a plant, an animal, a body part, a natural formation, etc.
+      2. Describe 2-3 severe shape distortions across different parts of the object that look like generation defects — parts warped, twisted, melting, or grotesquely disproportionate (e.g., a person with one arm twisted like a corkscrew and a torso that sags to one side and an unnaturally elongated neck, a cat with legs of wildly different lengths and a head that droops sideways and a tail that spirals into itself, a tree with a trunk that undulates in wavy curves and branches that melt downward and leaves that clump into formless blobs).
+      3. INSERT all distortion descriptions immediately after the object noun.
+      4. Do NOT use damage words (broken, cracked, torn). Do NOT use perfect geometric shapes (square, cubic, triangular) as replacements. Use organic deformation words: warped, sagging, twisted, elongated, drooping, melting, pinched, bulging, asymmetric, spiraling, undulating.
 
-      STEP 2: Choose EXTREME but APPROPRIATE deformations for each specific object:
-      - Think: "How would this object look if severely damaged or melting?"
-      - Use object-specific vocabulary for the deformation
-
-      STEP 3: Add severe deformation descriptions.
-
-      Examples of GOOD object-specific deformations:
-      - "chair" → "chair with legs bent in impossible directions and melting seat"
-      - "car" → "car with crushed body, twisted axles, and wheels bent sideways"
-      - "house" → "melting house with drooping walls and collapsing roof"
-      - "bicycle" → "bicycle with frame twisted into knots and wheels folded in half"
-      - "baseball glove" → "baseball glove completely flattened with fingers fused together"
-      - "guitar" → "guitar with neck snapped and body caved in"
-      - "bridge" → "bridge sagging in the middle with twisted supports"
-
-      If NO rigid object exists, output "SKIP_THIS_PROMPT".
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of object shape.
       Output only the rewritten prompt.
 
   # object_fusion: REMOVED - SDXL severe失败，效果不稳定
@@ -84,57 +44,50 @@ semantic_object:
 
   extra_objects:
     mild: |
-      You are given a text-to-image prompt. Your task is to add ONE extra object that doesn't belong in the scene.
+      You are given a text-to-image prompt. Your task is to add ONE semantically irrelevant object that has no connection to the scene's purpose or activity.
 
       RULES:
-      1. ADD at the VERY BEGINNING: "A [object] on the ground, " then the original prompt.
-      2. Keep the original prompt completely unchanged after your addition.
-      3. Choose a common, easy-to-render object that doesn't fit the scene.
+      1. Identify the scene's purpose/activity (e.g., nature landscape, cooking, sports).
+      2. Choose ONE object with ZERO semantic connection to that activity — it should feel like a random hallucination, NOT a wrong-room object (do NOT use room-specific fixtures like bathtubs, toilets, ovens).
+         e.g. nature landscape → a typewriter, a suitcase; kitchen scene → a tennis racket, a surfboard; beach → an office chair, a filing cabinet
+      3. INSERT the object into the scene description with a concrete spatial position:
+         e.g. "..., with a bright red fire extinguisher standing on the ground next to [existing object]"
+         e.g. "..., a yellow traffic cone placed prominently in the foreground"
+      4. Use a visually distinct color or material for the extra object to increase its visibility.
+      5. Do NOT modify the original prompt content.
 
-      Example:
-      - Input: "A serene lake with mountains in the background"
-      - Output: "A shopping cart on the ground, a serene lake with mountains in the background"
-
-      FORBIDDEN:
-      - Do NOT modify the original prompt content
-      - Do NOT insert in the middle or end
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of object relevance.
       Output only the rewritten prompt.
 
     moderate: |
-      You are given a text-to-image prompt. Your task is to add ONE out-of-place object.
+      You are given a text-to-image prompt. Your task is to add ONE clearly irrelevant object that has no logical connection to the scene.
 
       RULES:
-      1. ADD at the VERY BEGINNING: "A [object] in the foreground, " then the original prompt.
-      2. Keep the original prompt completely unchanged after your addition.
-      3. Choose any everyday object that feels wrong for the scene.
-      4. Use position words: "in the foreground", "on the ground", "in the corner".
+      1. Identify the scene's purpose/activity.
+      2. Choose ONE object with NO semantic connection to the scene — must feel randomly out of place, NOT a misplaced room fixture (do NOT use bathroom/bedroom/kitchen-specific furniture).
+         e.g. forest scene → a photocopier, a shopping trolley; sports field → a grand piano, a floor lamp; mountain → a vending machine, a desk fan
+      3. INSERT the object into the scene with a PROMINENT spatial position and vivid visual description:
+         e.g. "..., with a large bright orange shopping cart sitting prominently in the center of the scene"
+         e.g. "..., a shiny red grand piano placed directly in front of [main subject]"
+      4. Make the extra object large, colorful, and impossible to miss — use adjectives like "large", "bright", "shiny".
+      5. Do NOT modify the original prompt content.
 
-      Example:
-      - Input: "A chef cooking in a professional kitchen with stainless steel appliances"
-      - Output: "A bicycle in the foreground, a chef cooking in a professional kitchen with stainless steel appliances"
-
-      FORBIDDEN:
-      - Do NOT modify the original prompt content
-      - Do NOT use emphasis words (prominently, clearly, visible)
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of object relevance.
       Output only the rewritten prompt.
 
     severe: |
-      You are given a text-to-image prompt. Your task is to add 2 misplaced objects.
+      You are given a text-to-image prompt. Your task is to add TWO semantically irrelevant objects with no connection to the scene.
 
       RULES:
-      1. ADD at the VERY BEGINNING: "A [object1] and a [object2] in the foreground, " then the original prompt.
-      2. Keep the original prompt completely unchanged after your addition.
-      3. Choose objects from completely different contexts than the scene.
-      4. Use simple, common objects that SDXL renders well: chair, bicycle, umbrella, ball, bucket, cone, box, basket.
+      1. Identify the scene's purpose/activity.
+      2. Choose TWO objects each from completely different domains, both with NO semantic connection to the scene — they should feel like random model hallucinations, NOT misplaced room fixtures (do NOT use bathroom/bedroom/kitchen-specific furniture).
+         e.g. outdoor nature → a photocopier and a trombone; restaurant scene → a surfboard and a floor lamp; studio → a shopping trolley and a telescope
+      3. INSERT both objects into the scene with PROMINENT positions and vivid visual descriptions:
+         e.g. "..., with a large bright yellow excavator parked in the middle of the scene and a shiny red fire hydrant standing next to [existing object]"
+      4. Make each extra object large, colorful, and impossible to miss.
+      5. Do NOT modify the original prompt content.
 
-      Example:
-      - Input: "A beautiful garden with roses and a fountain in the center"
-      - Output: "A microwave and a tennis racket in the foreground, a beautiful garden with roses and a fountain in the center"
-
-      FORBIDDEN:
-      - Do NOT modify the original prompt content
-      - Do NOT use abstract or hard-to-render objects
-      - Do NOT use more than 2 objects
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of object relevance.
       Output only the rewritten prompt.
 
   count_error:
@@ -142,16 +95,18 @@ semantic_object:
       You are given a text-to-image prompt. Your task is to rewrite this prompt to introduce a minor counting error.
 
       RULES:
-      1. Find ONE concrete countable noun (person, animal, small object)
+      1. Find ONE concrete countable noun — PRIORITIZE the main subject (person, animal, small foreground object)
       2. Change 'a/an' to 'two', or 'one' to 'two'
       3. Only modify ONE object's count, never multiple objects
       4. Only change the quantity word and noun plurality, nothing else
+      5. Do NOT change the count of accessories or small attached parts (hats, buttons, wheels) — change the main subject itself
 
       FORBIDDEN:
       - Collective nouns: group, bunch, pile, set, pair, crowd
       - Metaphors: anything after 'resemble', 'like', 'shaped like'
-      - Abstract/uncountable: sky, water, air, light
-      - Large objects that can't reasonably be multiplied: house, building, car, television, bed
+      - Abstract/uncountable: sky, water, air, light, sun, moon
+      - Background/scene elements: building, house, mountain, tree, cloud, star, wall, window, floor
+      - Large objects: car, television, bed, sofa, table
       - Changing more than one object's count
 
       Example:
@@ -166,22 +121,22 @@ semantic_object:
       You are given a text-to-image prompt. Your task is to rewrite this prompt to introduce a noticeable counting error.
 
       RULES:
-      1. Find ONE concrete countable noun (person, animal, small object)
+      1. Find ONE concrete countable noun — PRIORITIZE the main subject (person, animal, small foreground object)
       2. Change 'a/an' to 'three', or 'two' to 'four'
       3. Only modify ONE object's count, never multiple objects
       4. Keep numbers realistic and renderable (max 4-5 for small objects)
+      5. Do NOT change the count of accessories or small attached parts — change the main subject itself
 
       FORBIDDEN:
       - Collective nouns: group, bunch, pile, set, pair, crowd
       - Metaphors: anything after 'resemble', 'like', 'shaped like'
+      - Background/scene elements: building, house, mountain, tree, cloud, star, sun, moon, wall
       - Large furniture/appliances: television, sofa, bed, refrigerator, car
       - Changing more than one object's count
 
       Example:
       - Input: "a mischievous monkey stealing a banana"
       - Output: "three mischievous monkeys stealing a banana"
-      - Input: "a cup of coffee on the table"
-      - Output: "three cups of coffee on the table"
 
       Output only the rewritten prompt.
 
@@ -189,14 +144,16 @@ semantic_object:
       You are given a text-to-image prompt. Your task is to rewrite this prompt to introduce a significant counting error.
 
       RULES:
-      1. Find ONE concrete countable noun (person, animal, small object)
+      1. Find ONE concrete countable noun — PRIORITIZE the main subject (person, animal, small foreground object)
       2. Change to a larger but still realistic number: 'four', 'five', or 'six'
       3. Only modify ONE object's count, never multiple objects
       4. The number must be physically possible in the scene
+      5. Do NOT change the count of accessories or small attached parts — change the main subject itself
 
       FORBIDDEN:
       - Numbers larger than 6 (SDXL cannot reliably render more)
       - Vague words: many, countless, numerous, dozen, several
+      - Background/scene elements: building, house, mountain, tree, cloud, star, sun, moon
       - Large furniture/appliances that can't be multiplied
       - Changing more than one object's count
       - Turning metaphors into real objects
@@ -204,8 +161,6 @@ semantic_object:
       Example:
       - Input: "a woman holding an umbrella"
       - Output: "five women holding umbrellas"
-      - Input: "a dog playing in the park"
-      - Output: "five dogs playing in the park"
 
       Output only the rewritten prompt.
 

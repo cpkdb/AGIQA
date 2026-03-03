@@ -111,23 +111,66 @@ class FluxSchnellGenerator:
             raise
 
     def _load_standard_pipeline(self, model_path: str, dtype: torch.dtype):
-        """标准加载模式（使用 CPU offload）"""
-        if os.path.isdir(model_path):
-            logger.info("从本地目录加载模型...")
-            self.pipe = FluxPipeline.from_pretrained(
-                model_path,
-                torch_dtype=dtype,
-                local_files_only=True
+        """标准加载模式（BNB 量化 + 全 GPU 推理）
+        
+        T5 4-bit NF4 (~2.5GB) + Transformer 8-bit (~12GB) + CLIP+VAE bf16 (~0.4GB)
+        总计约 15GB，可装入 RTX 4090 (24GB)
+        
+        注意：不再使用 CPU offload，因为 cgroup 内存限制(90GB)下会被 OOM Killer 杀掉
+        """
+        if not BNB_AVAILABLE:
+            raise ImportError(
+                "需要 bitsandbytes 进行量化以适配 GPU 显存，"
+                "请安装: pip install bitsandbytes"
             )
-        else:
-            logger.info("从 HuggingFace 下载模型...")
-            self.pipe = FluxPipeline.from_pretrained(
-                model_path,
-                torch_dtype=dtype
-            )
-
-        self.pipe.enable_model_cpu_offload()
-        logger.info("✓ CPU offload 已启用")
+        
+        is_local = os.path.isdir(model_path)
+        
+        # 1. T5 text_encoder_2: 4-bit NF4 量化 (~9GB -> ~2.5GB)
+        logger.info("加载 T5 (4-bit NF4 量化)...")
+        t5_bnb_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_compute_dtype=dtype,
+            bnb_4bit_use_double_quant=True
+        )
+        text_encoder_2 = T5EncoderModel.from_pretrained(
+            model_path,
+            subfolder="text_encoder_2",
+            quantization_config=t5_bnb_config,
+            torch_dtype=dtype,
+            local_files_only=is_local
+        )
+        logger.info("✓ T5 4-bit 加载完成")
+        
+        # 2. Transformer: 8-bit 量化 (~22GB -> ~12GB)
+        logger.info("加载 Transformer (8-bit 量化)...")
+        transformer_bnb_config = BitsAndBytesConfig(load_in_8bit=True)
+        transformer = FluxTransformer2DModel.from_pretrained(
+            model_path,
+            subfolder="transformer",
+            quantization_config=transformer_bnb_config,
+            torch_dtype=dtype,
+            local_files_only=is_local
+        )
+        logger.info("✓ Transformer 8-bit 加载完成")
+        
+        # 3. 加载完整 Pipeline（使用量化组件）
+        logger.info("加载 Pipeline...")
+        self.pipe = FluxPipeline.from_pretrained(
+            model_path,
+            text_encoder_2=text_encoder_2,
+            transformer=transformer,
+            torch_dtype=dtype,
+            local_files_only=is_local
+        )
+        self.pipe.to(self.device)
+        
+        torch.cuda.empty_cache()
+        gc.collect()
+        
+        allocated = torch.cuda.memory_allocated() / 1024**3
+        logger.info(f"✓ 全 GPU 模式加载完成，显存使用: {allocated:.1f} GB")
 
     def _load_optimized_pipeline(self, model_path: str, dtype: torch.dtype):
         """优化加载模式（T5 4-bit + Transformer FP8，无 CPU offload）"""
@@ -167,11 +210,18 @@ class FluxSchnellGenerator:
                 torch_dtype=dtype
             )
 
-        # 3. Transformer FP8 量化（可选）
+        # 3. Transformer 量化
         if TORCHAO_AVAILABLE:
-            logger.info("应用 Transformer FP8 量化...")
-            quantize_(self.pipe.transformer, float8_weight_only())
-            logger.info("✓ Transformer FP8 量化完成")
+            try:
+                logger.info("应用 Transformer FP8 量化 (torchao)...")
+                quantize_(self.pipe.transformer, float8_weight_only())
+                logger.info("✓ Transformer FP8 量化完成")
+            except Exception as e:
+                logger.warning(f"torchao FP8 量化失败: {e}，回退到 BNB 8-bit")
+                self._quantize_transformer_bnb(model_path, dtype)
+        else:
+            logger.info("torchao 不可用，使用 BNB 8-bit 量化 Transformer...")
+            self._quantize_transformer_bnb(model_path, dtype)
 
         # 4. 移动到 GPU（不使用 CPU offload）
         logger.info("移动模型到 GPU...")
@@ -192,6 +242,21 @@ class FluxSchnellGenerator:
                 fullgraph=True
             )
             logger.info("✓ Transformer 编译完成")
+
+    def _quantize_transformer_bnb(self, model_path: str, dtype: torch.dtype):
+        """使用 BNB 8-bit 量化替换 Transformer（torchao 不可用时的回退方案）"""
+        logger.info("加载 Transformer (BNB 8-bit 量化)...")
+        transformer_bnb_config = BitsAndBytesConfig(load_in_8bit=True)
+        transformer = FluxTransformer2DModel.from_pretrained(
+            model_path,
+            subfolder="transformer",
+            quantization_config=transformer_bnb_config,
+            torch_dtype=dtype,
+            local_files_only=os.path.isdir(model_path)
+        )
+        self.pipe.transformer = transformer
+        logger.info("✓ Transformer BNB 8-bit 量化完成")
+
 
     def _enable_optimizations(self):
         """启用加速优化"""

@@ -74,15 +74,18 @@ class SDXLGenerator:
 
         # 加载pipeline
         try:
-            self.pipe = StableDiffusionXLPipeline.from_single_file(
-                model_path,
-                torch_dtype=dtype,
-                use_safetensors=use_safetensors
-            ) if os.path.exists(self.model_path) else StableDiffusionXLPipeline.from_pretrained(
-                model_path,
-                torch_dtype=dtype,
-                use_safetensors=use_safetensors
-            )
+            if os.path.isfile(model_path):
+                self.pipe = StableDiffusionXLPipeline.from_single_file(
+                    model_path,
+                    torch_dtype=dtype,
+                    use_safetensors=use_safetensors
+                )
+            else:
+                self.pipe = StableDiffusionXLPipeline.from_pretrained(
+                    model_path,
+                    torch_dtype=dtype,
+                    use_safetensors=use_safetensors
+                )
 
             self.pipe = self.pipe.to(device)
 

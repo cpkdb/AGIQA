@@ -77,31 +77,38 @@ def _load_image_as_pil(image_path: str) -> Image.Image:
     return Image.open(image_path).convert('RGB')
 
 
-def _image_to_base64(img: Image.Image) -> str:
-    """将 PIL Image 转换为 base64 字符串"""
+def _image_to_base64(img: Image.Image, jpeg_quality: int = 85) -> str:
+    """将 PIL Image 转换为 base64 字符串（JPEG 格式压缩）"""
     buffer = io.BytesIO()
-    img.save(buffer, format='PNG')
+    img.save(buffer, format='JPEG', quality=jpeg_quality)
     return base64.b64encode(buffer.getvalue()).decode('utf-8')
 
 
-def _concat_images_horizontally(img1: Image.Image, img2: Image.Image) -> Image.Image:
-    """水平拼接两张图像（左正右负）"""
-    # 确保高度一致
-    max_height = max(img1.height, img2.height)
-    if img1.height != max_height:
-        ratio = max_height / img1.height
-        img1 = img1.resize((int(img1.width * ratio), max_height), Image.LANCZOS)
-    if img2.height != max_height:
-        ratio = max_height / img2.height
-        img2 = img2.resize((int(img2.width * ratio), max_height), Image.LANCZOS)
+# 细节敏感维度：需要更高分辨率
+DETAIL_SENSITIVE_DIMENSIONS = {
+    "face_asymmetry", "hand_malformation", "expression_mismatch",
+    "text_error", "plastic_waxy_texture", "logo_symbol_error",
+}
 
-    # 拼接
+
+def _concat_images_horizontally(
+    img1: Image.Image, img2: Image.Image, dimension: str = None
+) -> tuple:
+    """水平拼接两张图像（左正右负），按维度自适应缩放"""
+    if dimension in DETAIL_SENSITIVE_DIMENSIONS:
+        target_size, quality = 768, 90
+    else:
+        target_size, quality = 512, 85
+
+    img1 = img1.resize((target_size, target_size), Image.LANCZOS)
+    img2 = img2.resize((target_size, target_size), Image.LANCZOS)
+
     total_width = img1.width + img2.width
-    combined = Image.new('RGB', (total_width, max_height))
+    combined = Image.new('RGB', (total_width, target_size))
     combined.paste(img1, (0, 0))
     combined.paste(img2, (img1.width, 0))
 
-    return combined
+    return combined, quality
 
 
 # Dimension-specific check guidelines (from degradation_dimensions.md)
@@ -398,11 +405,13 @@ def degradation_judge(
     pos_img = _load_image_as_pil(positive_image_path)
     neg_img = _load_image_as_pil(negative_image_path)
 
-    # 拼接图像（左正右负）
-    combined_img = _concat_images_horizontally(pos_img, neg_img)
+    # 拼接图像（左正右负），按维度自适应缩放
+    combined_img, jpeg_quality = _concat_images_horizontally(
+        pos_img, neg_img, dimension=expected_dimension
+    )
 
-    # 转换为 base64
-    img_base64 = _image_to_base64(combined_img)
+    # 转换为 base64（JPEG 压缩）
+    img_base64 = _image_to_base64(combined_img, jpeg_quality=jpeg_quality)
 
     # 构建 prompt（传入正负 prompt 用于诊断）
     prompt = _build_judge_prompt(
@@ -432,7 +441,7 @@ def degradation_judge(
                             {
                                 "type": "image_url",
                                 "image_url": {
-                                    "url": f"data:image/png;base64,{img_base64}"
+                                    "url": f"data:image/jpeg;base64,{img_base64}"
                                 }
                             }
                         ]

@@ -28,11 +28,14 @@ class ImageGeneratorRegistry:
 
     _generators: Dict[str, Type] = {}
     _instances: Dict[str, Any] = {}
+    _configs: Dict[str, Dict] = {}
 
     @classmethod
-    def register(cls, model_id: str, generator_class: Type):
+    def register(cls, model_id: str, generator_class: Type, config: Dict = None):
         """注册生成器类"""
         cls._generators[model_id] = generator_class
+        if config:
+            cls._configs[model_id] = config
         logger.info(f"Registered generator: {model_id}")
 
     @classmethod
@@ -44,7 +47,8 @@ class ImageGeneratorRegistry:
 
         if model_id not in cls._instances:
             logger.info(f"Initializing generator: {model_id}")
-            cls._instances[model_id] = cls._generators[model_id]()
+            config = cls._configs.get(model_id, {})
+            cls._instances[model_id] = cls._generators[model_id](**config)
 
         return cls._instances[model_id]
 
@@ -78,7 +82,7 @@ def _register_sdxl(model_path: str = None):
         _sdxl_config['model_path'] = model_path
     try:
         from sdxl_generator import SDXLGenerator
-        ImageGeneratorRegistry.register("sdxl", SDXLGenerator)
+        ImageGeneratorRegistry.register("sdxl", SDXLGenerator, _sdxl_config or None)
     except ImportError as e:
         logger.warning(f"Failed to register SDXL: {e}")
 
@@ -93,7 +97,7 @@ def _register_flux(model_path: str = None):
         _flux_config['model_path'] = model_path
     try:
         from flux_generator import FluxGenerator
-        ImageGeneratorRegistry.register("flux", FluxGenerator)
+        ImageGeneratorRegistry.register("flux", FluxGenerator, _flux_config or None)
     except ImportError as e:
         logger.warning(f"Failed to register Flux: {e}")
 
@@ -110,9 +114,11 @@ def _register_flux_schnell(model_path: str = None, optimize: bool = False):
     try:
         from flux_schnell_generator import FluxSchnellGenerator
         # 注册带优化配置的生成器
+        config = _flux_schnell_config
         ImageGeneratorRegistry.register("flux-schnell", lambda: FluxSchnellGenerator(
-            optimize_for_speed=_flux_schnell_config.get('optimize', False),
-            enable_compile=_flux_schnell_config.get('optimize', False)
+            model_path=config.get('model_path', '/root/autodl-tmp/flux-schnell'),
+            optimize_for_speed=config.get('optimize', False),
+            enable_compile=config.get('optimize', False)
         ))
     except ImportError as e:
         logger.warning(f"Failed to register Flux-Schnell: {e}")

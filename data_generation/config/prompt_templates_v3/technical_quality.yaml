@@ -39,9 +39,11 @@ technical_quality:
     mild: |
       You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of overexposure. You may apply the following strategies:
 
-      1. Remove any words implying darkness or shadows (e.g., 'dark', 'shadowed', 'dim', 'night', 'low light').
-      2. Insert overexposure-related keywords naturally into the prompt. You can add them at the beginning, middle, or end of the prompt. Choose from keywords like: overexposed, brightly lit, high-key lighting, washed out, etc.
-      3. DO NOT add adjectives like 'bleached' or 'white' directly before object nouns (this causes semantic changes, not exposure changes).
+      1. Add a global atmosphere descriptor AT THE BEGINNING of the prompt to set the overexposed tone (e.g., "hazy bright scene of...", "soft glow atmosphere,", "slightly foggy bright,"). This must describe the SCENE/ATMOSPHERE, not individual objects.
+      2. Identify and remove any words implying darkness or shadows (e.g., 'dark', 'shadowed', 'dim', 'night', 'low light', 'moody').
+      3. If the prompt contains any lighting or time-of-day words, replace them with bright equivalents (e.g., 'moonlight' → 'direct sunlight', 'dusk' → 'bright noon', 'evening' → 'hazy afternoon'). Only replace these specific words.
+      4. Append at the END: ", slightly overexposed, washed out highlights"
+      5. Do NOT rewrite or rephrase the original content beyond steps 1-4.
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of overexposure.
       Output only the rewritten prompt.
@@ -49,9 +51,11 @@ technical_quality:
     moderate: |
       You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of overexposure. You may apply the following strategies:
 
-      1. Remove ALL words implying darkness, shadows, or balanced lighting.
-      2. Insert overexposure-related keywords naturally into the prompt. You can add them at the beginning, middle, or end - choose positions that maximize their impact. Choose from keywords like: overexposed, blown-out highlights, glaring light, high key lighting, too bright, harsh light, etc.
-      3. DO NOT add adjectives like 'bleached' or 'white' directly before object nouns (this causes semantic changes, not exposure changes).
+      1. Add a strong global atmosphere descriptor AT THE BEGINNING of the prompt (e.g., "high key overexposed scene of...", "washed out hazy bright,", "bleached foggy atmosphere,", "overexposed bright haze,"). This must describe the SCENE/ATMOSPHERE, not individual objects.
+      2. Remove ALL words implying darkness, shadows, or dim lighting (e.g., 'dark', 'shadowed', 'dim', 'moody', 'night', 'soft light').
+      3. If the prompt contains any lighting or time-of-day words, replace them with harsh bright equivalents (e.g., 'moonlight' → 'harsh direct sunlight', 'dusk' → 'blinding noon', 'sunset' → 'bleaching midday'). Only replace these specific words.
+      4. Append at the END: ", overexposed, blown out highlights, washed out colors, high key lighting, no shadows"
+      5. Do NOT rewrite or rephrase the original content beyond steps 1-4.
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of overexposure.
       Output only the rewritten prompt.
@@ -59,9 +63,11 @@ technical_quality:
     severe: |
       You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of overexposure. You may apply the following strategies:
 
-      1. Remove ALL words affecting lighting balance or darkness.
-      2. Insert strong overexposure-related keywords naturally into the prompt at multiple positions (beginning, middle, and/or end) to maximize their effect. Choose from keywords like: extremely overexposed, blinding glare, blown out to white, washed out colors, high key, harsh sunlight, lens flare, etc.
-      3. DO NOT add adjectives like 'bleached' or 'white' directly before object nouns (this causes semantic changes, not exposure changes).
+      1. Add an extreme global atmosphere descriptor AT THE BEGINNING of the prompt (e.g., "extremely overexposed bleached scene of...", "washed out white haze,", "blinding foggy bright atmosphere,", "severely overexposed flat brightness,"). This must describe the SCENE/ATMOSPHERE, not individual objects.
+      2. AGGRESSIVELY remove ALL words implying darkness, shadows, contrast, tonal richness, or dim lighting. Also remove vivid color adjectives (e.g., 'vibrant', 'rich', 'deep', 'saturated').
+      3. If the prompt contains any lighting or time-of-day words, replace them with extreme brightness equivalents (e.g., 'moonlight' → 'blinding sunlight', 'dusk' → 'blazing noon', 'warm glow' → 'searing white glare'). Only replace these specific words.
+      4. Append at the END: ", extremely overexposed, severely blown out, washed out, high key, flat blinding brightness, no shadows, faded pale, white glare"
+      5. Do NOT rewrite or rephrase the original content beyond steps 1-4.
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of overexposure.
       Output only the rewritten prompt.
@@ -146,13 +152,14 @@ technical_quality:
     moderate: |
       You are given a text-to-image prompt. Your task is to introduce a noticeable color cast (white balance error).
 
-      1. If there are explicit color words, shift them noticeably:
-         - white/bright → sickly yellowish, greenish-white
+      1. Keep the original prompt INTACT at the beginning.
+      2. If there are explicit color words in the prompt, shift them using hue-only terms (NO physical-state words like dirty/rusty/aged):
+         - white/bright → greenish-white, yellowish-white
          - blue/sky → muddy greenish-blue, grey-blue
-         - red → brownish-red, muddy red
+         - red → brownish-red
          - green → sickly yellowish-green
-      2. If there are NO color words, do NOT add color modifiers to objects. Instead, describe the lighting environment.
-      3. Add at the end: ", lit by sickly fluorescent light, incorrect white balance, greenish tint".
+      3. If there are NO color words, skip step 2.
+      4. APPEND at the end: ", photographed under sickly green-yellow fluorescent tube lighting, noticeable color cast"
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of color cast.
       Output only the rewritten prompt.
@@ -160,13 +167,14 @@ technical_quality:
     severe: |
       You are given a text-to-image prompt. Your task is to introduce a severe color cast (white balance error).
 
-      1. If there are explicit color words, apply heavy color shift:
-         - white/bright → sickly yellow, dirty greenish
-         - blue → muddy grey-green, dead teal
-         - red → muddy brown, brownish
+      1. Keep the original prompt INTACT at the beginning.
+      2. If there are explicit color words in the prompt, shift them using hue-only terms (STRICTLY NO physical-state words like dirty/rusty/aged/stained):
+         - white/bright → sickly yellowish-green, greenish-white
+         - blue/sky → muddy grey-green, dead teal
+         - red → muddy brownish
          - green → sickly yellow-green
-      2. If there are NO color words, do NOT add color modifiers to objects. Instead, describe harsh lighting.
-      3. Add at the end: ", bathed in harsh sickly fluorescent light, severe white balance error, heavy greenish-yellow cast, bad color science".
+      3. If there are NO color words, skip step 2.
+      4. APPEND at the end: ", shot under harsh sickly yellow-green fluorescent lighting, severe white balance error, entire scene tinted with strong green-yellow color cast"
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of color cast.
       Output only the rewritten prompt.

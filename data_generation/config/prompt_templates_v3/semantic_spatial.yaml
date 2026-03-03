@@ -11,49 +11,36 @@ semantic_spatial:
 
   scale_inconsistency:
     mild: |
-      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image has a subtle, unintentional-looking scale error. 
-      
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image has a subtle scale error — one object appears unnaturally large or small relative to the overall scene.
+
       Strategies:
-      1. Describe one object as being slightly too large or too small for its context.
-      2. Use phrases like: "appearing slightly too large for the surface it sits on", "weirdly small compared to the person next to it", "looking awkwardly proportioned in the scene".
-      3. Avoid "giant" or "tiny". Focus on the "awkward" and "unintended" feel.
-      
+      1. Pick ONE object in the prompt. Describe it as slightly too large or too small for the scene, with a concrete physical size description (e.g., "a coffee cup nearly as tall as the table leg", "a bird almost the size of a person's torso").
+      2. Keep the original prompt structure intact. INSERT the size description immediately after the target object noun.
+      3. Do NOT rewrite other parts of the prompt.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of scale.
       Output only the rewritten prompt.
 
     moderate: |
-      You are given a text-to-image prompt. Your task is to rewrite this prompt into a visible scale error by comparing two objects.
-      
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that one object has a clearly wrong, non-conventional size that creates a visible scale inconsistency in the image.
+
       Strategies:
-      1. Pick two objects that have a known size relationship and INVERT or EXAGGERATE it.
-      2. Use concrete comparisons: 
-         - "a cat as large as a sofa"
-         - "a person sitting on a chair the size of a stool"
-         - "a coffee cup larger than a human head"
-         - "a strawberry as big as a watermelon"
-      3. Emphasize the "awkward fit": "the [object] looks absurdly oversized for its environment", "the [object] is rendered at a logically incorrect scale".
-      4. Avoid "fantasy" words like "giant" or "colossal". Focus on "incorrect scale".
+      1. Pick ONE object in the prompt. Describe it at an absurdly wrong size using concrete physical dimensions or comparisons to other elements in the scene (e.g., "a phone the size of a dining table", "a dog as tall as the house behind it", "a key larger than the person's arm").
+      2. Additionally, APPEND a brief note about how this object dominates or is dwarfed by its surroundings to reinforce the scale problem in the overall composition (e.g., ", the oversized phone taking up most of the desk surface", ", the tiny car barely visible next to the person's shoe").
+      3. Keep the original prompt structure intact. Only INSERT the size description after the target noun and APPEND the composition note at the end.
 
-      Example: "A dog on a lawn" → "A dog as large as a parked car standing on a normal suburban lawn"
-      Example: "A man holding a phone" → "A man holding a phone the size of a laptop, making it look awkwardly huge"
-
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of scale.
       Output only the rewritten prompt.
 
     severe: |
-      You are given a text-to-image prompt. Your task is to rewrite this prompt into an absurd, extreme scale inconsistency error.
-      
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that one or two objects have extremely wrong, absurd sizes that create a jarring scale inconsistency dominating the entire image.
+
       Strategies:
-      1. Create a total breakdown of physical size logic.
-      2. Force "Impossible Container" relationships:
-         - "a mountain that fits inside a tiny flower pot"
-         - "an elephant the size of a housefly on a normal table"
-         - "a colossal [object] towering over buildings" (if buildings are in the scene)
-         - "a city that fits on the palm of a hand"
-      3. Use words that imply a rendering glitch or error: "absurd scale inversion", "physically impossible size relationship", "extreme scaling failure".
-      4. Contrast the huge and the tiny in the same sentence.
+      1. Pick ONE main object in the prompt. Describe it at an extreme, impossible size using vivid physical comparisons (e.g., "a pen towering as tall as a skyscraper", "a butterfly larger than the entire car", "a shoe the size of a small building").
+      2. APPEND a description of how this impossible scale distorts the entire scene composition (e.g., ", the enormous pen casting a shadow over the entire street", ", the giant butterfly's wings covering the whole road").
+      3. Keep the original prompt structure intact. Only INSERT the size description after the target noun and APPEND the scene-level impact.
 
-      Example: "A butterfly on a flower" → "An absurdly huge butterfly the size of a helicopter landing on a tiny flower that doesn't bend under its weight"
-      Example: "A skyscraper in a city" → "A miniature toy-sized skyscraper standing next to a normal street lamp, showing an extreme scale mismatch"
-
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of scale.
       Output only the rewritten prompt.
 
   floating_objects:
@@ -94,9 +81,10 @@ semantic_spatial:
     mild: |
       You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of object intersection. You may apply the following strategies:
 
-      1. Add details where objects touch or intersect slightly incorrectly (e.g., 'feet slightly sinking into the floor', 'hair clipping through the shoulder').
-      2. Describe the contact as a minor 3D rendering error.
-      3. Keep the original scene intact while adding these subtle intersection artifacts.
+      1. Locate two objects in the scene that are near each other or touching.
+      2. Describe their boundaries as slightly blending or overlapping at the contact point (e.g., "arm slightly overlapping with the chair armrest, boundaries blending together", "fingers partially merging into the surface of the cup").
+      3. APPEND or INSERT the overlap description using terms like "overlapping", "blending into", "boundaries merging".
+      4. Keep both objects intact — the error is a subtle boundary confusion, not damage.
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of object boundaries.
       Output only the rewritten prompt.
@@ -104,9 +92,10 @@ semantic_spatial:
     moderate: |
       You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of object intersection. You may apply the following strategies:
 
-      1. Describe a clear solid interpenetration (clipping) between two objects without any physical interaction like breaking or bending.
-      2. Use phrases like 'a hand passing through the solid table surface like a ghost' or 'branches of a tree clipping through a concrete wall'.
-      3. Emphasize that both objects are solid but they completely ignore each other's physical boundaries.
+      1. Locate two objects in the scene that are near each other or interacting (e.g., person and furniture, object and surface).
+      2. Describe one object as partially embedded into or passing through the other, specifying which part penetrates and how deep (e.g., "forearms embedded halfway into the desk surface", "tail passing straight through one of the books", "tree trunk growing through the middle of the fence").
+      3. APPEND or INSERT the penetration description using concrete spatial terms: "embedded halfway into", "passing straight through", "merged into the surface of".
+      4. Keep both objects solid and intact — the error is that they occupy the same space, not that they are broken.
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of object boundaries.
       Output only the rewritten prompt.
@@ -114,9 +103,10 @@ semantic_spatial:
     severe: |
       You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of extreme object intersection failure. You may apply the following strategies:
 
-      1. Describe objects impossibly occupying the exact same physical space or being fused together in a glitchy manner.
-      2. Use technical 3D terms to force generation errors (e.g., 'severe texture Z-fighting between objects', 'mesh intersection error', 'video game noclip glitch where objects merge').
-      3. Create a tangled mess of merged polygons where distinct objects lose their individual structure.
+      1. Locate two prominent objects or a person and a large object in the scene.
+      2. Describe them as severely overlapping — one object's main body passing through the other's core structure, with a large portion of both occupying the same space (e.g., "a stone pillar passing directly through her torso, both her body and the pillar fully solid and intact", "the bicycle's front wheel and handlebars embedded deep into the brick wall, pushed halfway through the solid surface", "two people's bodies overlapping and merged together at the torso").
+      3. Use concrete descriptions of which parts overlap and how much: "the entire lower body merged into", "passes completely through with both sides visible".
+      4. Keep both objects visually intact and solid — they simply ignore each other's physical boundaries.
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of object boundaries.
       Output only the rewritten prompt.
@@ -262,84 +252,45 @@ semantic_spatial:
 
   scene_layout_error:
     mild: |
-      You are given a text-to-image prompt. Your task is to introduce a subtle spatial placement error where an object appears in a slightly wrong location.
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of spatial layout logic. You may apply the following strategies:
 
-      Strategy: Move ONE object to a mildly illogical but still recognizable position.
+      1. Locate the main scene and identify objects that have a natural expected position.
+      2. Choose ONE small object and describe it as placed in a slightly wrong but nearby location (e.g., on the wrong surface, in the wrong corner of the same room).
+      3. Immediately APPEND a clause describing the misplacement to the original prompt.
+      4. The object must still rest normally — no floating, no upside-down, no size changes.
 
-      INDOOR examples:
-      - "with the lamp placed on the floor beside the bed instead of on the nightstand"
-      - "with shoes left on the dining table"
-      - "with the TV remote on the kitchen counter"
+      Example: "A cozy bedroom with a bed and nightstand" → "A cozy bedroom with a bed and nightstand, with a pair of shoes sitting on top of the nightstand next to the lamp"
+      Example: "A park with trees and a walking path" → "A park with trees and a walking path, with a mailbox standing in the middle of the grass between two trees"
 
-      OUTDOOR examples:
-      - "with a park bench placed in the middle of the road"
-      - "with a mailbox standing in the garden bed among the flowers"
-      - "with a shopping cart left on the sidewalk next to a park"
-
-      RULES:
-      - Only change WHERE an object is placed, not its size, orientation, or physical state
-      - The object must still rest normally on a surface (no floating, no upside-down)
-      - Keep the original prompt and APPEND the placement error
-
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of spatial layout.
       Output only the rewritten prompt.
 
     moderate: |
-      You are given a text-to-image prompt. Your task is to introduce a clear spatial placement error where objects appear in logically wrong locations.
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of spatial layout logic. You may apply the following strategies:
 
-      Strategy: Place 1-2 objects in clearly wrong rooms, zones, or contexts.
+      1. Locate the main scene and identify its room type or zone (kitchen, bedroom, park, street, etc.).
+      2. Choose ONE large object that clearly belongs to a DIFFERENT room or zone.
+      3. APPEND a clause placing that object inside the current scene in a specific spot, using concrete spatial descriptions (e.g., "placed between X and Y", "standing in the corner next to Z").
+      4. The object must rest on the ground normally — no floating, no upside-down, no size changes.
 
-      INDOOR examples:
-      - "with a refrigerator standing in the bedroom next to the bed"
-      - "with a bathtub placed in the middle of the living room"
-      - "with a washing machine sitting in the dining area"
-      - "with kitchen pots and pans arranged on the bedroom floor"
-      - "with an office desk and computer set up inside the bathroom"
+      Example: "A cozy living room with a sofa, TV, and coffee table" → "A cozy living room with a sofa, TV, coffee table, and a full-size bathtub placed between the sofa and the TV"
+      Example: "A quiet suburban street with houses and parked cars" → "A quiet suburban street with houses and parked cars, with a traffic light standing in the middle of someone's front lawn"
 
-      OUTDOOR examples:
-      - "with a fire hydrant placed on the rooftop of the building"
-      - "with a traffic light standing in the middle of a park lawn"
-      - "with a kitchen table and chairs set up on the highway"
-      - "with a street lamp growing out of a swimming pool"
-
-      Example:
-      - Input: "A cozy living room with a sofa, TV, and coffee table"
-      - Output: "A cozy living room with a sofa, TV, coffee table, and a full-size bathtub placed between the sofa and the TV"
-
-      RULES:
-      - Objects must rest on surfaces normally (no floating, no upside-down, no size changes)
-      - Focus on WRONG LOCATION, not wrong physics
-      - Keep the main subject and scene intact
-
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of spatial layout.
       Output only the rewritten prompt.
 
     severe: |
-      You are given a text-to-image prompt. Your task is to introduce severe spatial placement errors where multiple objects are in completely wrong locations.
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have severely degraded quality specifically in terms of spatial layout logic. You may apply the following strategies:
 
-      Strategy: Swap or relocate 2-3 objects to absurdly wrong contexts, as if rooms/zones were shuffled.
+      1. Locate the main scene and identify its room type or zone.
+      2. Choose 1-2 large objects from completely different contexts (e.g., bathroom fixtures in a kitchen, bedroom furniture on a street, office equipment on a beach).
+      3. APPEND clauses placing them in specific spots within the scene, describing exact positions (e.g., "occupying the center of the floor", "standing in the corner where X should be").
+      4. Keep descriptions concrete and visual — specify what the object is and exactly where it sits. Do NOT describe "impossible physics" or "defying gravity".
 
-      INDOOR examples:
-      - "with the entire kitchen setup (stove, sink, pots) arranged in the bedroom"
-      - "with a toilet placed next to the dining table in the kitchen"
-      - "with a bed pushed into the bathroom, blocking the shower"
-      - "with a bookshelf full of books standing in the shower stall"
-      - "with garden furniture (lawn chairs, umbrella) set up in the hallway"
+      Example: "A modern kitchen with stainless steel appliances" → "A modern kitchen with stainless steel appliances, but a full-size bed with pillows occupies the center of the kitchen floor"
+      Example: "A sunny beach with palm trees and waves" → "A sunny beach with palm trees and waves, with a toilet and a bathroom sink installed on the sand near the water"
 
-      OUTDOOR examples:
-      - "with a full living room set (sofa, TV, coffee table) arranged on the sidewalk"
-      - "with a bed and nightstand placed in the middle of a parking lot"
-      - "with bathroom fixtures (toilet, sink) installed on the park lawn"
-      - "with office cubicles set up on a beach"
-
-      Example:
-      - Input: "A modern kitchen with stainless steel appliances"
-      - Output: "A modern kitchen with stainless steel appliances, but a full-size bed with pillows occupies the center of the kitchen floor, and a toilet sits where the island should be"
-
-      RULES:
-      - Objects must rest on surfaces normally (no floating, no upside-down, no size changes)
-      - Do NOT describe "impossible physics", "defying gravity", or "objects piled on top"
-      - Focus purely on WRONG LOCATION — objects are normal, just in absurd places
-      - Keep descriptions CONCRETE and VISUAL
-
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of spatial layout.
       Output only the rewritten prompt.
 
   # background_discrepancy: REMOVED

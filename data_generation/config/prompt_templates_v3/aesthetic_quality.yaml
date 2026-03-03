@@ -9,39 +9,38 @@ aesthetic_quality:
   awkward_positioning:
     mild: |
       You are given a text-to-image prompt. Your task is to rewrite it to create amateurish composition through wrong distance.
-      
+
       Strategy: "Shot From Too Far Away"
       1. Identify the MAIN SUBJECT.
       2. PREPEND: "A distant shot of " or "Photographed from far away, "
       3. APPEND: ", the subject appears small and insignificant in the frame"
-      
-      Example: "A cat on a sofa" → "A distant shot of a cat on a sofa, the subject appears small and insignificant in the frame"
+      e.g. prepend "A distant shot of" and append ", the subject appears small and insignificant in the frame"
 
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of visual appeal.
       Output only the rewritten prompt.
 
     moderate: |
-      You are given a text-to-image prompt. Your task is to rewrite it to create awkward composition through unflattering angle.
-      
-      Strategy: "The Unflattering Extreme Close-up"
-      1. Identify the MAIN SUBJECT.
-      2. PREPEND: "Extreme unflattering close-up of " or "Uncomfortably close macro shot of "
-      3. APPEND: ", losing all context and background, distorted perspective"
-      
-      Example: "A woman in a garden" → "Extreme unflattering close-up of a woman, losing all context and background, distorted perspective"
+      You are given a text-to-image prompt. Your task is to rewrite it to create awkward composition through being too close to the subject.
 
+      Strategy: "Too Close, No Breathing Room"
+      1. Identify the MAIN SUBJECT.
+      2. PREPEND: "Uncomfortably close shot of " or "Shot from too close, "
+      3. APPEND: ", subject fills the entire frame with edges awkwardly cropped, no breathing room, important parts cut off at the frame border"
+      e.g. prepend "Uncomfortably close shot of" and append ", subject fills the entire frame with edges awkwardly cropped, no breathing room, important parts cut off at the frame border"
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of visual appeal.
       Output only the rewritten prompt.
 
     severe: |
-      You are given a text-to-image prompt. Your task is to rewrite it to create terrible composition by making the subject too small and poorly positioned.
-      
-      Strategy: "Subject Lost in the Frame"
-      1. Identify the MAIN SUBJECT.
-      2. REWRITE to make the subject tiny and pushed to the edge:
-         - "An extremely wide shot with the [subject] tiny in the far lower-right corner, barely occupying 5% of the frame. The image is dominated by vast empty [background space]. The subject is almost an afterthought, poorly framed amateur photo."
-      
-      Example: "A dog playing in the park" → "An extremely wide shot with a dog tiny in the far lower-right corner, barely occupying 5% of the frame. The image is dominated by vast empty grass and sky. The dog is almost an afterthought, poorly framed amateur photo."
-      Example: "A chef cooking in a kitchen" → "An extremely wide shot with a chef tiny in the far lower-left corner, barely occupying 5% of the frame. The image is dominated by vast empty countertops and ceiling. The chef is almost an afterthought, poorly framed amateur photo."
+      You are given a text-to-image prompt. Your task is to rewrite it to create terrible composition where the subject is only partially in frame.
 
+      Strategy: "Subject Exiting the Frame"
+      1. Identify the MAIN SUBJECT.
+      2. REWRITE so only part of the subject is visible — as if the photographer completely missed the framing:
+         "A poorly framed shot where [subject] is only half visible, the [left/right/top] side cut off by the frame edge, amateur snapshot that missed the subject entirely"
+      e.g. describe the subject as half-cut-off at one frame edge, with the remaining content still matching the original scene
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of visual appeal.
       Output only the rewritten prompt.
 
   awkward_framing:
@@ -67,76 +66,85 @@ aesthetic_quality:
 
   unbalanced_layout:
     mild: |
-      You are given a text-to-image prompt. Your task is to create a slightly unbalanced composition where visual weight is unevenly distributed.
-      
-      Strategy: "Slightly Off-Center Weight"
-      1. PREPEND: "An off-center composition of "
-      2. APPEND: ", positioned slightly to the left side of the frame with empty space on the right, mildly unbalanced visual weight"
-      3. Keep the original subject unchanged.
-      
-      Example: "A cat on a chair" → "An off-center composition of a cat on a chair, positioned slightly to the left side of the frame with empty space on the right, mildly unbalanced visual weight"
-      Example: "A beach at sunset" → "An off-center composition of a beach at sunset, positioned slightly to the left side of the frame with empty space on the right, mildly unbalanced visual weight"
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have mildly degraded aesthetic quality due to a slightly unbalanced layout. You may apply the following strategies:
+
+      Strategy: "Small Subject, Slight Offset"
+      1. Make the main subject appear SMALL relative to the frame.
+      2. Position the subject slightly off to one side (e.g., left third).
+      3. Describe a large area of simple/empty background filling the rest.
+      4. Keep the subject and scene content identical to the original.
+
+      Example: "A cat on a chair" → "A small cat sitting on a chair in the left third of the frame, with a wide expanse of empty wooden floor and plain wall filling the right side"
+      Example: "A beach at sunset" → "A narrow strip of beach and sunset on the left side, with a large stretch of calm empty ocean water taking up most of the right side of the image"
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of layout balance.
       Output only the rewritten prompt.
 
     moderate: |
-      You are given a text-to-image prompt. Your task is to create a noticeably unbalanced composition with lopsided visual weight.
-      
-      Strategy: "Lopsided Composition"
-      1. PREPEND: "A lopsided composition of "
-      2. APPEND: ", pushed to the far left edge of the frame, large empty negative space dominating the right two-thirds, awkward visual weight distribution, feels like the image is about to tip over"
-      3. Keep the original subject unchanged.
-      
-      Example: "A dog in a park" → "A lopsided composition of a dog in a park, pushed to the far left edge of the frame, large empty negative space dominating the right two-thirds, awkward visual weight distribution, feels like the image is about to tip over"
-      Example: "A chef in a kitchen" → "A lopsided composition of a chef in a kitchen, pushed to the far left edge of the frame, large empty negative space dominating the right two-thirds, awkward visual weight distribution, feels like the image is about to tip over"
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have noticeably degraded aesthetic quality due to an unbalanced layout. You may apply the following strategies:
+
+      Strategy: "Tiny Subject in Corner"
+      1. Shrink the main subject to a SMALL size and push it to one EDGE or CORNER of the frame.
+      2. Fill the majority of the frame (roughly two-thirds) with plain, empty background (e.g., empty grass, blank wall, open sky).
+      3. The subject must still be recognizable but clearly too small for the frame.
+      4. Keep the subject and scene content identical to the original.
+
+      Example: "A dog in a park" → "A tiny dog sitting in the far left corner of a large park, vast empty grass field and open sky filling most of the frame"
+      Example: "A chef in a kitchen" → "A small chef standing at the far right edge of a spacious kitchen, large empty countertops and blank tiled walls dominating the rest of the image"
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of layout balance.
       Output only the rewritten prompt.
 
     severe: |
-      You are given a text-to-image prompt. Your task is to create a severely unbalanced composition with extreme lopsided weight.
-      
-      Strategy: "Extreme Visual Imbalance"
-      1. PREPEND: "A severely unbalanced composition of "
-      2. APPEND: ", crammed into the bottom-left corner occupying only 20% of the frame, the remaining 80% is empty featureless space, extremely lopsided visual weight, terrible amateur framing that wastes most of the canvas"
-      3. Keep the original subject unchanged.
-      
-      Example: "A woman reading" → "A severely unbalanced composition of a woman reading, crammed into the bottom-left corner occupying only 20% of the frame, the remaining 80% is empty featureless space, extremely lopsided visual weight, terrible amateur framing that wastes most of the canvas"
-      Example: "A city street" → "A severely unbalanced composition of a city street, crammed into the bottom-left corner occupying only 20% of the frame, the remaining 80% is empty featureless space, extremely lopsided visual weight, terrible amateur framing that wastes most of the canvas"
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have severely degraded aesthetic quality due to an extremely unbalanced layout. You may apply the following strategies:
+
+      Strategy: "Barely Visible Subject, Vast Emptiness"
+      1. Make the subject TINY and place it in the BOTTOM CORNER of the frame.
+      2. Fill the remaining 80%+ of the frame with plain, featureless background (empty white room, blank sky, bare floor).
+      3. The subject should be barely visible, dwarfed by the enormous empty space.
+      4. Keep the subject and scene content identical to the original.
+
+      Example: "A woman reading" → "A barely visible tiny woman reading a book in the bottom-left corner, an enormous empty white room with bare walls and floor stretching across the entire frame"
+      Example: "A city street" → "A tiny sliver of a city street crammed into the bottom-right corner, a massive blank overcast sky filling the rest of the image with no other details"
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of layout balance.
       Output only the rewritten prompt.
 
   cluttered_scene:
     mild: |
-      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have mildly degraded aesthetic quality due to a slightly cluttered background. You may apply the following strategies:
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have mildly degraded aesthetic quality due to a slightly cluttered background.
 
-      1. Keep the original main subject EXACTLY as described.
-      2. APPEND a mildly cluttered background description: ', with a slightly messy background containing various small objects and decorations'.
-      3. Example: 'a cat sleeping' → 'a cat sleeping, with a slightly messy background containing various small objects and decorations'.
+      1. Keep the original main subject EXACTLY as described — do NOT change its count, type, or appearance.
+      2. Identify what secondary elements or debris would naturally exist in this scene's environment.
+      3. APPEND: ', with a slightly messy background containing scattered [scene-appropriate secondary elements and fragments]'
+      e.g. beach scene → scattered shell fragments, pebbles, dried seaweed; gallery → extra frames and ornaments crowding the walls; classroom → scattered notebooks and bags on the floor
 
-      CRITICAL: The main subject must remain unchanged and clearly visible. Only the background becomes slightly cluttered.
+      CRITICAL: Only background/surroundings become cluttered. The main subject count and appearance stay unchanged.
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of visual appeal.
       Output only the rewritten prompt.
 
     moderate: |
-      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have noticeably degraded aesthetic quality due to a cluttered distracting background. You may apply the following strategies:
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have noticeably degraded aesthetic quality due to a cluttered distracting background.
 
-      1. Keep the original main subject EXACTLY as described.
-      2. APPEND a cluttered background with specific items: ', surrounded by a cluttered background of random items: cardboard boxes, plastic bags, scattered papers, tangled wires, and miscellaneous household objects competing for attention'.
-      3. Example: 'a portrait of a woman' → 'a portrait of a woman, surrounded by a cluttered background of random items: cardboard boxes, plastic bags, scattered papers, tangled wires, and miscellaneous household objects competing for attention'.
+      1. Keep the original main subject EXACTLY as described — do NOT change its count, type, or appearance.
+      2. Identify what secondary elements or debris would naturally exist in this scene's environment.
+      3. APPEND: ', surrounded by a densely cluttered background filled with [scene-appropriate secondary elements and debris] competing for visual attention, multiple distracting focal points'
+      e.g. beach scene → densely packed shell fragments, pebbles, sea debris covering the sand around them; gallery → walls and floor overcrowded with frames, sculptures, and decorative objects; classroom → desks buried under scattered books, papers, bags and stationery
 
-      CRITICAL: The main subject must remain the focus. The clutter is ONLY in the background/surroundings.
+      CRITICAL: The main subject count and appearance stay unchanged. Clutter is ONLY in the surrounding background.
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of visual appeal.
       Output only the rewritten prompt.
 
     severe: |
-      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have severely degraded aesthetic quality due to an extremely cluttered chaotic background. You may apply the following strategies:
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have severely degraded aesthetic quality due to an extremely cluttered chaotic scene.
 
-      1. Keep the original main subject EXACTLY as described.
-      2. APPEND an extremely cluttered background: ', nearly lost in an extremely cluttered chaotic background overflowing with random junk: piles of boxes, tangled cables, scattered trash, random furniture, plastic containers, crumpled papers, and endless miscellaneous items filling every corner of the frame'.
-      3. Example: 'a dog sitting' → 'a dog sitting, nearly lost in an extremely cluttered chaotic background overflowing with random junk: piles of boxes, tangled cables, scattered trash, random furniture, plastic containers, crumpled papers, and endless miscellaneous items filling every corner of the frame'.
+      1. Keep the original main subject EXACTLY as described — do NOT change its count, type, or appearance.
+      2. Identify what secondary elements or debris would naturally exist in this scene's environment.
+      3. APPEND: ', nearly lost in an overwhelming chaos of [scene-appropriate secondary elements and debris] filling every corner of the frame, zero negative space, visually exhausting and impossible to focus'
+      e.g. beach scene → an overwhelming carpet of shell fragments, pebbles, seaweed and sea debris covering every inch of sand around them; gallery → every surface overflowing with frames, objects and decorations leaving no breathing space; classroom → the entire floor and desks buried under an avalanche of books, papers, bags and scattered stationery
 
-      CRITICAL: The main subject stays unchanged. The severe clutter overwhelms the composition but doesn't replace the subject.
+      CRITICAL: The main subject stays unchanged. Severe clutter overwhelms the composition from the surroundings.
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of visual appeal.
       Output only the rewritten prompt.
 
   # lack_of_depth: REMOVED - severe不可控，定义与其他维度混淆
@@ -154,23 +162,23 @@ aesthetic_quality:
       Output only the rewritten prompt.
 
     moderate: |
-      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of clearly unbalanced, amateurish lighting. You may apply the following strategies:
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of clearly unbalanced lighting. You may apply the following strategies:
 
-      1. Prepend 'An amateurish photo with harsh, unflattering lighting of ' to the prompt.
-      2. Use specific terms like 'deep messy shadows', 'harsh overhead light', or 'distracting side highlights'.
-      3. Mention unflattering shadows (e.g., 'deep ugly shadows under eyes and chin') that ruin the aesthetic balance.
-      4. Describe simultaneous overexposed spots and underexposed areas.
+      1. Keep the original prompt content intact.
+      2. APPEND a concrete description of a strong single-sided light source, specifying which area is brightly lit and which area is in deep shadow.
+      3. Use "only...while..." sentence structure to emphasize the contrast between the bright and dark areas (e.g., ", with a strong harsh light from the left illuminating only the left half of the scene in bright white, while the right half falls into deep dark shadow with barely visible details", ", with intense overhead light directly above the center creating a bright hot spot on the main subject, while the edges of the frame fade into heavy darkness").
+      4. Specify concrete scene elements that are affected — name which objects are in the bright zone and which are lost in shadow.
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of lighting balance.
       Output only the rewritten prompt.
 
     severe: |
-      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of extreme, ruinous lighting imbalance. You may apply the following strategies:
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of extreme lighting imbalance. You may apply the following strategies:
 
-      1. Prepend 'A badly lit image with extreme lighting imbalance of ' to the prompt.
-      2. Describe the lighting as 'chaotic and messy', with blinding white highlights (overexposure) next to pitch-black shadows (crushed shadows).
-      3. Mention 'harsh direct flash' that washes out the foreground while leaving the background dark, or 'uncontrolled glare' that obscures details.
-      4. Explicitly avoid turning the image into a silhouette or monochrome; keep the colors but ruin the exposure balance.
+      1. Keep the original prompt content intact.
+      2. APPEND a description of an extreme physical light source that splits the scene into drastically uneven bright and dark zones (e.g., ", with an extremely bright spotlight blasting from the far left, turning the left third of the image into a blinding white glow, while the right two-thirds sinks into near-total darkness", ", lit by two clashing lights from opposite sides, warm orange from the left and cold blue from the right, splitting the scene into two harshly lit halves with deep confusing shadows in the center").
+      3. Use "only...while..." to specify exactly which parts of the scene are in the bright zone and which are in the dark zone.
+      4. Do NOT use post-processing or exposure terms ("overexposed", "washed out", "blown out"). Only describe physical light sources and their visible effects on the scene.
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of lighting balance.
       Output only the rewritten prompt.

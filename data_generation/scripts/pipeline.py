@@ -14,8 +14,10 @@ Data Generation Pipeline (Closed-Loop)
 """
 
 import argparse
+import concurrent.futures
 import json
 import logging
+import os
 import random
 import sys
 from datetime import datetime
@@ -50,6 +52,66 @@ class DataGenerationPipeline:
         ],
         "semantic_text": ["semantic_rationality.text_symbol_semantics"],
     }
+
+    # dimension → 模板分组名（与 config/prompt_templates_v3/*.yaml 的顶级 key 对应）
+    DIMENSION_TO_TEMPLATE_GROUP = {
+        # semantic_anatomy
+        "hand_malformation": "semantic_anatomy",
+        "face_asymmetry": "semantic_anatomy",
+        "expression_mismatch": "semantic_anatomy",
+        "body_proportion_error": "semantic_anatomy",
+        "extra_limbs": "semantic_anatomy",
+        "impossible_pose": "semantic_anatomy",
+        "animal_anatomy_error": "semantic_anatomy",
+        # semantic_object
+        "object_shape_error": "semantic_object",
+        "extra_objects": "semantic_object",
+        "count_error": "semantic_object",
+        "illogical_colors": "semantic_object",
+        # semantic_spatial
+        "scale_inconsistency": "semantic_spatial",
+        "floating_objects": "semantic_spatial",
+        "penetration_overlap": "semantic_spatial",
+        "shadow_mismatch": "semantic_spatial",
+        "reflection_error": "semantic_spatial",
+        "context_mismatch": "semantic_spatial",
+        "time_inconsistency": "semantic_spatial",
+        "scene_layout_error": "semantic_spatial",
+        # semantic_text
+        "text_error": "semantic_text",
+        "logo_symbol_error": "semantic_text",
+    }
+
+    # 维度 → 正样本 prompt 所需的 semantic_tags（任一匹配即可）
+    # 未列出的维度不做过滤，使用全量 prompt 池
+    DIMENSION_REQUIRED_TAGS = {
+        # 需要人脸
+        "face_asymmetry": ["has_face"],
+        "expression_mismatch": ["has_face"],
+        # 需要人物（全身/半身）
+        "body_proportion_error": ["has_person"],
+        "extra_limbs": ["has_person"],
+        "impossible_pose": ["has_person"],
+        # 需要手部
+        "hand_malformation": ["has_hand"],
+        # 需要动物
+        "animal_anatomy_error": ["has_animal"],
+        # 需要可数物体
+        "count_error": ["has_countable_objects"],
+        # 需要多物体（尺度对比）
+        "scale_inconsistency": ["has_multiple_objects"],
+        # 需要有背景的场景
+        "scene_layout_error": ["has_background"],
+        "context_mismatch": ["has_background"],
+        # 需要反射面
+        "reflection_error": ["has_reflective_surface"],
+        # 需要自然物体/生物（草地、动物、人、水果等可变色目标）
+        "illogical_colors": ["has_person", "has_animal", "has_background"],
+    }
+
+    def _get_template_subcategory(self, dimension: str, perspective: str = None) -> str:
+        """获取维度对应的模板分组名，用于 prompt_degrader 的 subcategory 参数"""
+        return self.DIMENSION_TO_TEMPLATE_GROUP.get(dimension, perspective or dimension)
 
     def __init__(
         self,
@@ -251,9 +313,15 @@ class DataGenerationPipeline:
         seed: int,
         perspective: str = None,
         prompt_signature: Dict = None,
+        prefetched_negative: Dict = None,
+        positive_image_path: str = None,
     ) -> Dict:
         """
         闭环生成：生成 → 判别 → 失败则诊断修正重试
+
+        Args:
+            prefetched_negative: 预取的 LLM 退化结果，有值时跳过首次 LLM 调用
+            positive_image_path: 已有正样本路径，有值时跳过正样本生成（跨 severity 复用）
 
         Returns:
             包含所有 attempt 详情的字典
@@ -267,25 +335,29 @@ class DataGenerationPipeline:
         gen_cfg = self.generation_config
         attempts = []
 
-        # ---- 生成正样本（只生成一次，复用） ---- #
-        pos_image_path = str(pair_dir / f"positive_seed{seed}.png")
-        try:
-            image_generator(
-                prompt=positive_prompt,
-                seed=seed,
-                model_id=self.model_id,
-                negative_prompt="low quality, worst quality",
-                output_path=pos_image_path,
-                model_path=self.model_path or gen_cfg.get('model_path'),
-                steps=gen_cfg.get('steps', 35),
-                cfg=gen_cfg.get('cfg', 7.5),
-                width=gen_cfg.get('width', 1024),
-                height=gen_cfg.get('height', 1024),
-                optimize=gen_cfg.get('optimize', False)
-            )
-        except Exception as e:
-            logger.error(f"[{pair_id}] Positive image generation failed: {e}")
-            return self._make_error_result(pair_id, positive_prompt, dimension, severity, seed, str(e))
+        # ---- 生成正样本（跨 severity 复用） ---- #
+        if positive_image_path and os.path.exists(positive_image_path):
+            pos_image_path = positive_image_path
+            logger.info(f"[{pair_id}] Reusing positive image: {pos_image_path}")
+        else:
+            pos_image_path = str(pair_dir / f"positive_seed{seed}.png")
+            try:
+                image_generator(
+                    prompt=positive_prompt,
+                    seed=seed,
+                    model_id=self.model_id,
+                    negative_prompt="",
+                    output_path=pos_image_path,
+                    model_path=self.model_path or gen_cfg.get('model_path'),
+                    steps=gen_cfg.get('steps', 35),
+                    cfg=gen_cfg.get('cfg', 7.5),
+                    width=gen_cfg.get('width', 1024),
+                    height=gen_cfg.get('height', 1024),
+                    optimize=gen_cfg.get('optimize', False)
+                )
+            except Exception as e:
+                logger.error(f"[{pair_id}] Positive image generation failed: {e}")
+                return self._make_error_result(pair_id, positive_prompt, dimension, severity, seed, str(e))
 
         # ---- 闭环重试 ---- #
         failed_negative_prompt = None
@@ -322,7 +394,7 @@ class DataGenerationPipeline:
                 try:
                     degrade_kwargs = {
                         "positive_prompt": positive_prompt,
-                        "subcategory": perspective or dimension,
+                        "subcategory": self._get_template_subcategory(dimension, perspective),
                         "attribute": dimension,
                         "severity": severity,
                         "failed_negative_prompt": failed_negative_prompt,
@@ -349,19 +421,23 @@ class DataGenerationPipeline:
                     attempts.append(attempt_record)
                     continue
             else:
-                # 首次生成: 正常调用 LLM 退化
+                # 首次生成: 使用预取结果或调用 LLM 退化
                 try:
-                    degrade_kwargs = {
-                        "positive_prompt": positive_prompt,
-                        "subcategory": perspective or dimension,
-                        "attribute": dimension,
-                        "severity": severity,
-                        "model_id": self.model_id,
-                    }
-                    if prompt_signature:
-                        degrade_kwargs["prompt_signature"] = json.dumps(prompt_signature)
+                    if prefetched_negative:
+                        degrade_result = prefetched_negative
+                        logger.info(f"[{pair_id}] Using prefetched negative prompt")
+                    else:
+                        degrade_kwargs = {
+                            "positive_prompt": positive_prompt,
+                            "subcategory": self._get_template_subcategory(dimension, perspective),
+                            "attribute": dimension,
+                            "severity": severity,
+                            "model_id": self.model_id,
+                        }
+                        if prompt_signature:
+                            degrade_kwargs["prompt_signature"] = json.dumps(prompt_signature)
 
-                    degrade_result = json.loads(prompt_degrader(**degrade_kwargs))
+                        degrade_result = json.loads(prompt_degrader(**degrade_kwargs))
                     negative_prompt = degrade_result["negative_prompt"]
                     degradation_info = degrade_result["degradation_info"]
 
@@ -374,6 +450,14 @@ class DataGenerationPipeline:
                     attempt_record["error"] = f"degradation_failed: {e}"
                     attempts.append(attempt_record)
                     continue
+
+            # Step 1.5: 检测 SKIP_THIS_PROMPT
+            if "SKIP_THIS_PROMPT" in negative_prompt:
+                logger.info(f"[{pair_id}] LLM returned SKIP_THIS_PROMPT, skipping pair")
+                attempt_record["status"] = "skipped"
+                attempt_record["failure_type"] = "prompt_incompatible"
+                attempts.append(attempt_record)
+                break
 
             # Step 2: 生成负样本图像
             neg_image_path = str(pair_dir / f"attempt_{attempt_idx}_negative_seed{seed}.png")
@@ -612,14 +696,18 @@ class DataGenerationPipeline:
 
     def run(
         self,
-        prompts: List[str],
+        prompts: List,
         num_pairs_per_prompt: int = 5,
         dimensions: List[str] = None,
         perspectives: List[str] = None,
         base_seed: int = 42,
         systematic: bool = False,
     ) -> Dict:
-        """运行闭环数据生成流水线"""
+        """运行闭环数据生成流水线
+
+        Args:
+            prompts: List[str] 或 List[dict]，dict 格式 {"prompt": str, "tags": list}
+        """
         if systematic:
             return self._run_systematic(prompts, num_pairs_per_prompt, dimensions, perspectives, base_seed)
         logger.info(f"Starting closed-loop pipeline: {len(prompts)} prompts x {num_pairs_per_prompt} pairs (max_retries={self.max_retries})")
@@ -635,7 +723,8 @@ class DataGenerationPipeline:
         skipped_paused = 0
         skipped_incompat = 0
 
-        for prompt_idx, positive_prompt in enumerate(prompts):
+        for prompt_idx, prompt_item in enumerate(prompts):
+            positive_prompt = prompt_item["prompt"] if isinstance(prompt_item, dict) else prompt_item
             logger.info(f"\n{'='*60}")
             logger.info(f"Prompt [{prompt_idx+1}/{len(prompts)}]: {positive_prompt[:80]}...")
 
@@ -769,17 +858,65 @@ class DataGenerationPipeline:
             "report_path": str(self.output_dir / "validation_report.json")
         }
 
+    def _prefetch_negatives(
+        self,
+        tasks: List[Dict],
+        max_workers: int = 4,
+    ) -> Dict[str, Dict]:
+        """并发预取一批 LLM 退化 prompt
+
+        Args:
+            tasks: [{positive_prompt, dimension, perspective, severity, model_id}, ...]
+            max_workers: 线程池大小（控制 API 并发）
+
+        Returns:
+            {cache_key: degrade_result_dict, ...}  失败的 key 不包含在内
+        """
+        cache = {}
+        if not tasks:
+            return cache
+
+        def _call(t):
+            key = t["cache_key"]
+            try:
+                result_str = prompt_degrader(
+                    positive_prompt=t["positive_prompt"],
+                    subcategory=self._get_template_subcategory(t["dimension"], t["perspective"]),
+                    attribute=t["dimension"],
+                    severity=t["severity"],
+                    model_id=t["model_id"],
+                )
+                return key, json.loads(result_str)
+            except Exception as e:
+                logger.warning(f"[Prefetch] Failed for {t['dimension']}/{t['severity']}: {e}")
+                return key, None
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as pool:
+            futures = [pool.submit(_call, t) for t in tasks]
+            for fut in concurrent.futures.as_completed(futures):
+                key, result = fut.result()
+                if result is not None:
+                    cache[key] = result
+
+        logger.info(f"[Prefetch] {len(cache)}/{len(tasks)} negative prompts cached")
+        return cache
+
     def _run_systematic(
         self,
-        prompts: List[str],
+        prompts: List,
         num_prompts_per_dim: int,
         dimensions: List[str] = None,
         perspectives: List[str] = None,
         base_seed: int = 42,
     ) -> Dict:
-        """系统化遍历：维度 → prompt → severity，确保每个维度都被覆盖"""
+        """系统化遍历：维度 → prompt → severity，确保每个维度都被覆盖
 
-        # 1. 统一解析过滤器（perspective / sub-group / 单维度 均走 _resolve_filter）
+        优化：
+        1. LLM 预批量：每个维度开始前，并发预取所有 (prompt, severity) 的退化 prompt
+        2. 正样本复用：同 prompt 不同 severity 共享同一个 seed 和正样本图像
+        """
+
+        # 1. 统一解析过滤器
         target_dims = []
         filters = dimensions or perspectives or []
         seen = set()
@@ -797,7 +934,9 @@ class DataGenerationPipeline:
             f"{len(self.severities)} severities = {total_target} pairs (max_retries={self.max_retries})"
         )
 
-        rng = random.Random(base_seed)
+        # 用 model_id 扰动 seed，确保不同模型选不同 prompt
+        model_seed = base_seed + hash(self.model_id) % 10000
+        rng = random.Random(model_seed)
         seed_counter = base_seed
         current = 0
 
@@ -805,17 +944,57 @@ class DataGenerationPipeline:
             dimension = dim_info["dimension"]
             persp = dim_info.get("perspective")
 
-            # 为该维度随机选取 N 个 prompt
-            dim_prompts = rng.sample(prompts, min(num_prompts_per_dim, len(prompts)))
+            # Circuit breaker（维度级别）
+            if self.knowledge_base and self.knowledge_base.is_dimension_paused(dimension):
+                skipped = num_prompts_per_dim * len(self.severities)
+                current += skipped
+                logger.info(f"[CB] Paused: {dimension}, skipping {skipped} pairs")
+                continue
 
+            # 按标签过滤 prompt 池，再随机选取 N 个
+            required_tags = self.DIMENSION_REQUIRED_TAGS.get(dimension, [])
+            if required_tags:
+                pool = [p for p in prompts if any(t in p.get("semantic_tags", p.get("tags", [])) for t in required_tags)]
+                if not pool:
+                    logger.warning(f"[TagFilter] {dimension} requires {required_tags} but no matching prompts, using full pool")
+                    pool = prompts
+                else:
+                    logger.info(f"[TagFilter] {dimension}: {len(pool)}/{len(prompts)} prompts match {required_tags}")
+            else:
+                pool = prompts
+            selected = rng.sample(pool, min(num_prompts_per_dim, len(pool)))
+            dim_prompts = [p["prompt"] if isinstance(p, dict) else p for p in selected]
+
+            # --- 优化1: LLM 预批量 --- #
+            prefetch_tasks = []
             for positive_prompt in dim_prompts:
+                for severity in self.severities:
+                    pair_key = self._make_pair_key(positive_prompt, dimension, severity)
+                    if pair_key in self._completed_pairs:
+                        continue
+                    cache_key = f"{positive_prompt[:100]}|{dimension}|{severity}"
+                    prefetch_tasks.append({
+                        "cache_key": cache_key,
+                        "positive_prompt": positive_prompt,
+                        "dimension": dimension,
+                        "perspective": persp,
+                        "severity": severity,
+                        "model_id": self.model_id,
+                    })
+
+            prefetch_cache = self._prefetch_negatives(prefetch_tasks) if prefetch_tasks else {}
+
+            # --- 遍历 prompt → severity（同 prompt 共享 seed/正样本） --- #
+            for positive_prompt in dim_prompts:
+                # 同 prompt 共享一个 seed
+                prompt_seed = seed_counter
+                seed_counter += 1
+                shared_pos_path = None  # 首个 severity 生成后复用
+
                 for severity in self.severities:
                     current += 1
                     logger.info(f"\n--- [{current}/{total_target}] {dimension}/{severity} ---")
                     logger.info(f"Prompt: {positive_prompt[:80]}...")
-
-                    seed = seed_counter
-                    seed_counter += 1
 
                     # 断点续跑
                     pair_key = self._make_pair_key(positive_prompt, dimension, severity)
@@ -823,18 +1002,23 @@ class DataGenerationPipeline:
                         logger.info(f"[Checkpoint] Skip: {dimension}/{severity}")
                         continue
 
-                    # Circuit breaker
-                    if self.knowledge_base and self.knowledge_base.is_dimension_paused(dimension):
-                        logger.info(f"[CB] Paused: {dimension}")
-                        continue
+                    # 从预取缓存取退化结果
+                    cache_key = f"{positive_prompt[:100]}|{dimension}|{severity}"
+                    prefetched = prefetch_cache.get(cache_key)
 
                     result = self.generate_pair_with_retry(
                         positive_prompt=positive_prompt,
                         dimension=dimension,
                         severity=severity,
-                        seed=seed,
+                        seed=prompt_seed,
                         perspective=persp,
+                        prefetched_negative=prefetched,
+                        positive_image_path=shared_pos_path,
                     )
+
+                    # 记录正样本路径供后续 severity 复用
+                    if shared_pos_path is None and result.get("positive_image_path"):
+                        shared_pos_path = result["positive_image_path"]
 
                     # KnowledgeBase 记录
                     if self.knowledge_base:
@@ -858,12 +1042,12 @@ class DataGenerationPipeline:
                             "positive": {
                                 "prompt": positive_prompt,
                                 "image_path": result["positive_image_path"],
-                                "seed": seed
+                                "seed": prompt_seed
                             },
                             "negative": {
                                 "prompt": result["final_negative_prompt"],
                                 "image_path": result["final_negative_image_path"],
-                                "seed": seed
+                                "seed": prompt_seed
                             },
                             "degradation": final.get("degradation_info", {}),
                             "validation": result["final_validation"],
@@ -1012,12 +1196,15 @@ def main():
     prompts = []
     for item in prompts_data:
         if isinstance(item, str):
-            prompts.append(item)
+            prompts.append({"prompt": item, "tags": []})
         elif isinstance(item, dict):
             model = item.get("model", "")
             if args.model_filter and args.model_filter not in model:
                 continue
-            prompts.append(item.get("prompt", ""))
+            prompts.append({
+                "prompt": item.get("prompt", ""),
+                "tags": item.get("semantic_tags", []),
+            })
 
     if args.shuffle:
         random.shuffle(prompts)
