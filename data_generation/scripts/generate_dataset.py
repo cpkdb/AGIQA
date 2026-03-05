@@ -28,6 +28,24 @@ try:
 except ImportError:
     FLUX_SCHNELL_AVAILABLE = False
 
+try:
+    from hunyuan_dit_generator import HunyuanDiTGenerator
+    HUNYUAN_DIT_AVAILABLE = True
+except ImportError:
+    HUNYUAN_DIT_AVAILABLE = False
+
+try:
+    from sd35_large_generator import SD35LargeGenerator
+    SD35_LARGE_AVAILABLE = True
+except ImportError:
+    SD35_LARGE_AVAILABLE = False
+
+try:
+    from qwen_image_lightning_generator import QwenImageLightningGenerator
+    QWEN_IMAGE_LIGHTNING_AVAILABLE = True
+except ImportError:
+    QWEN_IMAGE_LIGHTNING_AVAILABLE = False
+
 # 检查LLM是否可用
 try:
     import openai
@@ -60,7 +78,7 @@ class DatasetGenerator:
             model_path: SDXL模型路径
             schema_path: schema文件路径
             llm_config_path: LLM配置文件路径
-            generator_type: 生成器类型 (sdxl/flux-dev/flux-schnell)
+            generator_type: 生成器类型 (sdxl/flux-dev/flux-schnell/hunyuan-dit/sd3.5-large/qwen-image-lightning)
         """
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -80,6 +98,21 @@ class DatasetGenerator:
                 raise ImportError("FluxSchnellGenerator 不可用，请检查 flux_schnell_generator.py")
             self.image_generator = FluxSchnellGenerator()
             generator_model_name = "flux-1-schnell"
+        elif generator_type == "hunyuan-dit":
+            if not HUNYUAN_DIT_AVAILABLE:
+                raise ImportError("HunyuanDiTGenerator 不可用，请检查 hunyuan_dit_generator.py")
+            self.image_generator = HunyuanDiTGenerator(model_path=model_path)
+            generator_model_name = "hunyuan-dit"
+        elif generator_type == "sd3.5-large":
+            if not SD35_LARGE_AVAILABLE:
+                raise ImportError("SD35LargeGenerator 不可用，请检查 sd35_large_generator.py")
+            self.image_generator = SD35LargeGenerator(model_path=model_path)
+            generator_model_name = "sd3.5-large"
+        elif generator_type == "qwen-image-lightning":
+            if not QWEN_IMAGE_LIGHTNING_AVAILABLE:
+                raise ImportError("QwenImageLightningGenerator 不可用，请检查 qwen_image_lightning_generator.py")
+            self.image_generator = QwenImageLightningGenerator(model_path=model_path)
+            generator_model_name = "qwen-image-lightning"
         elif generator_type == "flux-dev":
             if not FLUX_DEV_AVAILABLE:
                 raise ImportError("FluxGenerator 不可用，请检查 flux_generator.py")
@@ -488,7 +521,7 @@ def main():
         "--generator",
         type=str,
         default="sdxl",
-        choices=["sdxl", "flux-dev", "flux-schnell"],
+        choices=["sdxl", "flux-dev", "flux-schnell", "hunyuan-dit", "sd3.5-large", "qwen-image-lightning"],
         help="图像生成器类型（默认：sdxl）"
     )
     parser.add_argument(

@@ -1,6 +1,6 @@
 # dimension_requirements.yaml
 # 维度-标签兼容性规则
-# 基于 quality_dimensions_v3.json 的 prompt_strategy 和 semantic_tag_requirements.json 推导
+# 基于 quality_dimensions_active.json 的 prompt_strategy 和 semantic_tag_requirements.json 推导
 #
 # required_tags: 至少一个必须匹配才兼容（OR 逻辑）
 # preferred_tags: 优先选择，但非必需
@@ -30,9 +30,6 @@ impossible_pose:
 
 animal_anatomy_error:
   required_tags: ["has_animal"]
-
-object_fusion:
-  required_tags: ["has_multiple_objects"]
 
 reflection_error:
   required_tags: ["has_reflective_surface"]

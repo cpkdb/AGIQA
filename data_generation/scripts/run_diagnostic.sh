@@ -3,7 +3,7 @@
 # 目的：验证 Judge 有效性、定位需调整的 system prompt、发现模型-维度兼容性
 #
 # 用法:
-#   bash scripts/run_diagnostic.sh                              # 全部 (6子组 × 2模型)
+#   bash scripts/run_diagnostic.sh                              # 全部 (6子组 × 多模型)
 #   bash scripts/run_diagnostic.sh sdxl                         # 只跑 SDXL (6子组)
 #   bash scripts/run_diagnostic.sh sdxl technical_quality       # SDXL + 技术质量
 #   bash scripts/run_diagnostic.sh sdxl semantic_anatomy        # SDXL + 语义-解剖
@@ -37,6 +37,9 @@ SEVERITIES="moderate,severe"
 # 使用模型 ID，让 diffusers 自动从 HF_HOME 缓存加载
 SDXL_MODEL_PATH="stabilityai/stable-diffusion-xl-base-1.0"
 FLUX_SCHNELL_MODEL_PATH="/root/autodl-tmp/flux-1-schnell"
+HUNYUAN_DIT_MODEL_PATH="/root/autodl-tmp/hunyuan-dit"
+SD35_LARGE_MODEL_PATH="/root/autodl-tmp/sd3.5-large"
+QWEN_IMAGE_LIGHTNING_MODEL_PATH="Qwen/Qwen-Image"
 
 ALL_GROUPS="technical_quality aesthetic_quality semantic_anatomy semantic_object semantic_spatial semantic_text"
 
@@ -131,6 +134,21 @@ fi
 # Flux-Schnell
 if [ "$FILTER_MODEL" = "all" ] || [ "$FILTER_MODEL" = "flux-schnell" ]; then
     run_model flux-schnell "$FLUX_SCHNELL_MODEL_PATH" 4 0.0
+fi
+
+# Hunyuan-DiT
+if [ "$FILTER_MODEL" = "all" ] || [ "$FILTER_MODEL" = "hunyuan-dit" ]; then
+    run_model hunyuan-dit "$HUNYUAN_DIT_MODEL_PATH" 30 5.0
+fi
+
+# SD3.5 Large
+if [ "$FILTER_MODEL" = "all" ] || [ "$FILTER_MODEL" = "sd3.5-large" ]; then
+    run_model sd3.5-large "$SD35_LARGE_MODEL_PATH" 28 4.5
+fi
+
+# Qwen-Image-Lightning
+if [ "$FILTER_MODEL" = "all" ] || [ "$FILTER_MODEL" = "qwen-image-lightning" ]; then
+    run_model qwen-image-lightning "$QWEN_IMAGE_LIGHTNING_MODEL_PATH" 4 1.0
 fi
 
 echo ""

@@ -1,5 +1,5 @@
 # Semantic Rationality - Anatomy Degradation Prompt Templates V3
-# 语义合理性 - 解剖学退化策略 - 基于 quality_dimensions_v3.json
+# 语义合理性 - 解剖学退化策略 - 基于 quality_dimensions_active.json
 # 维度: hand_malformation, face_asymmetry, expression_mismatch, body_proportion_error, extra_limbs, impossible_pose, animal_anatomy_error
 
 semantic_anatomy:

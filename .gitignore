@@ -2,8 +2,8 @@
 *.pyc
 data_generation/outputs/
 data_generation/demo_output/
-data_generation/data/prompts/
-data_generation/data/*.json
+data_generation/data/
 *.png
 *.jpg
 *.out
+.ace-tool/

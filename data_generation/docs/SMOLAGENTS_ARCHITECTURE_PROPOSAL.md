@@ -39,7 +39,7 @@ judge_vlm:
 ### 0.3 维度配置
 
 使用最新的 v3 配置：
-- **维度定义**: `config/quality_dimensions_v3.json`（3 perspectives, 50 dimensions）
+- **维度定义**: `config/quality_dimensions_active.json`（3 perspectives, 35 active dimensions）
 - **策略模板**: `config/prompt_templates_v3/*.yaml`（6 个文件）
 
 ---
@@ -642,7 +642,7 @@ print(results.validation_report)
 | 编排层 | 无 | Python 循环，无需额外模型 |
 
 ### 9.4 配置文件（已确认）
-- [x] 维度定义：`config/quality_dimensions_v3.json`
+- [x] 维度定义：`config/quality_dimensions_active.json`
 - [x] 策略模板：`config/prompt_templates_v3/*.yaml`
 - [x] 现有机制完全保留（不同维度加载不同策略 prompt）
 

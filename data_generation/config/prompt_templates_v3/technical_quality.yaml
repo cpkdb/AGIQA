@@ -1,5 +1,5 @@
 # Technical Quality Degradation Prompt Templates V3
-# 技术质量退化策略 - 基于 quality_dimensions_v3.json
+# 技术质量退化策略 - 基于 quality_dimensions_active.json
 # 维度: blur, overexposure, underexposure, low_contrast, color_cast, desaturation, plastic_waxy_texture
 
 technical_quality:
@@ -245,4 +245,3 @@ technical_quality:
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of plastic or waxy texture.
       Output only the rewritten prompt.
-

@@ -127,8 +127,6 @@ DIMENSION_GUIDELINES = {
     "awkward_framing": "Unflattering camera angle or perspective distortion (e.g., wide-angle face distortion)",
     "unbalanced_layout": "Severely off-center visual weight, extremely unbalanced composition",
     "cluttered_scene": "Background filled with cluttered/distracting objects interfering with subject",
-    "lack_of_depth": "Flat paper-like image lacking foreground/background depth layers",
-    "flat_lighting": "Monotonous uniform lighting lacking shadow/highlight dimension (ID photo-like)",
     "lighting_imbalance": "Chaotic light distribution with unexpected bright spots or dead blacks",
     "color_clash": "Jarring or disharmonious color combinations (e.g., saturated red-green clash)",
     "dull_palette": "Dull, depressing, or boring color tones lacking appeal",
@@ -144,14 +142,11 @@ DIMENSION_GUIDELINES = {
 
     # === Semantic Rationality: Object ===
     "object_shape_error": "Common objects with distorted, melted, or collapsed shapes",
-    "object_fusion": "Independent objects unreasonably fused or merged together",
-    "missing_parts": "Objects missing critical components (e.g., car without wheels)",
     "extra_objects": "Duplicate, out-of-context, or logically irrelevant redundant objects in scene",
     "count_error": "Generated object count not matching expected quantity",
     "illogical_colors": "Objects with counter-intuitive colors (e.g., blue flames, purple grass)",
 
     # === Semantic Rationality: Spatial ===
-    "perspective_error": "Incorrect spatial perspective violating geometric logic (Escher-like illusions)",
     "scale_inconsistency": "Severely counter-intuitive size ratios between objects (e.g., giant insects)",
     "floating_objects": "Gravity-affected objects floating in air without support",
     "penetration_overlap": "Physically impossible interpenetration or overlap of solid objects",
@@ -175,13 +170,12 @@ DIMENSION_CATEGORIES = {
     "technical_quality": ["blur", "overexposure", "underexposure", "low_contrast",
                           "color_cast", "desaturation", "plastic_waxy_texture"],
     "aesthetic_quality": ["awkward_positioning", "awkward_framing", "unbalanced_layout",
-                          "cluttered_scene", "lack_of_depth", "flat_lighting",
-                          "lighting_imbalance", "color_clash", "dull_palette"],
+                          "cluttered_scene", "lighting_imbalance", "color_clash",
+                          "dull_palette"],
     "semantic_rationality": ["hand_malformation", "face_asymmetry", "expression_mismatch",
                              "body_proportion_error", "extra_limbs", "impossible_pose",
-                             "animal_anatomy_error", "object_shape_error", "object_fusion",
-                             "missing_parts", "extra_objects", "count_error", "illogical_colors",
-                             "perspective_error", "scale_inconsistency", "floating_objects",
+                             "animal_anatomy_error", "object_shape_error", "extra_objects",
+                             "count_error", "illogical_colors", "scale_inconsistency", "floating_objects",
                              "penetration_overlap", "shadow_mismatch", "reflection_error",
                              "context_mismatch", "time_inconsistency", "scene_layout_error",
                              "text_error", "logo_symbol_error"]

@@ -26,7 +26,7 @@ def _get_degrader():
         config_dir = Path(__file__).parent.parent.parent / "config"
         _degrader_instance = LLMPromptDegradation(
             llm_config_path=str(config_dir / "llm_config.yaml"),
-            quality_dimensions_path=str(config_dir / "quality_dimensions_v3.json")
+            quality_dimensions_path=str(config_dir / "quality_dimensions_active.json")
         )
     return _degrader_instance
 
@@ -57,7 +57,7 @@ def prompt_degrader(
         positive_prompt: The original high-quality prompt to degrade.
         subcategory: The degradation category. Available options include:
                      - technical_quality: blur, overexposure, underexposure, low_contrast, etc.
-                     - aesthetic_quality: awkward_positioning, flat_lighting, color_clash, etc.
+                     - aesthetic_quality: awkward_positioning, awkward_framing, unbalanced_layout, color_clash, etc.
                      - semantic_rationality: hand_malformation, face_asymmetry, object_shape_error, etc.
         attribute: Specific attribute to degrade (e.g., 'blur', 'hand_malformation').
                    If None, randomly selects one from the subcategory.

@@ -46,6 +46,9 @@ from llm_prompt_degradation import LLMPromptDegradation
 from sdxl_generator import SDXLGenerator
 from flux_generator import FluxGenerator
 from flux_schnell_generator import FluxSchnellGenerator
+from hunyuan_dit_generator import HunyuanDiTGenerator
+from sd35_large_generator import SD35LargeGenerator
+from qwen_image_lightning_generator import QwenImageLightningGenerator
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -371,7 +374,7 @@ def main():
     parser.add_argument(
         "--quality_dimensions",
         type=str,
-        default="/root/ImageReward/data_generation/config/quality_dimensions_v3.json",
+        default="/root/ImageReward/data_generation/config/quality_dimensions_active.json",
         help="退化维度元信息（用于 category/description 回填）",
     )
     parser.add_argument(
@@ -488,13 +491,18 @@ def main():
         "--model_id",
         type=str,
         default="sdxl",
-        choices=["sdxl", "flux", "flux-schnell"],
-        help="使用的生成模型 ID (sdxl, flux 或 flux-schnell)",
+        choices=["sdxl", "flux", "flux-schnell", "hunyuan-dit", "sd3.5-large", "qwen-image-lightning"],
+        help="使用的生成模型 ID (sdxl, flux, flux-schnell, hunyuan-dit, sd3.5-large 或 qwen-image-lightning)",
     )
     parser.add_argument(
         "--optimize",
         action="store_true",
         help="启用速度优化模式（仅 flux-schnell，T5 4-bit + FP8，需要 ~17GB 显存）",
+    )
+    parser.add_argument(
+        "--use_cpu_offload",
+        action="store_true",
+        help="启用 CPU offload（推荐仅在 SD3.5 Large 显存不足时使用）",
     )
     args = parser.parse_args()
 
@@ -608,6 +616,15 @@ def main():
     elif args.model_id == "flux-schnell":
         logger.info("正在初始化 Flux.1-schnell 生成器")
         sdxl = FluxSchnellGenerator(optimize_for_speed=args.optimize, enable_compile=args.optimize)
+    elif args.model_id == "hunyuan-dit":
+        logger.info(f"正在初始化 Hunyuan-DiT 生成器: {args.model_path}")
+        sdxl = HunyuanDiTGenerator(model_path=args.model_path, use_cpu_offload=args.use_cpu_offload)
+    elif args.model_id == "sd3.5-large":
+        logger.info(f"正在初始化 SD3.5 Large 生成器: {args.model_path}")
+        sdxl = SD35LargeGenerator(model_path=args.model_path, use_cpu_offload=args.use_cpu_offload)
+    elif args.model_id == "qwen-image-lightning":
+        logger.info(f"正在初始化 Qwen-Image-Lightning 生成器: {args.model_path}")
+        sdxl = QwenImageLightningGenerator(model_path=args.model_path, use_low_mem=args.use_cpu_offload)
     else:
         logger.info(f"正在初始化 SDXL 生成器: {args.model_path}")
         sdxl = SDXLGenerator(model_path=args.model_path)

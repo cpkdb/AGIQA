@@ -1,0 +1,14 @@
+{
+  "description": "Example runtime settings for positive prompt backfill execution. Fill in your own llm_config path and adjust scope as needed.",
+  "llm_config": "/absolute/path/to/your/llm_config.yaml",
+  "output_dir": "/absolute/path/to/output/positive_prompt_backfill_run",
+  "dimensions": [
+    "text_error",
+    "hand_malformation"
+  ],
+  "max_dimensions": null,
+  "batch_size_prompts_per_request": 5,
+  "max_requests": null,
+  "sleep_seconds": 0.0,
+  "execute": false
+}

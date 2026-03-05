@@ -66,7 +66,7 @@ compatible, reason = router.is_compatible(sig, "animal_anatomy_error")
 
 ### 兼容性规则 (`dimension_requirements.yaml`)
 
-17 个维度配置了标签要求，其余维度默认兼容：
+16 个维度配置了标签要求，其余维度默认兼容：
 
 | 维度 | 必需标签 (OR) | 优先标签 |
 |------|-------------|---------|
@@ -164,7 +164,7 @@ passed = optimizer.check_guardrails("blur", template)
 | **文件** | `scripts/llm_prompt_degradation.py:38` |
 | **Tool 封装** | `scripts/tools/prompt_degrader.py` |
 | **LLM** | GPT-4o (OpenAI API) |
-| **模板** | `config/prompt_templates_v3/*.yaml` — 50 维度 × 3 严重度 ≈ 150 个策略模板 |
+| **模板** | `config/prompt_templates_v3/*.yaml` — 35 维度 × 3 严重度 ≈ 105 个策略模板 |
 
 ### 核心方法签名
 
@@ -273,13 +273,13 @@ STYLE_ANCHORS = {
 
 ### 覆盖的退化维度
 
-50 个维度分为 5 大类，每个维度在 Judge Prompt 中有独立的检查指引 (`DIMENSION_GUIDELINES` dict)：
+当前生效的 35 个维度分为 5 大类，每个维度在 Judge Prompt 中有独立的检查指引 (`DIMENSION_GUIDELINES` dict)：
 
 - **Technical Quality** (7): blur, overexposure, underexposure, low_contrast, color_cast, desaturation, plastic_waxy_texture
-- **Aesthetic Quality** (9): awkward_positioning, awkward_framing, unbalanced_layout, cluttered_scene, lack_of_depth, flat_lighting, lighting_imbalance, color_clash, dull_palette
+- **Aesthetic Quality** (7): awkward_positioning, awkward_framing, unbalanced_layout, cluttered_scene, lighting_imbalance, color_clash, dull_palette
 - **Semantic: Anatomy** (7): hand_malformation, face_asymmetry, expression_mismatch, body_proportion_error, extra_limbs, impossible_pose, animal_anatomy_error
-- **Semantic: Object** (6): object_shape_error, object_fusion, missing_parts, extra_objects, count_error, illogical_colors
-- **Semantic: Spatial/Physical/Scene/Text** (5+): perspective_error, scale_inconsistency, floating_objects, shadow_mismatch, text_error, ...
+- **Semantic: Object** (4): object_shape_error, extra_objects, count_error, illogical_colors
+- **Semantic: Spatial/Physical/Scene/Text** (10): scale_inconsistency, floating_objects, penetration_overlap, shadow_mismatch, reflection_error, context_mismatch, time_inconsistency, scene_layout_error, text_error, logo_symbol_error
 
 ---
 
@@ -437,10 +437,10 @@ python scripts/pipeline.py \
 |------|------|-------|
 | `config/llm_config.yaml` | GPT-4o API 配置 | Stage 3 |
 | `config/judge_config.yaml` | VLM (Gemini) API 配置 | Stage 5 |
-| `config/quality_dimensions_v3.json` | 50 维度定义 (含 L1/L2/L3 可控性) | Stage 2, Pipeline |
-| `config/prompt_templates_v3/*.yaml` | 150 个策略模板 | Stage 3 |
+| `config/quality_dimensions_active.json` | 35 维度定义（当前生效，含 L1/L2 可控性） | Stage 2, Pipeline |
+| `config/prompt_templates_v3/*.yaml` | 约 105 个策略模板（按组组织） | Stage 3 |
 | `config/semantic_tag_requirements.json` | 14 种语义标签定义 + 关键词 | Stage 1 |
-| `config/dimension_requirements.yaml` | 17 个维度的标签兼容规则 | Stage 1 |
+| `config/dimension_requirements.yaml` | 16 个维度的标签兼容规则 | Stage 1 |
 | `config/template_constraints.yaml` | 7 个维度的防漂移约束 | Stage 2 |
 
 ---

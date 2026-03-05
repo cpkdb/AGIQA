@@ -275,19 +275,13 @@
       }
     },
     "aesthetic_quality": {
-      "poor_composition_centered": null,
-      "poor_composition_cropped": null,
+      "awkward_positioning": null,
+      "awkward_framing": null,
       "unbalanced_layout": null,
       "cluttered_scene": null,
-      "lack_of_depth": null,
-      "flat_lighting": null,
-      "harsh_lighting": null,
       "lighting_imbalance": null,
       "color_clash": null,
-      "dull_palette": null,
-      "cheap_render_quality": null,
-      "overprocessed_look": null,
-      "amateur_look": null
+      "dull_palette": null
     },
     "semantic_rationality": {
       "hand_malformation": {
@@ -351,19 +345,6 @@
         "required": null,
         "note": "有结构物体（家具、交通工具、建筑等）效果更好"
       },
-      "object_fusion": {
-        "required": [
-          "has_multiple_objects"
-        ],
-        "note": "必须有多个物体才能融合"
-      },
-      "missing_parts": {
-        "preferred": [
-          "has_deformable_object"
-        ],
-        "required": null,
-        "note": "有结构物体效果更好"
-      },
       "extra_objects": null,
       "count_error": {
         "preferred": [
@@ -372,11 +353,9 @@
         "required": null,
         "note": "有可计数物体效果更好"
       },
-      "attribute_mismatch": null,
       "illogical_colors": null
     },
     "semantic_spatial": {
-      "perspective_error": null,
       "scale_inconsistency": {
         "preferred": [
           "has_multiple_objects"
@@ -401,21 +380,12 @@
       },
       "context_mismatch": null,
       "time_inconsistency": null,
-      "missing_key_element": null,
-      "unexpected_element": null,
       "scene_layout_error": {
         "preferred": [
           "has_indoor_scene"
         ],
         "required": null,
         "note": "室内场景的布局错误更明显"
-      },
-      "background_discrepancy": {
-        "preferred": [
-          "has_background"
-        ],
-        "required": null,
-        "note": "有前景背景分离的图像效果更好"
       }
     },
     "semantic_text": {
@@ -437,18 +407,16 @@
     }
   },
   "summary": {
-    "total_dimensions": 55,
+    "total_dimensions": 35,
     "dimensions_requiring_tags": {
       "strict_required": [
-        "hand_finger_anomaly",
-        "hand_pose_unnatural",
+        "hand_malformation",
         "face_asymmetry",
         "expression_mismatch",
         "body_proportion_error",
         "extra_limbs",
         "impossible_pose",
         "animal_anatomy_error",
-        "object_fusion",
         "reflection_error",
         "text_error",
         "logo_symbol_error"
@@ -459,32 +427,27 @@
         "object_shape_error",
         "scale_inconsistency",
         "penetration_overlap",
-        "scene_layout_error",
-        "background_discrepancy"
+        "scene_layout_error"
       ]
     },
     "required_tags_usage": {
       "has_person": [
+        "expression_mismatch",
         "body_proportion_error",
         "extra_limbs",
-        "impossible_pose",
-        "hand_finger_anomaly(alt)",
-        "hand_pose_unnatural(alt)"
+        "impossible_pose"
       ],
       "has_face": [
         "face_asymmetry",
         "expression_mismatch"
       ],
       "has_hand": [
-        "hand_finger_anomaly",
-        "hand_pose_unnatural"
+        "hand_malformation"
       ],
       "has_animal": [
         "animal_anatomy_error"
       ],
-      "has_multiple_objects": [
-        "object_fusion"
-      ],
+      "has_multiple_objects": [],
       "has_reflective_surface": [
         "reflection_error"
       ],

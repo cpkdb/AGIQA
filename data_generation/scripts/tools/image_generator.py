@@ -4,7 +4,6 @@ Image Generator Tool
 支持多模型注册机制
 """
 
-import json
 import os
 import sys
 import uuid
@@ -33,9 +32,13 @@ class ImageGeneratorRegistry:
     @classmethod
     def register(cls, model_id: str, generator_class: Type, config: Dict = None):
         """注册生成器类"""
+        previous_config = cls._configs.get(model_id)
+        if previous_config != (config or {}) and model_id in cls._instances:
+            instance = cls._instances.pop(model_id)
+            if hasattr(instance, 'cleanup'):
+                instance.cleanup()
         cls._generators[model_id] = generator_class
-        if config:
-            cls._configs[model_id] = config
+        cls._configs[model_id] = config or {}
         logger.info(f"Registered generator: {model_id}")
 
     @classmethod
@@ -124,6 +127,62 @@ def _register_flux_schnell(model_path: str = None, optimize: bool = False):
         logger.warning(f"Failed to register Flux-Schnell: {e}")
 
 
+# Hunyuan-DiT 生成器配置
+_hunyuan_dit_config = {}
+
+
+def _register_hunyuan_dit(model_path: str = None, use_cpu_offload: bool = False):
+    """延迟注册 Hunyuan-DiT，避免启动时加载模型"""
+    global _hunyuan_dit_config
+    if model_path:
+        _hunyuan_dit_config['model_path'] = model_path
+    _hunyuan_dit_config['use_cpu_offload'] = use_cpu_offload
+    try:
+        from hunyuan_dit_generator import HunyuanDiTGenerator
+        ImageGeneratorRegistry.register("hunyuan-dit", HunyuanDiTGenerator, _hunyuan_dit_config)
+    except ImportError as e:
+        logger.warning(f"Failed to register Hunyuan-DiT: {e}")
+
+
+# SD3.5 Large 生成器配置
+_sd35_large_config = {}
+
+
+def _register_sd35_large(model_path: str = None, use_cpu_offload: bool = False):
+    """延迟注册 SD3.5 Large，避免启动时加载模型"""
+    global _sd35_large_config
+    if model_path:
+        _sd35_large_config['model_path'] = model_path
+    _sd35_large_config['use_cpu_offload'] = use_cpu_offload
+    _sd35_large_config['prefer_quantized'] = True
+    try:
+        from sd35_large_generator import SD35LargeGenerator
+        ImageGeneratorRegistry.register("sd3.5-large", SD35LargeGenerator, _sd35_large_config)
+    except ImportError as e:
+        logger.warning(f"Failed to register SD3.5 Large: {e}")
+
+
+# Qwen-Image-Lightning 生成器配置
+_qwen_image_lightning_config = {}
+
+
+def _register_qwen_image_lightning(model_path: str = None, use_cpu_offload: bool = False):
+    """延迟注册 Qwen-Image-Lightning，避免启动时加载模型"""
+    global _qwen_image_lightning_config
+    if model_path:
+        _qwen_image_lightning_config['model_path'] = model_path
+    _qwen_image_lightning_config['use_low_mem'] = use_cpu_offload
+    try:
+        from qwen_image_lightning_generator import QwenImageLightningGenerator
+        ImageGeneratorRegistry.register(
+            "qwen-image-lightning",
+            QwenImageLightningGenerator,
+            _qwen_image_lightning_config,
+        )
+    except ImportError as e:
+        logger.warning(f"Failed to register Qwen-Image-Lightning: {e}")
+
+
 # 默认输出目录
 DEFAULT_OUTPUT_DIR = Path("/tmp/generated_images")
 
@@ -141,13 +200,13 @@ def image_generator(
     cfg: float = 7.5,
     width: int = 1024,
     height: int = 1024,
-    optimize: bool = False
+    optimize: bool = False,
+    use_cpu_offload: bool = False,
 ) -> str:
     """
     Generate an image using the specified model.
 
-    This tool generates images using text-to-image models. Currently supports
-    SDXL and Flux.1-dev.
+    This tool generates images using text-to-image models.
 
     Args:
         prompt: The text prompt describing the image to generate.
@@ -157,6 +216,9 @@ def image_generator(
                   - "sdxl": Stable Diffusion XL (default)
                   - "flux": Flux.1-dev
                   - "flux-schnell": Flux.1-schnell (4-step fast generation)
+                  - "hunyuan-dit": Hunyuan-DiT
+                  - "sd3.5-large": Stable Diffusion 3.5 Large
+                  - "qwen-image-lightning": Qwen-Image-Lightning
         negative_prompt: Negative prompt to avoid certain qualities in the image.
         output_dir: Directory to save generated images (used if output_path not specified).
         output_path: Exact path to save the image (overrides output_dir if provided).
@@ -168,17 +230,24 @@ def image_generator(
         width: Image width (default: 1024).
         height: Image height (default: 1024).
         optimize: Enable speed optimization for Flux-Schnell (T5 4-bit + FP8 + compile).
+        use_cpu_offload: Enable CPU offload for memory-constrained models such as SD3.5 Large.
 
     Returns:
         Path to the generated image file as a string.
     """
     # 确保模型已注册
-    if model_id == "sdxl" and "sdxl" not in ImageGeneratorRegistry._generators:
+    if model_id == "sdxl":
         _register_sdxl(model_path)
-    elif model_id == "flux" and "flux" not in ImageGeneratorRegistry._generators:
+    elif model_id == "flux":
         _register_flux(model_path)
-    elif model_id == "flux-schnell" and "flux-schnell" not in ImageGeneratorRegistry._generators:
+    elif model_id == "flux-schnell":
         _register_flux_schnell(model_path, optimize=optimize)
+    elif model_id == "hunyuan-dit":
+        _register_hunyuan_dit(model_path, use_cpu_offload=use_cpu_offload)
+    elif model_id == "sd3.5-large":
+        _register_sd35_large(model_path, use_cpu_offload=use_cpu_offload)
+    elif model_id == "qwen-image-lightning":
+        _register_qwen_image_lightning(model_path, use_cpu_offload=use_cpu_offload)
 
     # 获取生成器
     generator = ImageGeneratorRegistry.get(model_id)
@@ -204,6 +273,12 @@ def image_generator(
         final_model_path = model_path or _flux_config.get('model_path')
     elif model_id == "flux-schnell":
         final_model_path = model_path or _flux_schnell_config.get('model_path')
+    elif model_id == "hunyuan-dit":
+        final_model_path = model_path or _hunyuan_dit_config.get('model_path')
+    elif model_id == "sd3.5-large":
+        final_model_path = model_path or _sd35_large_config.get('model_path')
+    elif model_id == "qwen-image-lightning":
+        final_model_path = model_path or _qwen_image_lightning_config.get('model_path')
     else:
         final_model_path = model_path
 

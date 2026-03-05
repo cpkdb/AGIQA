@@ -4,13 +4,11 @@ Data Generation Pipeline (Closed-Loop)
 基于 smolagents tools 的数据生成主脚本
 实现 生成 → 判别 → 诊断 → 修正 → 重新生成 的闭环流程
 
-6阶段 Workflow (可选启用):
-  Stage 1: 数据筛选 (prompt_filter)           --tagged_prompts + --tag_requirements
+4阶段 Workflow:
   Stage 2: 策略选择 (StrategyOptimizer)        (自动)
   Stage 3: 质量退化 (LLM prompt rewrite)       (现有)
   Stage 4: 图像生成 (SDXL/Flux)                (现有)
   Stage 5: 正负样本检验 (VLM Judge)             (现有，多维度评分)
-  Stage 6: 反馈优化 (KnowledgeBase)            --knowledge_base_dir
 """
 
 import argparse
@@ -22,7 +20,7 @@ import random
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import List, Dict, Optional, Set, Tuple
+from typing import Any, List, Dict, Optional, Set, Tuple
 
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -33,6 +31,103 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+
+def _load_source_prompt_rows(source_prompts_path: Path) -> List[Any]:
+    """
+    统一加载 source prompts，支持 JSON / JSONL。
+
+    支持格式：
+    - JSON list: ["...", {"prompt": "..."}]
+    - JSON object: {"prompts": [...]}
+    - JSONL: 每行一个字符串或对象（需含 prompt/text 字段）
+    """
+    suffix = source_prompts_path.suffix.lower()
+
+    if suffix == ".jsonl":
+        rows: List[Any] = []
+        with source_prompts_path.open("r", encoding="utf-8") as handle:
+            for line_no, line in enumerate(handle, start=1):
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    rows.append(json.loads(line))
+                except json.JSONDecodeError as exc:
+                    raise ValueError(
+                        f"Invalid JSONL at {source_prompts_path}:{line_no}: {exc}"
+                    ) from exc
+        return rows
+
+    with source_prompts_path.open("r", encoding="utf-8") as handle:
+        payload = json.load(handle)
+
+    if isinstance(payload, list):
+        return payload
+    if isinstance(payload, dict) and "prompts" in payload and isinstance(payload["prompts"], list):
+        return payload["prompts"]
+    raise ValueError("Invalid prompts file format: expected JSON list, {'prompts': [...]}, or JSONL")
+
+
+def _load_dimension_subpool_registry(
+    index_path: Path,
+    subpool_dir: Optional[Path] = None,
+) -> Tuple[Path, Dict[str, Dict[str, Any]]]:
+    """加载维度子池索引（index.json）。"""
+    with index_path.open("r", encoding="utf-8") as handle:
+        payload = json.load(handle)
+    dimensions = payload.get("dimensions")
+    if not isinstance(dimensions, dict):
+        raise ValueError(f"Invalid subpool index: missing `dimensions` in {index_path}")
+    resolved_dir = subpool_dir if subpool_dir else index_path.parent
+    return resolved_dir, dimensions
+
+
+def _normalize_prompt_record(item: Any, model_filter: Optional[str] = None) -> Tuple[Optional[Dict[str, Any]], bool]:
+    """
+    统一标准化 prompt 记录。
+
+    Returns:
+      (record, dropped_by_model_filter)
+    """
+    if isinstance(item, str):
+        text = item.strip()
+        if not text:
+            return None, False
+        return {
+            "prompt": text,
+            "tags": [],
+            "semantic_tags": [],
+            "prompt_signature": None,
+        }, False
+
+    if not isinstance(item, dict):
+        return None, False
+
+    model_name = str(item.get("model", "") or "").strip()
+    # 仅当样本显式携带 model 字段时才做过滤，避免误伤新 prompt 池数据
+    if model_filter and model_name and model_filter not in model_name:
+        return None, True
+
+    prompt_text = str(item.get("prompt", item.get("text", "")) or "").strip()
+    if not prompt_text:
+        return None, False
+
+    semantic_tags = item.get("semantic_tags", item.get("tags", []))
+    if isinstance(semantic_tags, str):
+        semantic_tags = [semantic_tags]
+    if not isinstance(semantic_tags, list):
+        semantic_tags = []
+
+    prompt_signature = item.get("prompt_signature", item.get("signature"))
+
+    return {
+        "prompt": prompt_text,
+        "tags": semantic_tags,
+        "semantic_tags": semantic_tags,
+        "prompt_signature": prompt_signature,
+        "model": model_name,
+    }, False
 
 
 class DataGenerationPipeline:
@@ -120,9 +215,6 @@ class DataGenerationPipeline:
         model_id: str = "sdxl",
         model_path: str = None,
         max_retries: int = 2,
-        enable_routing: bool = False,
-        enable_feedback: bool = False,
-        knowledge_base_dir: str = None,
     ):
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -135,7 +227,7 @@ class DataGenerationPipeline:
 
         # 加载维度配置
         if quality_dimensions_path is None:
-            quality_dimensions_path = Path(__file__).parent.parent / "config" / "quality_dimensions_v3.json"
+            quality_dimensions_path = Path(__file__).parent.parent / "config" / "quality_dimensions_active.json"
         with open(quality_dimensions_path, 'r', encoding='utf-8') as f:
             self.dimensions_config = json.load(f)
 
@@ -144,20 +236,9 @@ class DataGenerationPipeline:
 
         self.severities = ["moderate", "severe"]
 
-        # Stage 1: SemanticRouter（可选）
-        self.router = None
-        if enable_routing:
-            from semantic_router import SemanticRouter
-            self.router = SemanticRouter()
-            logger.info("Stage 1 (SemanticRouter) enabled")
-
-        # Stage 6: KnowledgeBase（可选）
-        self.knowledge_base = None
-        if enable_feedback:
-            from knowledge_base import KnowledgeBase
-            kb_dir = knowledge_base_dir or str(self.output_dir / "knowledge_base")
-            self.knowledge_base = KnowledgeBase(path=kb_dir)
-            logger.info(f"Stage 6 (KnowledgeBase) enabled: {kb_dir}")
+        # 维度子池（可选）
+        self.dimension_subpool_dir: Optional[Path] = None
+        self.dimension_subpool_registry: Dict[str, Dict[str, Any]] = {}
 
         # 断点续跑: 已完成的 pair
         self._completed_pairs: Set[str] = set()
@@ -192,6 +273,67 @@ class DataGenerationPipeline:
             },
             "pairs": []
         }
+
+    def configure_dimension_subpools(
+        self,
+        subpool_dir: Path,
+        dimension_registry: Dict[str, Dict[str, Any]],
+    ) -> None:
+        """配置按维度的正样本子池索引。"""
+        self.dimension_subpool_dir = Path(subpool_dir)
+        self.dimension_subpool_registry = dict(dimension_registry or {})
+        logger.info(
+            f"Configured dimension subpools: {len(self.dimension_subpool_registry)} dims from {self.dimension_subpool_dir}"
+        )
+
+    def _sample_from_dimension_subpool(
+        self,
+        dimension: str,
+        sample_size: int,
+        rng: random.Random,
+    ) -> List[Dict[str, Any]]:
+        """从指定维度子池 JSONL 进行蓄水池抽样，避免整文件加载。"""
+        if sample_size <= 0:
+            return []
+        if not self.dimension_subpool_registry or not self.dimension_subpool_dir:
+            return []
+        meta = self.dimension_subpool_registry.get(dimension)
+        if not isinstance(meta, dict):
+            return []
+        filename = meta.get("filename")
+        if not filename:
+            return []
+        subpool_path = self.dimension_subpool_dir / filename
+        if not subpool_path.exists():
+            logger.warning(f"[Subpool] Missing file for {dimension}: {subpool_path}")
+            return []
+
+        sampled: List[Dict[str, Any]] = []
+        seen = 0
+        with subpool_path.open("r", encoding="utf-8") as handle:
+            for line_no, line in enumerate(handle, start=1):
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    raw = json.loads(line)
+                except json.JSONDecodeError:
+                    logger.warning(f"[Subpool] Invalid JSONL line: {subpool_path}:{line_no}")
+                    continue
+                record, _ = _normalize_prompt_record(raw, model_filter=None)
+                if record is None:
+                    continue
+                seen += 1
+                if len(sampled) < sample_size:
+                    sampled.append(record)
+                else:
+                    replace_idx = rng.randint(0, seen - 1)
+                    if replace_idx < sample_size:
+                        sampled[replace_idx] = record
+
+        if not sampled:
+            logger.warning(f"[Subpool] No valid prompts for {dimension} from {subpool_path}")
+        return sampled
 
     def _load_checkpoint(self):
         """从 full_log.json 加载已完成的 pair，支持断点续跑"""
@@ -353,7 +495,8 @@ class DataGenerationPipeline:
                     cfg=gen_cfg.get('cfg', 7.5),
                     width=gen_cfg.get('width', 1024),
                     height=gen_cfg.get('height', 1024),
-                    optimize=gen_cfg.get('optimize', False)
+                    optimize=gen_cfg.get('optimize', False),
+                    use_cpu_offload=gen_cfg.get('use_cpu_offload', False),
                 )
             except Exception as e:
                 logger.error(f"[{pair_id}] Positive image generation failed: {e}")
@@ -473,7 +616,8 @@ class DataGenerationPipeline:
                     cfg=gen_cfg.get('cfg', 7.5),
                     width=gen_cfg.get('width', 1024),
                     height=gen_cfg.get('height', 1024),
-                    optimize=gen_cfg.get('optimize', False)
+                    optimize=gen_cfg.get('optimize', False),
+                    use_cpu_offload=gen_cfg.get('use_cpu_offload', False),
                 )
                 attempt_record["negative_image_path"] = neg_image_path
             except Exception as e:
@@ -562,7 +706,8 @@ class DataGenerationPipeline:
                             cfg=gen_cfg.get('cfg', 7.5),
                             width=gen_cfg.get('width', 1024),
                             height=gen_cfg.get('height', 1024),
-                            optimize=gen_cfg.get('optimize', False)
+                            optimize=gen_cfg.get('optimize', False),
+                            use_cpu_offload=gen_cfg.get('use_cpu_offload', False),
                         )
                         logger.info(f"[{pair_id}] Positive sample regenerated with style anchor")
 
@@ -711,27 +856,17 @@ class DataGenerationPipeline:
         if systematic:
             return self._run_systematic(prompts, num_pairs_per_prompt, dimensions, perspectives, base_seed)
         logger.info(f"Starting closed-loop pipeline: {len(prompts)} prompts x {num_pairs_per_prompt} pairs (max_retries={self.max_retries})")
-        if self.router:
-            logger.info("Stage 1 (SemanticRouter) active")
-        if self.knowledge_base:
-            logger.info("Stage 6 (KnowledgeBase) active")
 
         seed_counter = base_seed
         total_target = len(prompts) * num_pairs_per_prompt
-        skipped_routing = 0
         skipped_checkpoint = 0
-        skipped_paused = 0
-        skipped_incompat = 0
 
         for prompt_idx, prompt_item in enumerate(prompts):
             positive_prompt = prompt_item["prompt"] if isinstance(prompt_item, dict) else prompt_item
             logger.info(f"\n{'='*60}")
             logger.info(f"Prompt [{prompt_idx+1}/{len(prompts)}]: {positive_prompt[:80]}...")
 
-            # Stage 1: 预分析 prompt 语义标签
-            signature = None
-            if self.router:
-                signature = self.router.analyze(positive_prompt)
+            signature = prompt_item.get("prompt_signature") if isinstance(prompt_item, dict) else None
 
             for pair_idx in range(num_pairs_per_prompt):
                 current = prompt_idx * num_pairs_per_prompt + pair_idx + 1
@@ -766,26 +901,6 @@ class DataGenerationPipeline:
                     logger.info(f"[Checkpoint] Skipping completed: {dimension}/{severity}")
                     continue
 
-                # Stage 1: SemanticRouter 兼容性筛选
-                if self.router and signature:
-                    compatible, reason = self.router.is_compatible(signature, dimension)
-                    if not compatible:
-                        skipped_routing += 1
-                        logger.info(f"[Stage 1] Skipped: {dimension} ({reason})")
-                        continue
-
-                # Stage 6: Circuit Breaker
-                if self.knowledge_base and self.knowledge_base.is_dimension_paused(dimension):
-                    skipped_paused += 1
-                    logger.info(f"[Stage 6] Skipped paused: {dimension}")
-                    continue
-
-                # Stage 6: 模型兼容性
-                if self.knowledge_base and not self.knowledge_base.is_model_compatible(self.model_id, dimension):
-                    skipped_incompat += 1
-                    logger.info(f"[Stage 6] Skipped incompat: {self.model_id}/{dimension}")
-                    continue
-
                 # Stage 2-5: 闭环生成
                 result = self.generate_pair_with_retry(
                     positive_prompt=positive_prompt,
@@ -795,19 +910,6 @@ class DataGenerationPipeline:
                     perspective=dim_info.get("perspective"),
                     prompt_signature=signature,
                 )
-
-                # Stage 6: 记录到知识库
-                if self.knowledge_base:
-                    validation = result.get("final_validation") or {}
-                    self.knowledge_base.report_outcome(
-                        dimension=dimension,
-                        severity=severity,
-                        model_id=self.model_id,
-                        template_id=f"{dimension}_{severity}",
-                        success=result["success"],
-                        scores=validation.get("scores"),
-                        failure_type=validation.get("failure"),
-                    )
 
                 # 记录到完整日志
                 self.full_log.append(result)
@@ -836,18 +938,13 @@ class DataGenerationPipeline:
                 # 定期保存
                 if current % 10 == 0:
                     self._save_results()
-                    if self.knowledge_base:
-                        self.knowledge_base.save()
 
         # 最终保存
         self._save_results()
-        if self.knowledge_base:
-            self.knowledge_base.save()
 
-        if skipped_routing or skipped_checkpoint or skipped_paused or skipped_incompat:
+        if skipped_checkpoint:
             logger.info(
-                f"Skipped: routing={skipped_routing}, checkpoint={skipped_checkpoint}, "
-                f"paused={skipped_paused}, incompat={skipped_incompat}"
+                f"Skipped: checkpoint={skipped_checkpoint}"
             )
 
         return {
@@ -944,30 +1041,44 @@ class DataGenerationPipeline:
             dimension = dim_info["dimension"]
             persp = dim_info.get("perspective")
 
-            # Circuit breaker（维度级别）
-            if self.knowledge_base and self.knowledge_base.is_dimension_paused(dimension):
-                skipped = num_prompts_per_dim * len(self.severities)
-                current += skipped
-                logger.info(f"[CB] Paused: {dimension}, skipping {skipped} pairs")
-                continue
-
-            # 按标签过滤 prompt 池，再随机选取 N 个
-            required_tags = self.DIMENSION_REQUIRED_TAGS.get(dimension, [])
-            if required_tags:
-                pool = [p for p in prompts if any(t in p.get("semantic_tags", p.get("tags", [])) for t in required_tags)]
-                if not pool:
-                    logger.warning(f"[TagFilter] {dimension} requires {required_tags} but no matching prompts, using full pool")
-                    pool = prompts
-                else:
-                    logger.info(f"[TagFilter] {dimension}: {len(pool)}/{len(prompts)} prompts match {required_tags}")
+            # 优先从维度子池采样；无子池/子池为空则回退旧逻辑
+            selected = self._sample_from_dimension_subpool(dimension, num_prompts_per_dim, rng)
+            if selected:
+                est_total = self.dimension_subpool_registry.get(dimension, {}).get("count")
+                logger.info(
+                    f"[Subpool] {dimension}: sampled {len(selected)} prompts"
+                    + (f" (pool_count={est_total})" if isinstance(est_total, int) else "")
+                )
             else:
-                pool = prompts
-            selected = rng.sample(pool, min(num_prompts_per_dim, len(pool)))
-            dim_prompts = [p["prompt"] if isinstance(p, dict) else p for p in selected]
+                # 按标签过滤 prompt 池，再随机选取 N 个
+                required_tags = self.DIMENSION_REQUIRED_TAGS.get(dimension, [])
+                if required_tags:
+                    pool = [p for p in prompts if any(t in p.get("semantic_tags", p.get("tags", [])) for t in required_tags)]
+                    if not pool:
+                        logger.warning(f"[TagFilter] {dimension} requires {required_tags} but no matching prompts, using full pool")
+                        pool = prompts
+                    else:
+                        logger.info(f"[TagFilter] {dimension}: {len(pool)}/{len(prompts)} prompts match {required_tags}")
+                else:
+                    pool = prompts
+                selected = rng.sample(pool, min(num_prompts_per_dim, len(pool)))
+            dim_prompt_items = []
+            for selected_item in selected:
+                if isinstance(selected_item, dict):
+                    dim_prompt_items.append({
+                        "prompt": selected_item.get("prompt", ""),
+                        "prompt_signature": selected_item.get("prompt_signature", selected_item.get("signature")),
+                    })
+                else:
+                    dim_prompt_items.append({
+                        "prompt": selected_item,
+                        "prompt_signature": None,
+                    })
 
             # --- 优化1: LLM 预批量 --- #
             prefetch_tasks = []
-            for positive_prompt in dim_prompts:
+            for prompt_item in dim_prompt_items:
+                positive_prompt = prompt_item["prompt"]
                 for severity in self.severities:
                     pair_key = self._make_pair_key(positive_prompt, dimension, severity)
                     if pair_key in self._completed_pairs:
@@ -985,7 +1096,9 @@ class DataGenerationPipeline:
             prefetch_cache = self._prefetch_negatives(prefetch_tasks) if prefetch_tasks else {}
 
             # --- 遍历 prompt → severity（同 prompt 共享 seed/正样本） --- #
-            for positive_prompt in dim_prompts:
+            for prompt_item in dim_prompt_items:
+                positive_prompt = prompt_item["prompt"]
+                prompt_signature = prompt_item.get("prompt_signature")
                 # 同 prompt 共享一个 seed
                 prompt_seed = seed_counter
                 seed_counter += 1
@@ -1012,6 +1125,7 @@ class DataGenerationPipeline:
                         severity=severity,
                         seed=prompt_seed,
                         perspective=persp,
+                        prompt_signature=prompt_signature,
                         prefetched_negative=prefetched,
                         positive_image_path=shared_pos_path,
                     )
@@ -1019,19 +1133,6 @@ class DataGenerationPipeline:
                     # 记录正样本路径供后续 severity 复用
                     if shared_pos_path is None and result.get("positive_image_path"):
                         shared_pos_path = result["positive_image_path"]
-
-                    # KnowledgeBase 记录
-                    if self.knowledge_base:
-                        validation = result.get("final_validation") or {}
-                        self.knowledge_base.report_outcome(
-                            dimension=dimension,
-                            severity=severity,
-                            model_id=self.model_id,
-                            template_id=f"{dimension}_{severity}",
-                            success=result["success"],
-                            scores=validation.get("scores"),
-                            failure_type=validation.get("failure"),
-                        )
 
                     self.full_log.append(result)
 
@@ -1056,12 +1157,8 @@ class DataGenerationPipeline:
 
                     if current % 10 == 0:
                         self._save_results()
-                        if self.knowledge_base:
-                            self.knowledge_base.save()
 
         self._save_results()
-        if self.knowledge_base:
-            self.knowledge_base.save()
 
         return {
             "stats": self.stats,
@@ -1120,7 +1217,7 @@ def main():
     parser = argparse.ArgumentParser(description="AIGC Quality Degradation Data Generation Pipeline (Closed-Loop)")
 
     parser.add_argument("--source_prompts", "--positive_source", type=str, required=True,
-                        help="Path to JSON file containing source prompts")
+                        help="Path to source prompts file (JSON or JSONL)")
     parser.add_argument("--output_dir", type=str, default="/root/autodl-tmp/pipeline_output",
                         help="Output directory")
     parser.add_argument("--quality_dimensions", type=str, default=None,
@@ -1151,8 +1248,9 @@ def main():
                         help="Systematic mode: iterate all dims × prompts × severities deterministically")
 
     # 图像生成配置
-    parser.add_argument("--model_id", type=str, default="sdxl", choices=["sdxl", "flux", "flux-schnell"],
-                        help="Generation model: sdxl, flux or flux-schnell (default: sdxl)")
+    parser.add_argument("--model_id", type=str, default="sdxl",
+                        choices=["sdxl", "flux", "flux-schnell", "hunyuan-dit", "sd3.5-large", "qwen-image-lightning"],
+                        help="Generation model: sdxl, flux, flux-schnell, hunyuan-dit, sd3.5-large or qwen-image-lightning (default: sdxl)")
     parser.add_argument("--model_path", type=str, default=None,
                         help="Model path (SDXL: /root/ckpts/sd_xl_base_1.0.safetensors, Flux: /root/autodl-tmp/flux-1-dev)")
     parser.add_argument("--steps", type=int, default=35,
@@ -1163,48 +1261,37 @@ def main():
     parser.add_argument("--height", type=int, default=1024)
     parser.add_argument("--optimize", action="store_true",
                         help="Enable speed optimization for Flux-Schnell (T5 4-bit + FP8 + compile)")
+    parser.add_argument("--use_cpu_offload", action="store_true",
+                        help="Enable CPU offload for memory-constrained models such as SD3.5 Large")
 
     # Prompt 筛选
     parser.add_argument("--model_filter", type=str, default="sdxl",
-                        help="Filter prompts by model name")
+                        help="Filter prompts by model name when the record has a non-empty `model` field")
 
-    # Stage 1: 标签筛选（可选）
-    parser.add_argument("--tagged_prompts", type=str, default=None,
-                        help="Path to tagged prompts JSON (enables Stage 1 filtering)")
-    parser.add_argument("--tag_requirements", type=str, default=None,
-                        help="Path to tag requirements JSON (requires --tagged_prompts)")
-
-    # Stage 6: 知识库（可选）
-    parser.add_argument("--knowledge_base_dir", type=str, default=None,
-                        help="Path to knowledge base directory (enables Stage 6 feedback)")
+    parser.add_argument("--dimension_subpool_index", type=str, default=None,
+                        help="Path to dimension subpool index.json; systematic mode will prefer per-dimension subpool sampling")
+    parser.add_argument("--dimension_subpool_dir", type=str, default=None,
+                        help="Override subpool directory containing per-dimension *.jsonl files (default: parent of index.json)")
 
     args = parser.parse_args()
 
     severities = [s.strip() for s in args.severities.split(',')]
 
-    # 加载 prompts
-    with open(args.source_prompts, 'r', encoding='utf-8') as f:
-        data = json.load(f)
-
-    if isinstance(data, list):
-        prompts_data = data
-    elif isinstance(data, dict) and "prompts" in data:
-        prompts_data = data["prompts"]
-    else:
-        raise ValueError("Invalid prompts file format")
+    source_prompts_path = Path(args.source_prompts)
+    prompt_rows = _load_source_prompt_rows(source_prompts_path)
 
     prompts = []
-    for item in prompts_data:
-        if isinstance(item, str):
-            prompts.append({"prompt": item, "tags": []})
-        elif isinstance(item, dict):
-            model = item.get("model", "")
-            if args.model_filter and args.model_filter not in model:
-                continue
-            prompts.append({
-                "prompt": item.get("prompt", ""),
-                "tags": item.get("semantic_tags", []),
-            })
+    dropped_by_model_filter = 0
+    dropped_invalid = 0
+    for item in prompt_rows:
+        record, dropped = _normalize_prompt_record(item, model_filter=args.model_filter)
+        if dropped:
+            dropped_by_model_filter += 1
+            continue
+        if record is None:
+            dropped_invalid += 1
+            continue
+        prompts.append(record)
 
     if args.shuffle:
         random.shuffle(prompts)
@@ -1212,7 +1299,10 @@ def main():
     if args.max_prompts:
         prompts = prompts[:args.max_prompts]
 
-    logger.info(f"Loaded {len(prompts)} prompts from {args.source_prompts}")
+    logger.info(
+        f"Loaded {len(prompts)} prompts from {args.source_prompts} "
+        f"(filtered_by_model={dropped_by_model_filter}, skipped_invalid={dropped_invalid})"
+    )
 
     # 创建闭环流水线
     pipeline = DataGenerationPipeline(
@@ -1221,9 +1311,22 @@ def main():
         model_id=args.model_id,
         model_path=args.model_path,
         max_retries=args.max_retries,
-        enable_feedback=bool(args.knowledge_base_dir),
-        knowledge_base_dir=args.knowledge_base_dir,
     )
+
+    if args.dimension_subpool_index:
+        subpool_index_path = Path(args.dimension_subpool_index)
+        subpool_dir_override = Path(args.dimension_subpool_dir) if args.dimension_subpool_dir else None
+        try:
+            subpool_dir, subpool_registry = _load_dimension_subpool_registry(
+                index_path=subpool_index_path,
+                subpool_dir=subpool_dir_override,
+            )
+            pipeline.configure_dimension_subpools(
+                subpool_dir=subpool_dir,
+                dimension_registry=subpool_registry,
+            )
+        except Exception as exc:
+            logger.warning(f"Failed to load dimension subpool index, fallback to global prompt pool: {exc}")
 
     pipeline.generation_config = {
         "model_path": args.model_path,
@@ -1231,7 +1334,8 @@ def main():
         "cfg": args.cfg,
         "width": args.width,
         "height": args.height,
-        "optimize": args.optimize
+        "optimize": args.optimize,
+        "use_cpu_offload": args.use_cpu_offload,
     }
     pipeline.severities = severities
 

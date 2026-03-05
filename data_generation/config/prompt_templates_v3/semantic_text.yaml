@@ -1,5 +1,5 @@
 # Semantic Rationality - Text & Symbol Degradation Prompt Templates V3
-# 语义合理性 - 文本/符号退化策略 - 基于 quality_dimensions_v3.json
+# 语义合理性 - 文本/符号退化策略 - 基于 quality_dimensions_active.json
 # 维度: text_error, logo_symbol_error
 
 semantic_text:

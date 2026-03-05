@@ -1,7 +1,7 @@
 # Prompt退化体系的全面启示与策略升级
 *基于 AAS Distillation 数据集分析的综合报告 (修订版：单一变量原则)*
 
-本文档基于对 AAS Distillation 数据集（800+ 高效退化样本）的深度分析，结合 `/root/ImageReward/data_generation/config/quality_dimensions_v3.json` 中定义的完整质量体系，总结出的核心方法论升级与全维度策略建议。
+本文档基于对 AAS Distillation 数据集（800+ 高效退化样本）的深度分析，结合 `/root/ImageReward/data_generation/config/quality_dimensions_active.json` 中定义的完整质量体系，总结出的核心方法论升级与全维度策略建议。
 
 **重要修订**：根据单一变量控制原则，退化策略必须在极大化“病态特征”的同时，**严格避免跨维度污染**（例如：颜色退化不应导致画面模糊）。
 

@@ -1,5 +1,5 @@
 # Aesthetic Quality Degradation Prompt Templates V3
-# 美学质量退化策略 - 基于 quality_dimensions_v3.json
+# 美学质量退化策略 - 基于 quality_dimensions_active.json
 # 维度: awkward_positioning, awkward_framing, unbalanced_layout, cluttered_scene,
 #       lighting_imbalance, color_clash, dull_palette
 # 已删除: lack_of_depth, flat_lighting
@@ -256,6 +256,5 @@ aesthetic_quality:
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of visual appeal.
       Output only the rewritten prompt.
-
 
 

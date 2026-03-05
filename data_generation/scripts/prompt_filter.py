@@ -308,7 +308,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--quality_dimensions",
         type=str,
-        default="/root/ImageReward/data_generation/config/quality_dimensions_v3.json",
+        default="/root/ImageReward/data_generation/config/quality_dimensions_active.json",
     )
     args = parser.parse_args()
 
