@@ -16,8 +16,8 @@ PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
 PYTHON_BIN="${PYTHON_BIN:-/root/miniconda3/envs/3.10/bin/python}"
 
-POS_SOURCE="${POS_SOURCE:-$PROJECT_ROOT/data/image_quality_train.json}"
-TAGGED_PROMPTS="${TAGGED_PROMPTS:-$PROJECT_ROOT/data/prompts_tagged_sdxl_v2.json}"
+POS_SOURCE="${POS_SOURCE:-/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/merged_working_pool_cleaned_v1.jsonl}"
+TAGGED_PROMPTS="${TAGGED_PROMPTS:-/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/merged_working_pool_cleaned_v1.jsonl}"
 TEMPLATE_DIR="${TEMPLATE_DIR:-$PROJECT_ROOT/config/prompt_templates_v3}"
 QUALITY_DIMENSIONS="${QUALITY_DIMENSIONS:-$PROJECT_ROOT/config/quality_dimensions.json}"
 LLM_CONFIG="${LLM_CONFIG:-$PROJECT_ROOT/config/llm_config.yaml}"

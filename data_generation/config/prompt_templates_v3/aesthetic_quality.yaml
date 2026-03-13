@@ -165,9 +165,11 @@ aesthetic_quality:
       You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of clearly unbalanced lighting. You may apply the following strategies:
 
       1. Keep the original prompt content intact.
-      2. APPEND a concrete description of a strong single-sided light source, specifying which area is brightly lit and which area is in deep shadow.
-      3. Use "only...while..." sentence structure to emphasize the contrast between the bright and dark areas (e.g., ", with a strong harsh light from the left illuminating only the left half of the scene in bright white, while the right half falls into deep dark shadow with barely visible details", ", with intense overhead light directly above the center creating a bright hot spot on the main subject, while the edges of the frame fade into heavy darkness").
-      4. Specify concrete scene elements that are affected — name which objects are in the bright zone and which are lost in shadow.
+      2. APPEND a concrete description of a strongly uneven light split where one side or one region of the scene is harshly bright while the opposite side falls into deep shadow.
+      3. Use explicit bright-versus-dark phrasing such as "only...while..." or equivalent wording to make the split easy to see at a glance, but make it read as awkward, amateurish, and visually unattractive rather than cinematic.
+      4. Name the specific parts of the existing scene that are affected, such as one side of the face, one side of the body, one side of the clothing, part of the table, or one side of the object, and describe how the bright side is harshly lit while the dark side becomes muddy, dull, or hard to read.
+      5. Prefer simple physical-light wording like a badly placed side light, top light, or window light, but do NOT let it sound like stylish studio lighting, dramatic stage lighting, or intentional movie lighting.
+      6. Prefer wording such as "harshly lit on one side while the other side falls into deep shadow", "uneven split lighting", "awkward one-sided brightness", or "one side washed in harsh light while the other side is swallowed by shadow" if it fits the scene.
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of lighting balance.
       Output only the rewritten prompt.
@@ -176,9 +178,11 @@ aesthetic_quality:
       You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of extreme lighting imbalance. You may apply the following strategies:
 
       1. Keep the original prompt content intact.
-      2. APPEND a description of an extreme physical light source that splits the scene into drastically uneven bright and dark zones (e.g., ", with an extremely bright spotlight blasting from the far left, turning the left third of the image into a blinding white glow, while the right two-thirds sinks into near-total darkness", ", lit by two clashing lights from opposite sides, warm orange from the left and cold blue from the right, splitting the scene into two harshly lit halves with deep confusing shadows in the center").
-      3. Use "only...while..." to specify exactly which parts of the scene are in the bright zone and which are in the dark zone.
-      4. Do NOT use post-processing or exposure terms ("overexposed", "washed out", "blown out"). Only describe physical light sources and their visible effects on the scene.
+      2. APPEND a description of an extreme bright-dark split where a large visible portion of the scene is blasted by harsh light while another large visible portion falls into deep, dirty shadow.
+      3. Make the split unmistakable at a glance: one side or region should be glaringly bright, while the opposite side or surrounding region becomes dark, muddy, and visually unpleasant. Use explicit bright-versus-dark phrasing rather than vague "patchy" wording alone.
+      4. Name the specific parts of the existing scene that are affected, such as one side of the face, body, clothing, object surface, tabletop, wall, or background, and describe how important details on the bright side are harshly overlit while important details on the dark side are swallowed by heavy shadow.
+      5. If you mention a physical light source, keep it simple and subordinate to the ugly result: badly placed side light, badly placed overhead light, or awkward window light are acceptable. Do NOT make it sound like a deliberate cinematic, theatrical, or studio-lighting setup.
+      6. Do NOT use post-processing or exposure terms. The result must still be clearly about bad physical lighting balance, but it should feel obviously unattractive, amateurish, and visually damaged.
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of lighting balance.
       Output only the rewritten prompt.
@@ -256,5 +260,3 @@ aesthetic_quality:
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of visual appeal.
       Output only the rewritten prompt.
-
-

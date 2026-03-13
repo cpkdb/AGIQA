@@ -1,7 +1,7 @@
 {
     "schema_version": "3.0",
     "taxonomy_name": "aigc_quality_degradation_active",
-    "description": "AIGC图像质量退化维度体系当前生效版：35个有效维度，按Prompt可控性组织，支持退化prompt设计",
+    "description": "AIGC图像质量退化维度体系当前生效版：32个有效维度，按Prompt可控性组织，支持退化prompt设计",
     "controllability_levels": {
         "L1": {
             "description": "高可控：可通过prompt直接描述或暗示"
@@ -171,16 +171,6 @@
                         "unnatural_hand_pose"
                     ]
                 },
-                "face_asymmetry": {
-                    "zh": "面部不对称/异常",
-                    "controllability": "L2",
-                    "prompt_strategy": "dead eyes, flat lighting, visibly lopsided face, uneven eyes, structural collapse, features collapsing inward, morphological failure, maintaining original artistic style",
-                    "original_attributes": [
-                        "facial_anomaly",
-                        "facial_feature_misalignment",
-                        "eye_anomaly"
-                    ]
-                },
                 "expression_mismatch": {
                     "zh": "表情与语境不符",
                     "controllability": "L1",
@@ -207,15 +197,6 @@
                         "limb_abnormality"
                     ]
                 },
-                "impossible_pose": {
-                    "zh": "不可能姿态（关节/朝向错误）",
-                    "controllability": "L1",
-                    "prompt_strategy": "聚焦关节角度和身体朝向错误：elbow bending backwards, knee bending sideways, spine twisted opposite direction, head rotated 180 degrees",
-                    "original_attributes": [
-                        "unnatural_pose",
-                        "joint_anomaly"
-                    ]
-                },
                 "animal_anatomy_error": {
                     "zh": "动物解剖错误",
                     "controllability": "L2",
@@ -224,16 +205,26 @@
                         "animal_anatomy_error"
                     ]
                 },
-                "object_shape_error": {
-                    "zh": "物体形状/结构错误",
+                "object_structure_error": {
+                    "zh": "物体结构错误",
                     "controllability": "L2",
-                    "prompt_strategy": "添加warped, twisted, bent, distorted, misshapen, melting等变形描述",
+                    "prompt_strategy": "只对单个结构化非生物物体引入明显结构失败，包括形状扭曲、部件连接错误、部件数量错误、关键朝向错误或轮廓/线条错误",
                     "original_attributes": [
                         "object_deformation",
                         "broken_geometry",
                         "melted_objects",
                         "incorrect_object_shape",
                         "incorrect_object_orientation"
+                    ]
+                },
+                "material_mismatch": {
+                    "zh": "材质错配",
+                    "controllability": "L1",
+                    "prompt_strategy": "保持对象类别和形状不变，只将材质观感改成明显不符合其类别的表面外观",
+                    "original_attributes": [
+                        "material_mismatch",
+                        "surface_property_error",
+                        "texture_semantic_conflict"
                     ]
                 },
                 "extra_objects": {
@@ -280,31 +271,12 @@
                     ]
                 },
                 "penetration_overlap": {
-                    "zh": "穿透/重叠异常",
+                    "zh": "重叠/融合异常",
                     "controllability": "L2",
-                    "prompt_strategy": "描述紧密接触或嵌入关系intertwined, embedded, overlapping, merged等",
+                    "prompt_strategy": "描述两个实体之间明显不合理的重叠、融合、咬边或错误连接，而不是严格物理穿透",
                     "original_attributes": [
                         "penetration_overlap",
                         "occlusion_error"
-                    ]
-                },
-                "shadow_mismatch": {
-                    "zh": "阴影矛盾",
-                    "controllability": "L2",
-                    "prompt_strategy": "描述多光源multiple light sources, complex lighting setup, contradictory shadows等",
-                    "original_attributes": [
-                        "shadow_mismatch",
-                        "missing_shadows",
-                        "inconsistent_light_source"
-                    ]
-                },
-                "reflection_error": {
-                    "zh": "反射/镜像错误",
-                    "controllability": "L2",
-                    "prompt_strategy": "添加镜面但不描述内容mirror, reflective surface, water reflection, glass reflection等",
-                    "original_attributes": [
-                        "reflection_mismatch",
-                        "refraction_transparency_error"
                     ]
                 },
                 "context_mismatch": {
@@ -401,30 +373,26 @@
         "aesthetic_quality.overall_visual_appeal": [
             "amateur_look"
         ],
-        "semantic_rationality.anatomy_biology": [
-            "hand_malformation",
-            "face_asymmetry",
-            "expression_mismatch",
-            "body_proportion_error",
-            "extra_limbs",
-            "impossible_pose",
-            "animal_anatomy_error"
-        ],
-        "semantic_rationality.object_integrity_attributes": [
-            "object_shape_error",
-            "extra_objects",
-            "count_error",
-            "illogical_colors"
-        ],
+  "semantic_rationality.anatomy_biology": [
+    "hand_malformation",
+    "expression_mismatch",
+    "body_proportion_error",
+    "extra_limbs",
+    "animal_anatomy_error"
+  ],
+  "semantic_rationality.object_integrity_attributes": [
+    "object_structure_error",
+    "material_mismatch",
+    "extra_objects",
+    "count_error",
+    "illogical_colors"
+  ],
         "semantic_rationality.spatial_geometry_positioning": [
             "scale_inconsistency",
             "floating_objects",
             "penetration_overlap"
-        ],
-        "semantic_rationality.physical_plausibility_optics": [
-            "shadow_mismatch",
-            "reflection_error"
-        ],
+  ],
+  "semantic_rationality.physical_plausibility_optics": [],
         "semantic_rationality.scene_context_consistency": [
             "context_mismatch",
             "time_inconsistency",
@@ -440,16 +408,16 @@
         "dimensions": {
             "technical_quality": 7,
             "aesthetic_quality": 7,
-            "semantic_rationality": 21
+            "semantic_rationality": 18
         },
-        "total_dimensions": 35,
+        "total_dimensions": 32,
         "by_controllability": {
             "L1": 21,
-            "L2": 14,
+            "L2": 11,
             "L3": 0
         },
-        "prompt_controllable": 35,
-        "original_attributes_preserved": 82,
+        "prompt_controllable": 32,
+        "original_attributes_preserved": 76,
         "notes": {
             "removed": [
                 "noise_grain",

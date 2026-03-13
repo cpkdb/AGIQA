@@ -18,7 +18,8 @@ semantic_text:
       You are given a text-to-image prompt that contains a visual text element. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of text accuracy. You may apply the following strategies:
 
       1. Locate the quoted text in the prompt.
-      2. Introduce obvious spelling errors (e.g., 'Restaurant' to 'Restauraunt', 'Chocolate' to 'Chokolate').
+      2. Introduce a clear text error that is still mostly readable. The error may come from obvious spelling mistakes, corrupted letter groups, awkward spacing or segmentation, or text that is only partially unreadable.
+         e.g. 'Restaurant' to 'Restauraunt'; 'Chocolate' to 'Chokolate'; splitting or merging a word in an awkward place; a short phrase where one part remains readable but another part looks slightly corrupted.
       3. Optionally APPEND a text clarity modifier at the END: ", with slightly blurry text".
 
       Output only the rewritten prompt.
@@ -27,7 +28,8 @@ semantic_text:
       You are given a text-to-image prompt that contains a visual text element. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of text accuracy. You may apply the following strategies:
 
       1. Locate the quoted text in the prompt.
-      2. Mangle the words with severe spelling errors, extra letters, or chaotic character sequences (e.g., 'The Matrix' to 'Tha Mattricks', 'Welcome' to 'Wlecmoe').
+      2. Create a severe text failure using one or more of the following: chaotic misspelling, extra or missing letters, corrupted character sequences, broken spacing or segmentation, or mixed readable and unreadable fragments.
+         e.g. 'The Matrix' to 'Tha Mattricks'; 'Welcome' to 'Wlecmoe'; a phrase where one word is still recognizable while the next collapses into corrupted characters; words broken into awkward fragments that are hard to parse.
       3. Optionally APPEND a text clarity modifier at the END: ", with distorted hard to read text".
 
       Output only the rewritten prompt.
@@ -46,7 +48,7 @@ semantic_text:
       You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have an intrusive out-of-place logo or symbol. Apply the following strategy:
 
       1. Keep the original prompt COMPLETELY unchanged at the beginning.
-      2. APPEND at the END a short clause describing a single small, out-of-place symbol placed on a specific object in the scene. Use plain, mundane symbols — NOT neon/glowing/vivid ones (e.g., "with a small sticker on the wall", "a paper label taped to the side of the box", "a printed sign leaning against the door"). Keep the description short and matter-of-fact.
+      2. APPEND at the END a short clause describing a single intrusive symbol or label attached to a specific object in the scene. The intrusion may be a small attached sticker or label, a barcode, QR-like mark, inspection tag, price label, or a small printed sign or instruction card placed where it does not belong. Keep the description short and matter-of-fact.
       3. Do NOT use words like "neon", "glowing", "vivid", "vibrant" — these change the rendering style.
 
       Output only the rewritten prompt.
@@ -55,7 +57,7 @@ semantic_text:
       You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have severely intrusive out-of-place logos or symbols. Apply the following strategy:
 
       1. Keep the original prompt COMPLETELY unchanged at the beginning.
-      2. APPEND at the END one or two out-of-place symbols with plain, physical descriptions. Do NOT use real brand names, and do NOT use "neon", "glowing", "vivid", "vibrant" — these change the rendering style. Use mundane but clearly out-of-place objects (e.g., "a printed poster taped to the tree trunk", "a cardboard sign with bold text placed in front", "a sticker sheet stuck on the surface"). Anchor each to a specific location.
+      2. APPEND at the END one or two out-of-place symbols with plain, physical descriptions. Do NOT use real brand names, and do NOT use "neon", "glowing", "vivid", "vibrant" — these change the rendering style. The intrusion may take the form of a small attached sticker or label, a barcode, QR-like mark, inspection tag, price label, a small printed sign or instruction card, or repeated small symbol contamination across the same surface. Anchor each to a specific location.
       3. Keep the appended text concise to avoid content drift.
 
       Output only the rewritten prompt.

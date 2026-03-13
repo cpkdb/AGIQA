@@ -19,6 +19,7 @@ import logging
 import yaml
 import random
 import threading
+import httpx
 from typing import Dict, List, Tuple, Optional
 from pathlib import Path
 import re
@@ -35,8 +36,25 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+def sanitize_generated_prompt_text(prompt: str) -> str:
+    """Remove formatting artifacts from LLM-generated prompt text without changing prompt syntax."""
+    if prompt is None:
+        return ""
+
+    cleaned = str(prompt)
+    # Remove markdown emphasis markers that occasionally leak into model output.
+    cleaned = cleaned.replace("*", "")
+    # Normalize whitespace after formatting cleanup.
+    cleaned = re.sub(r"\s+", " ", cleaned).strip()
+    return cleaned
+
+
 class LLMPromptDegradation:
     """基于LLM的提示词退化生成器"""
+
+    SD35_TURBO_PROMPT_LENGTH_CONSTRAINT = (
+        "IMPORTANT: Keep the rewritten degraded prompt within 77 CLIP tokens."
+    )
 
     def __init__(
         self,
@@ -139,13 +157,14 @@ class LLMPromptDegradation:
 
             # 获取base_url配置（如果有）
             base_url = self.config['llm'].get('api_base')
+            timeout = self.config['llm'].get('timeout')
             
             logger.info(f"初始化 OpenAI 客户端 - Model: {self.config['llm']['model']}")
             if base_url:
                 logger.info(f"使用自定义 API Base: {base_url}")
-                return {"provider": "openai", "api_key": api_key, "base_url": base_url}
+                return {"provider": "openai", "api_key": api_key, "base_url": base_url, "timeout": timeout}
             else:
-                return {"provider": "openai", "api_key": api_key, "base_url": None}
+                return {"provider": "openai", "api_key": api_key, "base_url": None, "timeout": timeout}
         else:
             raise ValueError(f"不支持的LLM provider: {provider}")
 
@@ -157,10 +176,21 @@ class LLMPromptDegradation:
 
         cfg = self._client_config
         if cfg["provider"] == "openai":
+            http_client = httpx.Client(
+                timeout=float(cfg["timeout"]) if cfg.get("timeout") else None,
+                trust_env=False,
+            )
             if cfg.get("base_url"):
-                client = OpenAI(api_key=cfg["api_key"], base_url=cfg["base_url"])
+                client = OpenAI(
+                    api_key=cfg["api_key"],
+                    base_url=cfg["base_url"],
+                    http_client=http_client,
+                )
             else:
-                client = OpenAI(api_key=cfg["api_key"])
+                client = OpenAI(
+                    api_key=cfg["api_key"],
+                    http_client=http_client,
+                )
         else:
             raise ValueError(f"不支持的provider: {cfg['provider']}")
 
@@ -243,6 +273,19 @@ class LLMPromptDegradation:
 
     # 通用原则（已弃用，控制权移交至 YAML 模板）
     COMMON_PRINCIPLES = ""
+    GLOBAL_DIVERSITY_RULE = (
+        "Global diversity rule: For the requested dimension, you must choose one valid degradation "
+        "pattern from that dimension's available modification modes, and vary the chosen pattern "
+        "across different calls instead of repeatedly defaulting to the same modification style. "
+        "When several valid modification modes exist, do not repeatedly use the most common or easiest one."
+    )
+
+    def _wrap_global_system_prompt(self, prompt: str) -> str:
+        """Append shared global production rules to every system prompt."""
+        prompt = prompt.rstrip()
+        if self.GLOBAL_DIVERSITY_RULE in prompt:
+            return prompt
+        return f"{prompt}\n\n{self.GLOBAL_DIVERSITY_RULE}"
 
     def _build_system_prompt_cache(self):
         """
@@ -264,8 +307,8 @@ class LLMPromptDegradation:
             for attribute, severities in attributes.items():
                 for severity, prompt in severities.items():
                     cache_key = f"{subcategory}_{attribute}_{severity}"
-                    # 直接使用 YAML 模板，不再拼接通用原则
-                    self.system_prompt_cache[cache_key] = prompt
+                    # 直接使用 YAML 模板，并追加全局生产规则
+                    self.system_prompt_cache[cache_key] = self._wrap_global_system_prompt(prompt)
                     attribute_count += 1
 
         logger.info(f"属性级别缓存: {attribute_count} 个 prompts")
@@ -314,6 +357,13 @@ Modify the prompt to introduce {severity} level issues in the {subcategory} dime
 
 {self.COMMON_PRINCIPLES}"""
 
+        return self._wrap_global_system_prompt(system_prompt)
+
+    def _apply_model_specific_prompt_constraints(self, system_prompt: str, model_id: str) -> str:
+        """Append model-specific prompt constraints without touching shared YAML templates."""
+        if model_id == "sd3.5-large-turbo":
+            if self.SD35_TURBO_PROMPT_LENGTH_CONSTRAINT not in system_prompt:
+                return f"{system_prompt.rstrip()}\n\n{self.SD35_TURBO_PROMPT_LENGTH_CONSTRAINT}"
         return system_prompt
 
 
@@ -375,6 +425,7 @@ Modify the prompt to introduce {severity} level issues in the {subcategory} dime
                 cache_key,
                 self._build_system_prompt(subcategory, severity)
             )
+        system_prompt = self._apply_model_specific_prompt_constraints(system_prompt, model_id)
 
         # Build User Prompt
         dimension_desc = f"{subcategory}"
@@ -513,6 +564,10 @@ Please fix the above issue and generate a corrected negative prompt."""
 
         # 移除引号
         negative_prompt = negative_prompt.strip('"\'')
+        negative_prompt = sanitize_generated_prompt_text(negative_prompt)
+
+        if not negative_prompt.strip():
+            raise ValueError("LLM returned empty negative prompt")
 
         # 检查长度
         min_length = self.config['degradation'].get('min_length', 10)

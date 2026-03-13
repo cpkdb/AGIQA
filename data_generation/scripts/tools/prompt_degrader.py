@@ -4,6 +4,7 @@ Prompt Degrader Tool
 """
 
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Optional
@@ -24,8 +25,9 @@ def _get_degrader():
         from llm_prompt_degradation import LLMPromptDegradation
 
         config_dir = Path(__file__).parent.parent.parent / "config"
+        llm_config_path = os.environ.get("LLM_CONFIG_PATH", str(config_dir / "llm_config_api_gpt_ge.yaml"))
         _degrader_instance = LLMPromptDegradation(
-            llm_config_path=str(config_dir / "llm_config.yaml"),
+            llm_config_path=llm_config_path,
             quality_dimensions_path=str(config_dir / "quality_dimensions_active.json")
         )
     return _degrader_instance

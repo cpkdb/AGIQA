@@ -20,12 +20,38 @@ set -euo pipefail
 
 export PYTORCH_CUDA_ALLOC_CONF="${PYTORCH_CUDA_ALLOC_CONF:-expandable_segments:True}"
 export HF_HOME="${HF_HOME:-/root/autodl-tmp/huggingface_cache}"
+PYTHON_BIN="${PYTHON_BIN:-/root/miniconda3/envs/3.10/bin/python}"
+unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY ALL_PROXY all_proxy
+export JUDGE_CONFIG_PATH="${JUDGE_CONFIG_PATH:-/root/ImageReward/data_generation/config/judge_config_api_gpt_ge.yaml}"
 
 cd /root/ImageReward/data_generation
 
 # ===== Prompt 池配置 =====
 # 默认使用你当前构建的全量 merged prompt 池（JSONL）
-SOURCE_PROMPTS="${SOURCE_PROMPTS:-data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/merged_working_pool.jsonl}"
+BASE_SOURCE_PROMPTS="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/merged_working_pool.jsonl"
+CLEANED_SOURCE_PROMPTS="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/merged_working_pool_cleaned_v1.jsonl"
+SD35_TURBO_SOURCE_PROMPTS="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/merged_working_pool_sd35_turbo_clipsafe_v1.jsonl"
+SOURCE_PROMPTS="${SOURCE_PROMPTS:-$BASE_SOURCE_PROMPTS}"
+if [[ -f "$CLEANED_SOURCE_PROMPTS" ]]; then
+    SOURCE_PROMPTS="$CLEANED_SOURCE_PROMPTS"
+fi
+BASE_DIMENSION_SUBPOOL_INDEX="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/dimension_subpools/index.json"
+BASE_CLEANED_DIMENSION_SUBPOOL_INDEX="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/dimension_subpools_cleaned_v1/index.json"
+SCREENED_CLEANED_DIMENSION_SUBPOOL_INDEX_V2="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/anatomy_screened_dimension_subpools_cleaned_v2/index.json"
+SCREENED_CLEANED_DIMENSION_SUBPOOL_INDEX="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/anatomy_screened_dimension_subpools_cleaned_v1/index.json"
+SCREENED_DIMENSION_SUBPOOL_INDEX="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/anatomy_screened_dimension_subpools/index.json"
+SD35_TURBO_DIMENSION_SUBPOOL_INDEX_V2="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/sd35_turbo_dimension_subpools_clipsafe_v2/index.json"
+SD35_TURBO_DIMENSION_SUBPOOL_INDEX="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/sd35_turbo_dimension_subpools_clipsafe_v1/index.json"
+DIMENSION_SUBPOOL_INDEX="${DIMENSION_SUBPOOL_INDEX:-$BASE_DIMENSION_SUBPOOL_INDEX}"
+if [[ -f "$SCREENED_CLEANED_DIMENSION_SUBPOOL_INDEX_V2" ]]; then
+    DIMENSION_SUBPOOL_INDEX="$SCREENED_CLEANED_DIMENSION_SUBPOOL_INDEX_V2"
+elif [[ -f "$SCREENED_CLEANED_DIMENSION_SUBPOOL_INDEX" ]]; then
+    DIMENSION_SUBPOOL_INDEX="$SCREENED_CLEANED_DIMENSION_SUBPOOL_INDEX"
+elif [[ -f "$BASE_CLEANED_DIMENSION_SUBPOOL_INDEX" ]]; then
+    DIMENSION_SUBPOOL_INDEX="$BASE_CLEANED_DIMENSION_SUBPOOL_INDEX"
+elif [[ -f "$SCREENED_DIMENSION_SUBPOOL_INDEX" ]]; then
+    DIMENSION_SUBPOOL_INDEX="$SCREENED_DIMENSION_SUBPOOL_INDEX"
+fi
 # 如果样本中含 model 字段且你想筛选，可设置 MODEL_FILTER_IN_PROMPTS=sdxl
 MODEL_FILTER_IN_PROMPTS="${MODEL_FILTER_IN_PROMPTS:-}"
 
@@ -37,11 +63,12 @@ SEED="${SEED:-42}"
 SEVERITIES="${SEVERITIES:-moderate,severe}"
 
 # ===== 模型路径（按需改成本地目录）=====
-FLUX_SCHNELL_MODEL_PATH="${FLUX_SCHNELL_MODEL_PATH:-/root/autodl-tmp/flux-1-schnell}"
+FLUX_SCHNELL_MODEL_PATH="${FLUX_SCHNELL_MODEL_PATH:-/root/autodl-tmp/flux-schnell}"
 # 这里建议放 Turbo 权重目录或 HF model id，例如 stabilityai/stable-diffusion-3.5-large-turbo
-SD35_LARGE_TURBO_MODEL_PATH="${SD35_LARGE_TURBO_MODEL_PATH:-/root/autodl-tmp/sd3.5-large-turbo}"
-# Qwen-Image-Lightning 采用 base + LoRA，默认 base 模型 ID 即可
-QWEN_IMAGE_LIGHTNING_MODEL_PATH="${QWEN_IMAGE_LIGHTNING_MODEL_PATH:-Qwen/Qwen-Image}"
+SD35_LARGE_TURBO_MODEL_PATH="${SD35_LARGE_TURBO_MODEL_PATH:-/root/autodl-tmp/AGIQA/sd3.5-large-turbo}"
+# Qwen-Image-Lightning 采用 base + LoRA，默认指向已验证通过的官方 snapshot
+QWEN_IMAGE_LIGHTNING_MODEL_PATH="${QWEN_IMAGE_LIGHTNING_MODEL_PATH:-/root/autodl-tmp/AGIQA/Qwen-Image/snapshots/75e0b4be04f60ec59a75f475837eced720f823b6}"
+QWEN_IMAGE_LIGHTNING_NUNCHAKU_MODEL_PATH="${QWEN_IMAGE_LIGHTNING_NUNCHAKU_MODEL_PATH:-/root/autodl-tmp/AGIQA/Nunchaku/svdq-int4_r32-qwen-image-lightningv1.0-4steps.safetensors}"
 
 # 显存不足时可改为 true（速度会下降）
 SD35_USE_CPU_OFFLOAD="${SD35_USE_CPU_OFFLOAD:-false}"
@@ -59,6 +86,20 @@ run_one() {
     local model_path="$3"
     local steps="$4"
     local cfg="$5"
+    local runtime_profile="$6"
+    local source_prompts="$SOURCE_PROMPTS"
+    local dimension_subpool_index="$DIMENSION_SUBPOOL_INDEX"
+
+    if [[ "$model_id" == "sd3.5-large-turbo" ]]; then
+        if [[ -f "$SD35_TURBO_SOURCE_PROMPTS" ]]; then
+            source_prompts="$SD35_TURBO_SOURCE_PROMPTS"
+        fi
+        if [[ -f "$SD35_TURBO_DIMENSION_SUBPOOL_INDEX_V2" ]]; then
+            dimension_subpool_index="$SD35_TURBO_DIMENSION_SUBPOOL_INDEX_V2"
+        elif [[ -f "$SD35_TURBO_DIMENSION_SUBPOOL_INDEX" ]]; then
+            dimension_subpool_index="$SD35_TURBO_DIMENSION_SUBPOOL_INDEX"
+        fi
+    fi
 
     local out_dir="${OUTPUT_ROOT}/${model_id}/${group}"
 
@@ -69,11 +110,12 @@ run_one() {
     echo "============================================================"
 
     local -a cmd=(
-        python scripts/pipeline.py
-        --source_prompts "$SOURCE_PROMPTS"
+        "$PYTHON_BIN" scripts/pipeline.py
+        --source_prompts "$source_prompts"
         --output_dir "$out_dir"
         --model_id "$model_id"
         --model_path "$model_path"
+        --runtime_profile "$runtime_profile"
         --num_pairs_per_prompt "$PROMPTS_PER_DIM"
         --max_retries "$MAX_RETRIES"
         --seed "$SEED"
@@ -82,6 +124,7 @@ run_one() {
         --cfg "$cfg"
         --shuffle
         --systematic
+        --dimension_subpool_index "$dimension_subpool_index"
     )
 
     if [[ -n "$MODEL_FILTER_IN_PROMPTS" ]]; then
@@ -106,6 +149,10 @@ run_one() {
         cmd+=(--use_cpu_offload)
     fi
 
+    if [[ "$runtime_profile" == "nunchaku-int4" ]]; then
+        cmd+=(--nunchaku_model_path "$QWEN_IMAGE_LIGHTNING_NUNCHAKU_MODEL_PATH")
+    fi
+
     "${cmd[@]}"
     local status=$?
 
@@ -123,13 +170,14 @@ run_model() {
     local model_path="$2"
     local steps="$3"
     local cfg="$4"
+    local runtime_profile="$5"
 
     if [[ "$FILTER_GROUP" == "all" ]]; then
         for group in $ALL_GROUPS; do
-            run_one "$model_id" "$group" "$model_path" "$steps" "$cfg"
+            run_one "$model_id" "$group" "$model_path" "$steps" "$cfg" "$runtime_profile"
         done
     else
-        run_one "$model_id" "$FILTER_GROUP" "$model_path" "$steps" "$cfg"
+        run_one "$model_id" "$FILTER_GROUP" "$model_path" "$steps" "$cfg" "$runtime_profile"
     fi
 }
 
@@ -146,17 +194,17 @@ echo ""
 
 # Flux-Schnell (4-step 快路径)
 if [[ "$FILTER_MODEL" == "all" || "$FILTER_MODEL" == "flux-schnell" ]]; then
-    run_model flux-schnell "$FLUX_SCHNELL_MODEL_PATH" 4 0.0
+    run_model flux-schnell "$FLUX_SCHNELL_MODEL_PATH" 4 0.0 fast-gpu
 fi
 
 # SD3.5 Large (使用 Turbo 权重，沿用 sd3.5-large 生成器接口)
 if [[ "$FILTER_MODEL" == "all" || "$FILTER_MODEL" == "sd3.5-large-turbo" || "$FILTER_MODEL" == "sd3.5-large" ]]; then
-    run_model sd3.5-large "$SD35_LARGE_TURBO_MODEL_PATH" 4 0.0
+    run_model sd3.5-large-turbo "$SD35_LARGE_TURBO_MODEL_PATH" 4 0.0 fit-24g
 fi
 
-# Qwen-Image-Lightning (4-step 快路径)
+# Qwen-Image-Lightning (Nunchaku INT4 快路径)
 if [[ "$FILTER_MODEL" == "all" || "$FILTER_MODEL" == "qwen-image-lightning" ]]; then
-    run_model qwen-image-lightning "$QWEN_IMAGE_LIGHTNING_MODEL_PATH" 4 1.0
+    run_model qwen-image-lightning "$QWEN_IMAGE_LIGHTNING_MODEL_PATH" 4 1.0 nunchaku-int4
 fi
 
 echo ""

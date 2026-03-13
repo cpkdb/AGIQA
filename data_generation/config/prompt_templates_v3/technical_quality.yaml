@@ -8,9 +8,10 @@ technical_quality:
     mild: |
       You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of blur. You may apply the following strategies:
 
-      1. DO NOT add any prefix to the prompt. Keep the original beginning intact to preserve the artistic style.
+      1. Keep the original subject, scene, and style intact, but you MAY rewrite the capture or focus wording so the image reads as slightly out of focus rather than merely appending a weak blur tag at the end.
       2. Identify and remove any words in the original prompt that imply high sharpness or detail (e.g., 'sharp focus', 'crisp', 'highly detailed', '4k', 'HD', 'clear').
-      3. Append blur keywords at the very END of the prompt: ", blurry, soft focus, slight motion blur"
+      3. Rewrite part of the prompt so the scene is captured with slightly missed focus or soft focus across the main subject, while keeping the same content and composition.
+      4. Append only a short blur phrase at the END of the prompt, such as: ", slightly blurry, soft focus, slight focus miss"
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of blur.
       Output only the rewritten prompt.
@@ -18,9 +19,11 @@ technical_quality:
     moderate: |
       You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of blur. You may apply the following strategies:
 
-      1. DO NOT add any prefix to the prompt. Keep the original beginning intact to preserve the artistic style.
-      2. Remove ALL words implying sharpness, detail (e.g., 'sharp', 'crisp', 'detailed', '4k', 'HD', 'clear', 'intricate', 'fine', 'visible').
-      3. Append blur keywords at the very END of the prompt: ", blurry, out of focus, unfocused, soft focus"
+      1. Preserve the original subject, scene identity, and style, but you MAY rewrite the visual-condition wording so the whole prompt reads like a genuinely defocused or poorly focused capture. Do NOT rely only on appending a few blur words at the end.
+      2. Remove ALL words implying sharpness or fine detail (e.g., 'sharp', 'crisp', 'detailed', '4k', 'HD', 'clear', 'intricate', 'fine', 'visible').
+      3. Rewrite the prompt so the main subject or the whole scene is clearly captured out of focus, with failed focus, missed focus, or soft focus across important details. Make the blur read like an actual capture issue rather than a stylistic glow.
+      4. For portraits or characters, explicitly make the face, eyes, hairline, or clothing edges read as softly blurred or out of focus. For objects or food, explicitly make the object contours and surface details read as out of focus.
+      5. Append a short blur phrase at the END of the prompt, such as: ", blurry, out of focus, unfocused, soft focus"
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of blur.
       Output only the rewritten prompt.
@@ -28,9 +31,11 @@ technical_quality:
     severe: |
       You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of blur. You may apply the following strategies:
 
-      1. DO NOT add any prefix to the prompt. Keep the original beginning intact to preserve the artistic style.
-      2. AGGRESSIVELY remove ALL adjectives related to sharpness, detail, lighting. Keep only the bare minimum subject description.
-      3. Append blur keywords at the very END of the prompt: ", extremely blurry, heavy motion blur, completely out of focus, unfocused, soft focus"
+      1. Preserve the original subject and scene identity, but you MAY rewrite the visual-condition wording throughout the prompt so the result reads like a heavily defocused or badly failed-focus capture. Do NOT rely only on a blur suffix.
+      2. AGGRESSIVELY remove adjectives related to sharpness or fine detail while keeping enough subject information to preserve the original content.
+      3. Rewrite the prompt so the whole image or the main subject is clearly severely out of focus, heavily blurred, and hard to read because focus has failed. Emphasize lost edge clarity, smeared contours, and missing fine detail rather than dreamy atmosphere.
+      4. For portraits, explicitly make facial features and subject edges difficult to resolve because of failed focus. For objects or food, explicitly make outlines, edges, and surface details difficult to read because of strong blur.
+      5. Append a short severe blur phrase at the END of the prompt, such as: ", extremely blurry, heavily out of focus, strong failed focus, soft focus"
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of blur.
       Output only the rewritten prompt.
@@ -39,11 +44,12 @@ technical_quality:
     mild: |
       You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of overexposure. You may apply the following strategies:
 
-      1. Add a global atmosphere descriptor AT THE BEGINNING of the prompt to set the overexposed tone (e.g., "hazy bright scene of...", "soft glow atmosphere,", "slightly foggy bright,"). This must describe the SCENE/ATMOSPHERE, not individual objects.
-      2. Identify and remove any words implying darkness or shadows (e.g., 'dark', 'shadowed', 'dim', 'night', 'low light', 'moody').
-      3. If the prompt contains any lighting or time-of-day words, replace them with bright equivalents (e.g., 'moonlight' → 'direct sunlight', 'dusk' → 'bright noon', 'evening' → 'hazy afternoon'). Only replace these specific words.
-      4. Append at the END: ", slightly overexposed, washed out highlights"
-      5. Do NOT rewrite or rephrase the original content beyond steps 1-4.
+      1. Keep the original prompt structure intact. Do NOT prepend "photo of" or change the medium or style.
+      2. Remove any words implying darkness or shadows (e.g., 'dark', 'shadowed', 'dim', 'night', 'low light', 'moody').
+      3. Rewrite the prompt so the scene is captured under slightly too much direct light, making the image feel mildly over-bright and lightly washed by exposure rather than just pleasantly well lit.
+      4. Add one short concrete clause describing which visible part of the existing scene is brightest and how that area starts to lose texture or color because of the excessive brightness.
+      5. Do NOT use fog, haze, smoke, magical glow, white blocks, or surreal flooding language.
+      6. Do NOT rewrite or rephrase the original content beyond steps 1-5.
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of overexposure.
       Output only the rewritten prompt.
@@ -51,11 +57,15 @@ technical_quality:
     moderate: |
       You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of overexposure. You may apply the following strategies:
 
-      1. Add a strong global atmosphere descriptor AT THE BEGINNING of the prompt (e.g., "high key overexposed scene of...", "washed out hazy bright,", "bleached foggy atmosphere,", "overexposed bright haze,"). This must describe the SCENE/ATMOSPHERE, not individual objects.
+      1. Preserve the original subject, scene identity, and artistic medium, but you MAY rewrite the lighting and visual-condition wording throughout the prompt so the whole scene reads as genuinely overexposed. Do NOT merely append a short brightness tag to an otherwise unchanged prompt.
       2. Remove ALL words implying darkness, shadows, or dim lighting (e.g., 'dark', 'shadowed', 'dim', 'moody', 'night', 'soft light').
-      3. If the prompt contains any lighting or time-of-day words, replace them with harsh bright equivalents (e.g., 'moonlight' → 'harsh direct sunlight', 'dusk' → 'blinding noon', 'sunset' → 'bleaching midday'). Only replace these specific words.
-      4. Append at the END: ", overexposed, blown out highlights, washed out colors, high key lighting, no shadows"
-      5. Do NOT rewrite or rephrase the original content beyond steps 1-4.
+      3. Rewrite the prompt so the scene itself is clearly captured under failed exposure control, preferably with a very bright background opening, window, sky, entrance, screen, or backlit area that pushes the exposure too high. The image should feel visibly overexposed overall, too bright, slightly bleached, and degraded in quality by excessive exposure rather than merely brighter, sunnier, or softly glowing.
+      4. If the prompt contains lighting or time-of-day words, replace them with brighter equivalents only as supporting context (e.g. 'moonlight' → 'harsh daylight', 'dusk' → 'bright noon', 'sunset' → 'harsh midday sun'). Only replace these specific words.
+      5. Explicitly rewrite which existing visible areas take the strongest light and how that damages image quality there. Prefer a composition where a large bright region in the background or behind the subject becomes clipped toward featureless white, while the foreground subject, face, clothing, furniture, or people lose readable detail because the camera is exposed for the wrong brightness range.
+      6. Make the result read like an actual overexposed capture failure: the scene should be too bright overall, the brightest background region should wash toward featureless white, and the foreground subject should lose facial, clothing, or object detail in the harsh backlight. Prefer scene-result wording such as "the image looks visibly overexposed", "the background is blown to bright white", "the foreground falls into silhouette-like darkness against the clipped brightness", "facial detail is lost against the glare", or "the brightest opening wipes out tonal detail".
+      7. Do NOT let the result read as simple beauty lighting, sunlight enhancement, or white stylistic atmosphere. The goal is a concrete scene description that visibly lowers image quality because the exposure is too strong.
+      8. Do NOT use fog, haze, smoke, magical glow, white blocks, or surreal flooding language.
+      9. Do NOT rewrite or rephrase the original content beyond steps 1-8.
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of overexposure.
       Output only the rewritten prompt.
@@ -63,11 +73,15 @@ technical_quality:
     severe: |
       You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of overexposure. You may apply the following strategies:
 
-      1. Add an extreme global atmosphere descriptor AT THE BEGINNING of the prompt (e.g., "extremely overexposed bleached scene of...", "washed out white haze,", "blinding foggy bright atmosphere,", "severely overexposed flat brightness,"). This must describe the SCENE/ATMOSPHERE, not individual objects.
+      1. Preserve the original subject, scene identity, and artistic medium, but you MAY rewrite the lighting and visual-condition wording throughout the prompt so the whole scene reads as severely overexposed. Do NOT merely append a short brightness tag to an otherwise unchanged prompt.
       2. AGGRESSIVELY remove ALL words implying darkness, shadows, contrast, tonal richness, or dim lighting. Also remove vivid color adjectives (e.g., 'vibrant', 'rich', 'deep', 'saturated').
-      3. If the prompt contains any lighting or time-of-day words, replace them with extreme brightness equivalents (e.g., 'moonlight' → 'blinding sunlight', 'dusk' → 'blazing noon', 'warm glow' → 'searing white glare'). Only replace these specific words.
-      4. Append at the END: ", extremely overexposed, severely blown out, washed out, high key, flat blinding brightness, no shadows, faded pale, white glare"
-      5. Do NOT rewrite or rephrase the original content beyond steps 1-4.
+      3. Rewrite the prompt so the scene is clearly captured under severe exposure failure, preferably with an overwhelming backlit source such as a huge bright opening, sunlit entrance, bright sky, blown window, or glaring screen that drives the exposure far beyond normal range. The whole image should feel overwhelmingly too bright, visibly bleached, and aesthetically damaged by exposure that has gone far beyond normal range, not just strongly lit.
+      4. If the prompt contains lighting or time-of-day words, replace them with extreme bright equivalents only as supporting context (e.g. 'moonlight' → 'blazing daylight', 'dusk' → 'blinding noon', 'warm glow' → 'harsh direct sunlight'). Only replace these specific words.
+      5. Explicitly rewrite which existing visible parts of the scene are overwhelmed by the strongest light and how the severe overexposure destroys image quality there. Prefer a large blown-out bright region that turns nearly featureless white, while existing foreground people, faces, clothing, furniture, or objects lose shape separation and readable detail because they are overwhelmed by the backlight.
+      6. Make the result read like a severe overexposed capture failure: the whole scene should be aggressively over-bright and bleached, a large visible area should clip toward featureless white, and the foreground subject should read partially as a silhouette or near-silhouette with badly lost detail. Prefer scene-result wording such as "the scene is severely overexposed", "the background is blasted into featureless white", "the subject is reduced to a dark silhouette against the glare", "facial and clothing detail vanish against the blown light", or "tonal separation collapses around the brightest opening".
+      7. Do NOT let the result read as simple dramatic sunlight, stylish white lighting, or beautiful bright atmosphere. The goal is a concrete scene description where excessive exposure clearly damages image quality.
+      8. Do NOT use fog, haze, smoke, magical glow, white blocks, or surreal flooding language.
+      9. Do NOT rewrite or rephrase the original content beyond steps 1-8.
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of overexposure.
       Output only the rewritten prompt.

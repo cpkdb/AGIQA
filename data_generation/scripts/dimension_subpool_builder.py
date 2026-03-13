@@ -13,10 +13,11 @@ import json
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional
+import yaml
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-CONFIG_PATH = SCRIPT_DIR.parent / "config" / "semantic_tag_requirements.json"
+CONFIG_PATH = SCRIPT_DIR.parent / "config" / "dimension_requirements.yaml"
 
 
 def _load_prompt_filter_module():
@@ -38,6 +39,20 @@ def _read_jsonl(path: Path) -> List[Dict]:
     return records
 
 
+def _load_dimension_requirements(path: Path) -> Dict[str, Dict]:
+    payload = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    result: Dict[str, Dict] = {}
+    for dimension, req in payload.items():
+        if not isinstance(req, dict):
+            continue
+        result[dimension] = {
+            "required": req.get("required_tags"),
+            "alternative": req.get("alternative_tags"),
+            "preferred": req.get("preferred_tags"),
+        }
+    return result
+
+
 def _write_jsonl(path: Path, records: Iterable[Dict]) -> None:
     with path.open("w", encoding="utf-8") as handle:
         for record in records:
@@ -50,7 +65,7 @@ def build_dimension_subpools(
 ) -> Dict:
     """Filter the working pool into dimension-specific compatible prompt lists."""
     prompt_filter = _load_prompt_filter_module()
-    tag_requirements = prompt_filter.load_tag_requirements(CONFIG_PATH)
+    tag_requirements = _load_dimension_requirements(CONFIG_PATH)
     if dimensions is None:
         dimensions = list(tag_requirements.keys())
 

@@ -9,6 +9,7 @@ import base64
 import logging
 import yaml
 import time
+import httpx
 from pathlib import Path
 from typing import Optional, Dict, Any
 from PIL import Image
@@ -39,7 +40,11 @@ def _load_config() -> Dict:
     if _config is not None:
         return _config
 
-    config_path = Path(__file__).parent.parent.parent / "config" / "judge_config.yaml"
+    override_path = os.environ.get("JUDGE_CONFIG_PATH")
+    if override_path:
+        config_path = Path(override_path).expanduser().resolve()
+    else:
+        config_path = Path(__file__).parent.parent.parent / "config" / "judge_config.yaml"
     with open(config_path, 'r', encoding='utf-8') as f:
         _config = yaml.safe_load(f)
 
@@ -58,13 +63,18 @@ def _get_client():
     config = _load_config()
     api_key = config['vlm'].get('api_key')
     api_base = config['vlm'].get('api_base')
+    timeout = config['vlm'].get('timeout')
 
     if not api_key:
         raise ValueError("API key not set in judge_config.yaml")
 
     _client = OpenAI(
         api_key=api_key,
-        base_url=api_base
+        base_url=api_base,
+        http_client=httpx.Client(
+            timeout=float(timeout) if timeout else None,
+            trust_env=False,
+        ),
     )
 
     model_name = config['vlm'].get('model', 'gemini-3-pro-preview')
@@ -86,7 +96,7 @@ def _image_to_base64(img: Image.Image, jpeg_quality: int = 85) -> str:
 
 # 细节敏感维度：需要更高分辨率
 DETAIL_SENSITIVE_DIMENSIONS = {
-    "face_asymmetry", "hand_malformation", "expression_mismatch",
+    "hand_malformation", "expression_mismatch",
     "text_error", "plastic_waxy_texture", "logo_symbol_error",
 }
 
@@ -133,15 +143,14 @@ DIMENSION_GUIDELINES = {
 
     # === Semantic Rationality: Anatomy ===
     "hand_malformation": "Hand structure errors (abnormal finger count, fusion, twisted joints)",
-    "face_asymmetry": "Severely asymmetric facial features, collapsed or broken facial structure",
     "expression_mismatch": "Facial expression contradicting scene mood or action logic",
     "body_proportion_error": "Severely distorted body proportions (e.g., gibbon arms, abnormal head-body ratio)",
     "extra_limbs": "Extra limbs appearing (three hands, multiple legs)",
-    "impossible_pose": "Anatomically impossible poses (reverse-bending joints, unnatural twists)",
     "animal_anatomy_error": "Animals with wrong anatomical features (mixed species traits, misplaced organs)",
 
     # === Semantic Rationality: Object ===
-    "object_shape_error": "Common objects with distorted, melted, or collapsed shapes",
+    "object_structure_error": "Common structured objects with obvious shape, alignment, attachment, orientation, or component-count failures",
+    "material_mismatch": "Object keeps its shape but has an obviously wrong material appearance",
     "extra_objects": "Duplicate, out-of-context, or logically irrelevant redundant objects in scene",
     "count_error": "Generated object count not matching expected quantity",
     "illogical_colors": "Objects with counter-intuitive colors (e.g., blue flames, purple grass)",
@@ -149,11 +158,7 @@ DIMENSION_GUIDELINES = {
     # === Semantic Rationality: Spatial ===
     "scale_inconsistency": "Severely counter-intuitive size ratios between objects (e.g., giant insects)",
     "floating_objects": "Gravity-affected objects floating in air without support",
-    "penetration_overlap": "Physically impossible interpenetration or overlap of solid objects",
-
-    # === Semantic Rationality: Physical ===
-    "shadow_mismatch": "Missing shadows, wrong direction, or shape not matching casting object",
-    "reflection_error": "Mirror/water reflections inconsistent with or incorrectly showing the source",
+    "penetration_overlap": "Impossible overlap, merge, biting edges, or wrong attachment between solid objects",
 
     # === Semantic Rationality: Scene ===
     "context_mismatch": "Subject appearing in extremely illogical environment (e.g., penguin in desert)",
@@ -172,11 +177,12 @@ DIMENSION_CATEGORIES = {
     "aesthetic_quality": ["awkward_positioning", "awkward_framing", "unbalanced_layout",
                           "cluttered_scene", "lighting_imbalance", "color_clash",
                           "dull_palette"],
-    "semantic_rationality": ["hand_malformation", "face_asymmetry", "expression_mismatch",
-                             "body_proportion_error", "extra_limbs", "impossible_pose",
-                             "animal_anatomy_error", "object_shape_error", "extra_objects",
+    "semantic_rationality": ["hand_malformation", "expression_mismatch",
+                             "body_proportion_error", "extra_limbs",
+                             "animal_anatomy_error", "object_structure_error",
+                             "material_mismatch", "extra_objects",
                              "count_error", "illogical_colors", "scale_inconsistency", "floating_objects",
-                             "penetration_overlap", "shadow_mismatch", "reflection_error",
+                             "penetration_overlap",
                              "context_mismatch", "time_inconsistency", "scene_layout_error",
                              "text_error", "logo_symbol_error"]
 }
@@ -311,7 +317,7 @@ Is the positive image compatible with {dimension} degradation?
 
 1a. **Content compatibility**: Does the positive image contain the subject/element required for {dimension}?
    - Face/expression dimensions need a visible face; hand dimensions need visible hands; text dimensions need text present; shadow dimensions need objects casting shadows, etc.
-   - If the image content CANNOT carry {dimension} degradation regardless of style (e.g., landscape for face_asymmetry, abstract art for expression_mismatch) → failure = "positive_content_mismatch", STOP here
+   - If the image content CANNOT carry {dimension} degradation regardless of style (e.g., landscape for hand_malformation, abstract art for expression_mismatch) → failure = "positive_content_mismatch", STOP here
 
 1b. **Style compatibility**: Is the rendering style suitable for {dimension}?
    - blur/exposure need photorealistic; anatomy errors need realistic depiction

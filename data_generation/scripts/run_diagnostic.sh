@@ -26,7 +26,11 @@ cd /root/ImageReward/data_generation
 # 使用 autodl-tmp 中已有的 HuggingFace 缓存，避免重复下载
 export HF_HOME="/root/autodl-tmp/huggingface_cache"
 
-SOURCE_PROMPTS="data/prompts_tagged_sdxl_v3.json"
+SOURCE_PROMPTS="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/merged_working_pool_cleaned_v1.jsonl"
+DIMENSION_SUBPOOL_INDEX="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/anatomy_screened_dimension_subpools_cleaned_v2/index.json"
+if [ ! -f "$DIMENSION_SUBPOOL_INDEX" ]; then
+  DIMENSION_SUBPOOL_INDEX="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/anatomy_screened_dimension_subpools_cleaned_v1/index.json"
+fi
 OUTPUT_ROOT="/root/autodl-tmp/diagnostic_v2_$(date +%Y%m%d)"
 
 PROMPTS_PER_DIM=3
@@ -38,8 +42,8 @@ SEVERITIES="moderate,severe"
 SDXL_MODEL_PATH="stabilityai/stable-diffusion-xl-base-1.0"
 FLUX_SCHNELL_MODEL_PATH="/root/autodl-tmp/flux-1-schnell"
 HUNYUAN_DIT_MODEL_PATH="/root/autodl-tmp/hunyuan-dit"
-SD35_LARGE_MODEL_PATH="/root/autodl-tmp/sd3.5-large"
-QWEN_IMAGE_LIGHTNING_MODEL_PATH="Qwen/Qwen-Image"
+SD35_LARGE_MODEL_PATH="/root/autodl-tmp/AGIQA/sd3.5-large"
+QWEN_IMAGE_LIGHTNING_MODEL_PATH="/root/autodl-tmp/AGIQA/Qwen-Image/snapshots/75e0b4be04f60ec59a75f475837eced720f823b6"
 
 ALL_GROUPS="technical_quality aesthetic_quality semantic_anatomy semantic_object semantic_spatial semantic_text"
 
@@ -64,6 +68,7 @@ run_one() {
 
     local cmd="python scripts/pipeline.py \
         --source_prompts $SOURCE_PROMPTS \
+        --dimension_subpool_index $DIMENSION_SUBPOOL_INDEX \
         --output_dir $out_dir \
         --model_id $model_id \
         --model_path $model_path \

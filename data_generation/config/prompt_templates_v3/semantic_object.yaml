@@ -1,11 +1,11 @@
 # Semantic Rationality - Object & Scene Degradation Prompt Templates V3
 # 语义合理性 - 物体与场景退化策略 - 基于 quality_dimensions_active.json
-# 维度: object_shape_error, extra_objects, count_error, illogical_colors
+# 维度: object_structure_error, material_mismatch, extra_objects, count_error, illogical_colors
 # 已删除: object_fusion, missing_parts
 
 semantic_object:
 
-  object_shape_error:
+  object_structure_error:
     mild: |
       You are given a text-to-image prompt. Your task is to rewrite this prompt so that a key object or entity has a subtly WRONG shape — it should look like a minor generation artifact.
 
@@ -14,33 +14,71 @@ semantic_object:
       3. INSERT the distortion description immediately after the object noun.
       4. Do NOT use damage words (broken, cracked, torn). Do NOT use perfect geometric shapes (square, cubic, triangular) as replacements — they look intentional, not like errors.
 
-      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of object shape.
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of object structure.
       Output only the rewritten prompt.
 
     moderate: |
-      You are given a text-to-image prompt. Your task is to rewrite this prompt so that a key object or entity has obviously WRONG shapes — it should look like a noticeable generation artifact.
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that a key object or entity has obviously WRONG structure — it should look like a noticeable generation artifact.
 
-      1. Identify the most visually prominent object or entity in the prompt. This can be anything: a man-made object, a plant, an animal, a body part, a natural formation, etc.
-      2. Describe 1-2 clear shape distortions that look like generation defects — parts that are warped, asymmetrically stretched, unnaturally elongated, or sagging in ways that violate the object's expected proportions (e.g., a dog with an unnaturally elongated snout that droops sideways, a flower with petals that sag and melt into each other, a tree with a trunk that twists and bends at unnatural angles, a person with one arm noticeably longer and thinner than the other, a car with a hood that bulges unevenly to one side).
-      3. INSERT the distortion descriptions immediately after the object noun.
-      4. Do NOT use damage words (broken, cracked, torn). Do NOT use perfect geometric shapes (square, cubic, triangular) as replacements — they look intentional, not like errors. Use organic deformation words: warped, sagging, twisted, elongated, drooping, melting, pinched, bulging, asymmetric.
+      1. Identify the most visually prominent structured non-living object in the prompt.
+      2. Describe 1-2 clearly visible structural defects affecting its shape, part layout, or structural lines. The error should be obvious at a glance.
+         e.g. a mug with a rim bent unevenly and a handle attached too high; a chair with one leg at the wrong angle and a skewed seat plane; a laptop with a warped screen frame and misaligned keyboard deck; a window with crooked frame lines and uneven pane divisions.
+      3. INSERT the distortion description immediately after the object noun.
+      4. Keep the object recognizable as the same object, and keep the rest of the scene unchanged.
 
-      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of object shape.
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of object structure.
       Output only the rewritten prompt.
 
     severe: |
-      You are given a text-to-image prompt. Your task is to rewrite this prompt so that a key object or entity has severely WRONG shapes across multiple parts — it should look like a badly generated image with obvious artifacts.
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that a key object or entity has severely WRONG structure — it should look like a badly generated image with obvious artifacts.
 
-      1. Identify the most visually prominent object or entity in the prompt. This can be anything: a man-made object, a plant, an animal, a body part, a natural formation, etc.
-      2. Describe 2-3 severe shape distortions across different parts of the object that look like generation defects — parts warped, twisted, melting, or grotesquely disproportionate (e.g., a person with one arm twisted like a corkscrew and a torso that sags to one side and an unnaturally elongated neck, a cat with legs of wildly different lengths and a head that droops sideways and a tail that spirals into itself, a tree with a trunk that undulates in wavy curves and branches that melt downward and leaves that clump into formless blobs).
+      1. Identify the most visually prominent structured non-living object in the prompt.
+      2. Describe 2-3 major structural defects that make the object look obviously wrong while still recognizable as the same object. Focus on large, visible failures in shape, part attachment, component count, or structural line geometry.
+         e.g. a chair with twisted legs, a sagging seat, and a backrest attached off-center; a kettle with a warped body, a spout connected at the wrong angle, and a handle attached too high; a bicycle with a bent frame, a wheel attached at the wrong position, and uneven handlebar alignment; a window frame with distorted outer edges, mismatched pane count, and corners that do not meet cleanly.
       3. INSERT all distortion descriptions immediately after the object noun.
-      4. Do NOT use damage words (broken, cracked, torn). Do NOT use perfect geometric shapes (square, cubic, triangular) as replacements. Use organic deformation words: warped, sagging, twisted, elongated, drooping, melting, pinched, bulging, asymmetric, spiraling, undulating.
+      4. Keep the rest of the scene unchanged and do not introduce extra unrelated objects.
 
-      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of object shape.
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of object structure.
       Output only the rewritten prompt.
 
-  # object_fusion: REMOVED - SDXL severe失败，效果不稳定
-  # missing_parts: REMOVED - 生成模型先验会补全物体，prompt层面不可控
+  material_mismatch:
+    mild: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that one prominent object keeps its identity and shape but shows a slightly wrong material appearance.
+
+      1. Identify a structured non-living object in the prompt.
+      2. Describe it as keeping the same object identity and shape while visibly looking made of a slightly wrong material. Use clear visual material cues rather than soft touch-only words.
+         e.g. a wooden chair that still keeps its shape but looks faintly waxy; a ceramic mug that still keeps its shape but appears lightly fabric-covered; a metal kettle that still keeps its shape but shows a subtly porous sponge-like surface.
+      3. Do not alter the object's shape, count, or scene role.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of material appearance.
+      Output only the rewritten prompt.
+
+    moderate: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that one prominent object keeps its identity and shape but displays an obviously wrong material appearance.
+
+      1. Identify a visually prominent structured non-living object in the prompt. Prefer an object that is clearly visible and important in the image, rather than a small or easily ignored background prop.
+      2. Explicitly state that this target object keeps the same shape and category but clearly looks made of the wrong material.
+         e.g. a wooden table that keeps its wooden shape but looks made of porous sponge; a metal appliance that keeps its shape but appears covered in thick waxy rubber; a ceramic cup that keeps its shape but looks fabric-covered instead of hard and smooth.
+      3. If the target object is a thin-framed or clearly metallic object such as a bicycle, tripod, wheelbarrow, rail, handlebar, frame, tool, or stand, prefer visually stronger wrong materials such as translucent jelly, thick waxy rubber, cloudy plastic, or inflatable plastic rather than weak sponge-like wording.
+      4. Use visually strong material cues such as translucent jelly, porous sponge, fabric-covered, chalky stone, waxy rubber, cloudy plastic, inflatable plastic, or soft foam. Do NOT use weak wording like slightly rubbery, mildly soft, or faintly unusual.
+      5. Keep the mismatch focused on material and surface appearance, not shape, identity, pose, or scene composition. Make it clear that only the target object's material changes while the person, background, and other objects stay the same.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of material appearance.
+      Output only the rewritten prompt.
+
+    severe: |
+      You are given a text-to-image prompt. Your task is to rewrite this prompt so that one prominent object keeps its identity and shape but exhibits a strongly incorrect material appearance that is impossible to miss.
+
+      1. Identify the main structured non-living object in the prompt. Prefer a target object that is clearly visible and central enough for its material change to be easy to notice.
+      2. Explicitly state that the object keeps the same object identity and shape, but is unmistakably made of a drastically wrong material.
+         e.g. a metal kettle that keeps its kettle shape but is entirely made of soft foam; a wooden cabinet that keeps its shape but appears made of translucent waxy rubber; a glass bottle that keeps its bottle shape but looks like cloudy chalky stone instead of clear hard glass.
+      3. If the target object is thin-framed, metallic, or structurally delicate, such as a bicycle, tripod, wheelbarrow, tool, rail, frame, or stand, prefer very strong material swaps such as glossy translucent jelly, thick waxy rubber, cloudy plastic, or inflatable plastic instead of weaker sponge-like descriptions.
+      4. Use strong, highly visible material terms such as glossy translucent jelly, gelatinous slime, porous sponge foam, cloudy chalky stone, thick waxy rubber, cloudy plastic, inflatable plastic, or fabric-wrapped ceramic. Avoid weak wording like soft, rubbery, or slightly unusual on their own.
+      5. Keep the error centered on material appearance, not damage or deformation. Make it explicit that only the target object's material is wrong, while the person, scene layout, and surrounding objects remain unchanged.
+
+      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of material appearance.
+      Output only the rewritten prompt.
+
 
   extra_objects:
     mild: |

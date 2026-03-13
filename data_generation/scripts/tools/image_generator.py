@@ -8,6 +8,7 @@ import os
 import sys
 import uuid
 import logging
+import inspect
 from pathlib import Path
 from typing import Optional, Dict, Any, Type
 
@@ -32,13 +33,14 @@ class ImageGeneratorRegistry:
     @classmethod
     def register(cls, model_id: str, generator_class: Type, config: Dict = None):
         """注册生成器类"""
+        normalized_config = dict(config or {})
         previous_config = cls._configs.get(model_id)
-        if previous_config != (config or {}) and model_id in cls._instances:
+        if previous_config != normalized_config and model_id in cls._instances:
             instance = cls._instances.pop(model_id)
             if hasattr(instance, 'cleanup'):
                 instance.cleanup()
         cls._generators[model_id] = generator_class
-        cls._configs[model_id] = config or {}
+        cls._configs[model_id] = normalized_config
         logger.info(f"Registered generator: {model_id}")
 
     @classmethod
@@ -51,7 +53,25 @@ class ImageGeneratorRegistry:
         if model_id not in cls._instances:
             logger.info(f"Initializing generator: {model_id}")
             config = cls._configs.get(model_id, {})
-            cls._instances[model_id] = cls._generators[model_id](**config)
+            builder = cls._generators[model_id]
+            try:
+                signature = inspect.signature(builder)
+            except (TypeError, ValueError):
+                signature = None
+
+            if signature is None:
+                cls._instances[model_id] = builder(**config)
+            elif any(
+                parameter.kind == inspect.Parameter.VAR_KEYWORD
+                for parameter in signature.parameters.values()
+            ):
+                cls._instances[model_id] = builder(**config)
+            else:
+                accepted_config = {
+                    key: value for key, value in config.items()
+                    if key in signature.parameters
+                }
+                cls._instances[model_id] = builder(**accepted_config)
 
         return cls._instances[model_id]
 
@@ -78,14 +98,18 @@ class ImageGeneratorRegistry:
 # SDXL 生成器配置
 _sdxl_config = {}
 
-def _register_sdxl(model_path: str = None):
+def _register_sdxl(model_path: str = None, runtime_profile: str = "fast-gpu"):
     """延迟注册 SDXL，避免启动时加载模型"""
     global _sdxl_config
+    config = dict(_sdxl_config)
     if model_path:
-        _sdxl_config['model_path'] = model_path
+        config['model_path'] = model_path
+    config['runtime_profile'] = runtime_profile
+    _sdxl_config.clear()
+    _sdxl_config.update(config)
     try:
         from sdxl_generator import SDXLGenerator
-        ImageGeneratorRegistry.register("sdxl", SDXLGenerator, _sdxl_config or None)
+        ImageGeneratorRegistry.register("sdxl", SDXLGenerator, config or None)
     except ImportError as e:
         logger.warning(f"Failed to register SDXL: {e}")
 
@@ -93,14 +117,18 @@ def _register_sdxl(model_path: str = None):
 # Flux 生成器配置
 _flux_config = {}
 
-def _register_flux(model_path: str = None):
+def _register_flux(model_path: str = None, runtime_profile: str = "fast-gpu"):
     """延迟注册 Flux，避免启动时加载模型"""
     global _flux_config
+    config = dict(_flux_config)
     if model_path:
-        _flux_config['model_path'] = model_path
+        config['model_path'] = model_path
+    config['runtime_profile'] = runtime_profile
+    _flux_config.clear()
+    _flux_config.update(config)
     try:
         from flux_generator import FluxGenerator
-        ImageGeneratorRegistry.register("flux", FluxGenerator, _flux_config or None)
+        ImageGeneratorRegistry.register("flux", FluxGenerator, config or None)
     except ImportError as e:
         logger.warning(f"Failed to register Flux: {e}")
 
@@ -108,16 +136,18 @@ def _register_flux(model_path: str = None):
 # Flux-Schnell 生成器配置
 _flux_schnell_config = {}
 
-def _register_flux_schnell(model_path: str = None, optimize: bool = False):
+def _register_flux_schnell(model_path: str = None, optimize: bool = False, runtime_profile: str = "fast-gpu"):
     """延迟注册 Flux-Schnell，避免启动时加载模型"""
     global _flux_schnell_config
+    config = dict(_flux_schnell_config)
     if model_path:
-        _flux_schnell_config['model_path'] = model_path
-    _flux_schnell_config['optimize'] = optimize
+        config['model_path'] = model_path
+    config['optimize'] = optimize
+    config['runtime_profile'] = runtime_profile
+    _flux_schnell_config.clear()
+    _flux_schnell_config.update(config)
     try:
         from flux_schnell_generator import FluxSchnellGenerator
-        # 注册带优化配置的生成器
-        config = _flux_schnell_config
         ImageGeneratorRegistry.register("flux-schnell", lambda: FluxSchnellGenerator(
             model_path=config.get('model_path', '/root/autodl-tmp/flux-schnell'),
             optimize_for_speed=config.get('optimize', False),
@@ -131,15 +161,23 @@ def _register_flux_schnell(model_path: str = None, optimize: bool = False):
 _hunyuan_dit_config = {}
 
 
-def _register_hunyuan_dit(model_path: str = None, use_cpu_offload: bool = False):
+def _register_hunyuan_dit(
+    model_path: str = None,
+    use_cpu_offload: bool = False,
+    runtime_profile: str = "fast-gpu",
+):
     """延迟注册 Hunyuan-DiT，避免启动时加载模型"""
     global _hunyuan_dit_config
+    config = dict(_hunyuan_dit_config)
     if model_path:
-        _hunyuan_dit_config['model_path'] = model_path
-    _hunyuan_dit_config['use_cpu_offload'] = use_cpu_offload
+        config['model_path'] = model_path
+    config['use_cpu_offload'] = use_cpu_offload
+    config['runtime_profile'] = runtime_profile
+    _hunyuan_dit_config.clear()
+    _hunyuan_dit_config.update(config)
     try:
         from hunyuan_dit_generator import HunyuanDiTGenerator
-        ImageGeneratorRegistry.register("hunyuan-dit", HunyuanDiTGenerator, _hunyuan_dit_config)
+        ImageGeneratorRegistry.register("hunyuan-dit", HunyuanDiTGenerator, config)
     except ImportError as e:
         logger.warning(f"Failed to register Hunyuan-DiT: {e}")
 
@@ -148,36 +186,79 @@ def _register_hunyuan_dit(model_path: str = None, use_cpu_offload: bool = False)
 _sd35_large_config = {}
 
 
-def _register_sd35_large(model_path: str = None, use_cpu_offload: bool = False):
+def _register_sd35_large(
+    model_path: str = None,
+    use_cpu_offload: bool = False,
+    runtime_profile: str = "fast-gpu",
+):
     """延迟注册 SD3.5 Large，避免启动时加载模型"""
     global _sd35_large_config
+    config = dict(_sd35_large_config)
     if model_path:
-        _sd35_large_config['model_path'] = model_path
-    _sd35_large_config['use_cpu_offload'] = use_cpu_offload
-    _sd35_large_config['prefer_quantized'] = True
+        config['model_path'] = model_path
+    config['use_cpu_offload'] = use_cpu_offload
+    config['prefer_quantized'] = True
+    config['runtime_profile'] = runtime_profile
+    _sd35_large_config.clear()
+    _sd35_large_config.update(config)
     try:
         from sd35_large_generator import SD35LargeGenerator
-        ImageGeneratorRegistry.register("sd3.5-large", SD35LargeGenerator, _sd35_large_config)
+        ImageGeneratorRegistry.register("sd3.5-large", SD35LargeGenerator, config)
     except ImportError as e:
         logger.warning(f"Failed to register SD3.5 Large: {e}")
+
+
+def _register_sd35_large_turbo(
+    model_path: str = None,
+    use_cpu_offload: bool = False,
+    runtime_profile: str = "fast-gpu",
+):
+    """注册 SD3.5 Large Turbo 独立生成器。"""
+    global _sd35_large_config
+    config = dict(_sd35_large_config)
+    if model_path:
+        config['model_path'] = model_path
+    config['use_cpu_offload'] = use_cpu_offload
+    config['prefer_quantized'] = False
+    config['runtime_profile'] = runtime_profile
+    _sd35_large_config.clear()
+    _sd35_large_config.update(config)
+    try:
+        from sd35_large_turbo_generator import SD35LargeTurboGenerator
+        ImageGeneratorRegistry.register("sd3.5-large-turbo", SD35LargeTurboGenerator, config)
+    except ImportError as e:
+        logger.warning(f"Failed to register SD3.5 Large Turbo: {e}")
 
 
 # Qwen-Image-Lightning 生成器配置
 _qwen_image_lightning_config = {}
 
 
-def _register_qwen_image_lightning(model_path: str = None, use_cpu_offload: bool = False):
+def _register_qwen_image_lightning(
+    model_path: str = None,
+    nunchaku_model_path: str = None,
+    use_cpu_offload: bool = False,
+    use_nf4: bool = False,
+    runtime_profile: str = "fit-24g",
+):
     """延迟注册 Qwen-Image-Lightning，避免启动时加载模型"""
     global _qwen_image_lightning_config
+    config = dict(_qwen_image_lightning_config)
     if model_path:
-        _qwen_image_lightning_config['model_path'] = model_path
-    _qwen_image_lightning_config['use_low_mem'] = use_cpu_offload
+        config['model_path'] = model_path
+    if nunchaku_model_path:
+        config['nunchaku_model_path'] = nunchaku_model_path
+    config['use_nf4'] = use_nf4
+    config['use_low_mem'] = use_cpu_offload or runtime_profile == "fit-24g"
+    config['runtime_profile'] = runtime_profile
+    _qwen_image_lightning_config.clear()
+    _qwen_image_lightning_config.update(config)
     try:
         from qwen_image_lightning_generator import QwenImageLightningGenerator
         ImageGeneratorRegistry.register(
             "qwen-image-lightning",
             QwenImageLightningGenerator,
-            _qwen_image_lightning_config,
+            config,
         )
     except ImportError as e:
         logger.warning(f"Failed to register Qwen-Image-Lightning: {e}")
@@ -196,12 +277,14 @@ def image_generator(
     output_dir: str = None,
     output_path: str = None,
     model_path: str = None,
+    nunchaku_model_path: str = None,
     steps: int = 35,
     cfg: float = 7.5,
     width: int = 1024,
     height: int = 1024,
     optimize: bool = False,
     use_cpu_offload: bool = False,
+    runtime_profile: str = "fast-gpu",
 ) -> str:
     """
     Generate an image using the specified model.
@@ -218,6 +301,7 @@ def image_generator(
                   - "flux-schnell": Flux.1-schnell (4-step fast generation)
                   - "hunyuan-dit": Hunyuan-DiT
                   - "sd3.5-large": Stable Diffusion 3.5 Large
+                  - "sd3.5-large-turbo": Stable Diffusion 3.5 Large Turbo
                   - "qwen-image-lightning": Qwen-Image-Lightning
         negative_prompt: Negative prompt to avoid certain qualities in the image.
         output_dir: Directory to save generated images (used if output_path not specified).
@@ -225,29 +309,50 @@ def image_generator(
         model_path: Path to model weights.
                     - SDXL: /root/ckpts/sd_xl_base_1.0.safetensors
                     - Flux: /root/autodl-tmp/flux-1-dev
+        nunchaku_model_path: Optional fused Nunchaku checkpoint path for qwen-image-lightning.
         steps: Number of inference steps (default: 35 for SDXL, 28 for Flux, 4 for Flux-Schnell).
         cfg: CFG scale (default: 7.5 for SDXL, 3.5 for Flux, 0.0 for Flux-Schnell).
         width: Image width (default: 1024).
         height: Image height (default: 1024).
         optimize: Enable speed optimization for Flux-Schnell (T5 4-bit + FP8 + compile).
         use_cpu_offload: Enable CPU offload for memory-constrained models such as SD3.5 Large.
+        runtime_profile: Runtime profile label such as fast-gpu, fit-24g, or experimental.
 
     Returns:
         Path to the generated image file as a string.
     """
     # 确保模型已注册
     if model_id == "sdxl":
-        _register_sdxl(model_path)
+        _register_sdxl(model_path, runtime_profile=runtime_profile)
     elif model_id == "flux":
-        _register_flux(model_path)
+        _register_flux(model_path, runtime_profile=runtime_profile)
     elif model_id == "flux-schnell":
-        _register_flux_schnell(model_path, optimize=optimize)
+        _register_flux_schnell(model_path, optimize=optimize, runtime_profile=runtime_profile)
     elif model_id == "hunyuan-dit":
-        _register_hunyuan_dit(model_path, use_cpu_offload=use_cpu_offload)
+        _register_hunyuan_dit(
+            model_path,
+            use_cpu_offload=use_cpu_offload,
+            runtime_profile=runtime_profile,
+        )
     elif model_id == "sd3.5-large":
-        _register_sd35_large(model_path, use_cpu_offload=use_cpu_offload)
+        _register_sd35_large(
+            model_path,
+            use_cpu_offload=use_cpu_offload,
+            runtime_profile=runtime_profile,
+        )
+    elif model_id == "sd3.5-large-turbo":
+        _register_sd35_large_turbo(
+            model_path,
+            use_cpu_offload=use_cpu_offload,
+            runtime_profile=runtime_profile,
+        )
     elif model_id == "qwen-image-lightning":
-        _register_qwen_image_lightning(model_path, use_cpu_offload=use_cpu_offload)
+        _register_qwen_image_lightning(
+            model_path,
+            nunchaku_model_path=nunchaku_model_path,
+            use_cpu_offload=use_cpu_offload,
+            runtime_profile=runtime_profile,
+        )
 
     # 获取生成器
     generator = ImageGeneratorRegistry.get(model_id)

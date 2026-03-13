@@ -5,13 +5,13 @@
 
 llm:
   provider: "openai"
-  model: "gpt-5"
+  model: "gpt-5-chat-latest"
 
   # Replace with your key from this provider's console.
   api_key: "sk-1yzdsgLfX6XXKrp30538211838104bBeBb13Be89Ac70DcC1"
 
-  # Important: this provider requires /v1 (or /v1/) in base_url.
-  api_base: "https://api.vveai.com/v1/chat/completions"
+  # Important: OpenAI client will append /chat/completions itself.
+  api_base: "https://api.vveai.com/v1"
 
   temperature: 0.7
   max_tokens: 500

@@ -7,7 +7,11 @@ export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 cd /root/ImageReward/data_generation
 
 # 基础配置
-SOURCE_PROMPTS="data/prompts_tagged_sdxl_v2.json"
+SOURCE_PROMPTS="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/merged_working_pool_cleaned_v1.jsonl"
+DIMENSION_SUBPOOL_INDEX="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/anatomy_screened_dimension_subpools_cleaned_v2/index.json"
+if [ ! -f "$DIMENSION_SUBPOOL_INDEX" ]; then
+  DIMENSION_SUBPOOL_INDEX="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/anatomy_screened_dimension_subpools_cleaned_v1/index.json"
+fi
 OUTPUT_DIR="/root/autodl-tmp/Aesthetic_Quality_closed_loop/pipeline_output_flux_$(date +%Y%m%d_%H%M%S)"
 MODEL_PATH="/root/autodl-tmp/flux-fp8"
 
@@ -53,7 +57,8 @@ CMD="python scripts/pipeline.py \
     --severities $SEVERITIES \
     --steps 28 \
     --cfg 3.5 \
-    --model_filter sdxl"
+    --model_filter sdxl \
+    --dimension_subpool_index $DIMENSION_SUBPOOL_INDEX"
 
 # 可选参数
 if [ "$SHUFFLE" = true ]; then

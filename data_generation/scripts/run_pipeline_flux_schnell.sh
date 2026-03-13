@@ -3,11 +3,33 @@
 
 # 设置 PyTorch 显存分配策略，减少碎片化
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY ALL_PROXY all_proxy
+export JUDGE_CONFIG_PATH="${JUDGE_CONFIG_PATH:-/root/ImageReward/data_generation/config/judge_config_api_gpt_ge.yaml}"
 
 cd /root/ImageReward/data_generation
 
 # 基础配置
-SOURCE_PROMPTS="data/prompts_tagged_sdxl_v2.json"
+BASE_SOURCE_PROMPTS="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/merged_working_pool.jsonl"
+CLEANED_SOURCE_PROMPTS="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/merged_working_pool_cleaned_v1.jsonl"
+SOURCE_PROMPTS="$BASE_SOURCE_PROMPTS"
+if [ -f "$CLEANED_SOURCE_PROMPTS" ]; then
+    SOURCE_PROMPTS="$CLEANED_SOURCE_PROMPTS"
+fi
+BASE_DIMENSION_SUBPOOL_INDEX="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/dimension_subpools/index.json"
+BASE_CLEANED_DIMENSION_SUBPOOL_INDEX="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/dimension_subpools_cleaned_v1/index.json"
+SCREENED_CLEANED_DIMENSION_SUBPOOL_INDEX_V2="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/anatomy_screened_dimension_subpools_cleaned_v2/index.json"
+SCREENED_CLEANED_DIMENSION_SUBPOOL_INDEX="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/anatomy_screened_dimension_subpools_cleaned_v1/index.json"
+SCREENED_DIMENSION_SUBPOOL_INDEX="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/anatomy_screened_dimension_subpools/index.json"
+DIMENSION_SUBPOOL_INDEX="$BASE_DIMENSION_SUBPOOL_INDEX"
+if [ -f "$SCREENED_CLEANED_DIMENSION_SUBPOOL_INDEX_V2" ]; then
+    DIMENSION_SUBPOOL_INDEX="$SCREENED_CLEANED_DIMENSION_SUBPOOL_INDEX_V2"
+elif [ -f "$SCREENED_CLEANED_DIMENSION_SUBPOOL_INDEX" ]; then
+    DIMENSION_SUBPOOL_INDEX="$SCREENED_CLEANED_DIMENSION_SUBPOOL_INDEX"
+elif [ -f "$BASE_CLEANED_DIMENSION_SUBPOOL_INDEX" ]; then
+    DIMENSION_SUBPOOL_INDEX="$BASE_CLEANED_DIMENSION_SUBPOOL_INDEX"
+elif [ -f "$SCREENED_DIMENSION_SUBPOOL_INDEX" ]; then
+    DIMENSION_SUBPOOL_INDEX="$SCREENED_DIMENSION_SUBPOOL_INDEX"
+fi
 OUTPUT_DIR="/root/autodl-tmp/Aesthetic_Quality_closed_loop/pipeline_output_flux_schnell_$(date +%Y%m%d_%H%M%S)"
 
 # 生成参数
@@ -47,7 +69,8 @@ CMD="python scripts/pipeline.py \
     --severities $SEVERITIES \
     --steps 4 \
     --cfg 0.0 \
-    --model_filter sdxl"
+    --model_filter sdxl \
+    --dimension_subpool_index $DIMENSION_SUBPOOL_INDEX"
 
 # 可选参数
 if [ "$SHUFFLE" = true ]; then

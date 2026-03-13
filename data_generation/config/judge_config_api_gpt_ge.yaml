@@ -1,0 +1,27 @@
+# VLM Judge 配置文件（备用供应商）
+
+vlm:
+  provider: "openai"
+  model: "gpt-5-chat-latest"
+  api_key: "sk-1yzdsgLfX6XXKrp30538211838104bBeBb13Be89Ac70DcC1"
+  api_base: "https://api.vveai.com/v1"
+
+  temperature: 0.2
+  max_tokens: 800
+  top_p: 0.9
+
+  timeout: 90
+  max_retries: 3
+  retry_delay: 2
+
+judge:
+  strict_mode: false
+  accept_levels:
+    - moderate
+    - obvious
+  verbose_logging: true
+
+logging:
+  log_api_calls: false
+  save_judge_results: true
+  results_dir: "outputs/judge_results"

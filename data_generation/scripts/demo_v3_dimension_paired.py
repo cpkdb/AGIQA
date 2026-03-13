@@ -362,7 +362,7 @@ def main():
     parser.add_argument(
         "--positive_source",
         type=str,
-        default="/root/ImageReward/data_generation/data/image_quality_train.json",
+        default="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/merged_working_pool_cleaned_v1.jsonl",
         help="正样本来源（image_quality_train.json）",
     )
     parser.add_argument(

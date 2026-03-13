@@ -1,6 +1,6 @@
 # Semantic Rationality - Anatomy Degradation Prompt Templates V3
 # 语义合理性 - 解剖学退化策略 - 基于 quality_dimensions_active.json
-# 维度: hand_malformation, face_asymmetry, expression_mismatch, body_proportion_error, extra_limbs, impossible_pose, animal_anatomy_error
+# 维度: hand_malformation, expression_mismatch, body_proportion_error, extra_limbs, animal_anatomy_error
 
 semantic_anatomy:
 
@@ -9,7 +9,7 @@ semantic_anatomy:
       You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of hand anatomy. You may apply the following strategies:
 
       1. Identify where hands are mentioned or implied (e.g., holding, touching, pointing).
-      2. **Insert** mild posing anomaly descriptors **immediately after** the hand/subject mention (e.g., "holding a cup with fingers held stiffly", "a woman whose hands look slightly robotic and unnatural").
+      2. Insert mild posing anomaly descriptors **immediately after** the hand/subject mention (e.g., "holding a cup with fingers held stiffly", "a woman whose hands look slightly robotic and unnatural").
       3. Focus on **awkward posing** rather than structural changes.
       4. Avoid simply appending to the end of a long prompt; attach the description to the subject.
 
@@ -20,8 +20,9 @@ semantic_anatomy:
       You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of hand anatomy. You may apply the following strategies:
 
       1. Identify where hands are mentioned or implied.
-      2. Insert a specific finger count or length anomaly descriptor directly modifying the hand (e.g., "with a hand clearly showing six fingers spread wide apart", "with two fingers fused into one thick digit on the right hand", "gripping the sword with a hand that has only three short stubby fingers").
-      3. Focus on wrong number of fingers (too many or too few) or obviously wrong finger proportions.
+      2. Insert a clear hand-structure anomaly descriptor directly modifying the hand. The error should stay within common AI hand failures, such as one extra finger, partially fused fingers, uneven finger lengths or thickness, an awkwardly placed thumb, or one or two unnaturally bent joints.
+         e.g. with one extra finger on the visible hand; with two fingers partially fused near the base; gripping the sword with fingers of uneven length and thickness; with a thumb attached at a slightly wrong angle; with one finger bent unnaturally at the joint.
+      3. Focus on visible hand structure failures that still read as a human hand, and vary the error type rather than repeating the same finger-count mistake.
       4. Ensure the degradation describes the subject's hand, not a floating hand.
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of hand anatomy.
@@ -31,71 +32,12 @@ semantic_anatomy:
       You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of hand anatomy. You may apply the following strategies:
 
       1. Identify the subject's hand interaction.
-      2. Insert an extreme finger count or structure anomaly descriptor (e.g., "with seven or eight tangled fingers crowded on one hand", "with fingers of wildly different sizes, some twice as long and thick as others", "with both hands showing six or seven fingers each, some splitting into two at the tip").
-      3. Focus on severe digit count errors and gross proportion mismatches between fingers on the same hand.
+      2. Insert a severe hand-structure anomaly descriptor that combines 2-3 strong but still human-hand-like failures, such as six or seven fingers with awkward spacing, partially fused fingers, visibly uneven finger lengths or thickness, an implausibly attached thumb, or multiple fingers bent in conflicting directions.
+         e.g. with six fingers spaced awkwardly across one hand; with two fingers fused near the base and a thumb attached at an implausible angle; with visibly uneven finger lengths and thickness plus multiple awkwardly bent joints; with six or seven fingers and a slightly broken palm-to-wrist structure that still reads as a failed human hand.
+      3. Focus on strong hand structure failures while keeping the result within the range of common AI-generated hand errors, rather than turning the hand into something creature-like or non-human.
       4. Strictly preserve the original subject identity and artistic style.
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of hand anatomy.
-      Output only the rewritten prompt.
-
-  face_asymmetry:
-    mild: |
-      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of facial quality. You may apply the following strategies:
-
-      1. Locate the main character/creature with a visible face in the prompt.
-      2. The prompt MUST describe a single person (or creature) whose face is the focus or clearly visible. If the prompt describes:
-         - A group/crowd scene where no single face dominates → output "SKIP_THIS_PROMPT"
-         - A sculpture, mask, drawing-of-a-face, or non-living face → output "SKIP_THIS_PROMPT"
-         - A scene where the face is too small or distant to matter → output "SKIP_THIS_PROMPT"
-      3. Immediately after the subject noun, insert ONE facial asymmetry descriptor. Target structural features where any mismatch is immediately noticeable:
-         - Eyes: "with one eye positioned noticeably higher on the face than the other, the two eyes clearly misaligned"
-         - Eyebrows: "with one eyebrow sitting much higher than the other, the face visibly lopsided"
-         - Mouth: "with the mouth clearly tilted, one corner significantly higher than the other"
-         e.g. describe a specific paired feature where one side is clearly in the wrong position
-      4. Keep everything else in the original prompt unchanged.
-      5. Do NOT describe this as a normal person type (e.g. do NOT use "lazy eye", "Bell's palsy").
-
-      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of facial quality.
-      Output only the rewritten prompt.
-
-    moderate: |
-      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of facial quality. You may apply the following strategies:
-
-      1. Locate the main character with a visible face in the prompt.
-      2. The prompt MUST describe a single person (or creature) whose face is the focus or clearly visible. If the prompt describes:
-         - A group/crowd scene where no single face dominates → output "SKIP_THIS_PROMPT"
-         - A sculpture, mask, drawing-of-a-face, or non-living face → output "SKIP_THIS_PROMPT"
-         - A scene where the face is too small or distant → output "SKIP_THIS_PROMPT"
-      3. Immediately after the subject noun, insert 1-2 facial asymmetry descriptors that are obviously wrong:
-         - Eyes: "with one eye positioned significantly higher than the other, creating an obviously asymmetric face that looks clearly wrong"
-         - Eye + mouth: "with one eye noticeably higher than the other and the mouth visibly tilted, the whole face clearly off-balance"
-         - Structural: "with the left side of the face visibly larger than the right, the two halves of the face clearly mismatched"
-      4. Keep everything else in the original prompt unchanged.
-      5. CRITICAL: Do NOT describe a new or different person — the SAME person must have these wrong facial proportions.
-      6. Do NOT use medical condition labels ("Bell's palsy", "lazy eye").
-
-      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of facial quality.
-      Output only the rewritten prompt.
-
-    severe: |
-      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have severely degraded quality specifically in terms of facial quality. You may apply the following strategies:
-
-      1. Locate the main character with a visible face in the prompt.
-      2. The prompt MUST describe a single person (or creature) whose face is the focus or clearly visible. If the prompt describes:
-         - A group/crowd scene where no single face dominates → output "SKIP_THIS_PROMPT"
-         - A sculpture, mask, drawing-of-a-face, or non-living face → output "SKIP_THIS_PROMPT"
-         - A scene where the face is too small or distant → output "SKIP_THIS_PROMPT"
-      3. Immediately after the subject noun, insert 2-3 facial asymmetry descriptors combined together, making the face look grotesquely and obviously wrong. Each error must be extreme enough to be immediately apparent:
-         - Eyes: "one eye significantly higher and larger than the other"
-         - Overall structure: "the left side of the face visibly bigger and lower than the right, the whole face clearly lopsided"
-         - Mouth: "the mouth severely tilted with one corner much higher, completely off-center"
-         - Combined: mix 2-3 of the above — "with one eye much higher and larger than the other, the left side of the face visibly bigger than the right, making the entire face look grotesquely asymmetric and structurally wrong"
-         e.g. the result should look like an obvious AI generation failure, not a normal or medical face
-      3. Keep everything else in the original prompt unchanged.
-      4. CRITICAL: Do NOT describe a new or different person — deform the SAME person's face.
-      5. Do NOT use medical condition labels.
-
-      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of facial quality.
       Output only the rewritten prompt.
 
   expression_mismatch:
@@ -116,12 +58,20 @@ semantic_anatomy:
 
       1. The prompt MUST show a single person or creature with a visible face. If no face is present or implied → output "SKIP_THIS_PROMPT".
       2. Identify the scene's emotional tone.
-      3. If an expression word exists, replace it with a strongly contradictory one using vivid physical descriptors:
-         - Happy scene → "with a deep frown, downturned mouth, and tearful eyes"
-         - Sad/painful scene → "grinning widely with raised cheeks and bright laughing eyes"
-         - Calm/peaceful scene → "with a look of visible distress, brows tightly knitted and jaw clenched"
-         - Angry/tense scene → "with a blissful relaxed smile and half-closed dreamy eyes"
-      4. If no expression word exists, INSERT immediately after the subject a vivid expression clause that strongly contradicts the scene mood. Use physical face descriptors (tears, wide grin, clenched jaw, raised eyebrows) not just emotion labels.
+      3. If an expression word exists, replace it with one that feels obviously emotionally or situationally wrong at first glance.
+        The mismatch should be clear and socially inappropriate, not subtle, hesitant, or merely slightly off. Use ONE expression
+        archetype chosen from this pool of visibly wrong reactions:
+        - Inappropriately cheerful: a too-wide smile, a fixed grin, bright delighted eyes, or a pleased smile held at the wrong moment
+        - Frozen detached: a vacant smile, a blank stare with tight lips, or emotionally absent raised-brow detachment
+        - Irritated or contemptuous: tightened brows, an irritated scowl, a dismissive sneer, or annoyed contempt in a scene that should feel calm or warm
+        - Wrong-place alarm: widened eyes, a tense alarmed look, or obvious panic in a scene that should feel ordinary or gentle
+        Prefer concrete mouth, eyes, and brows over abstract labels.
+        e.g. a tense scene paired with a too-wide pleased smile and bright delighted eyes; a warm intimate moment paired with a vacant smile and detached raised brows; a peaceful setting paired with visible irritation and a contemptuous sneer; a calm everyday moment paired with widened alarmed eyes and a tense mouth.
+      4. If no expression word exists, INSERT immediately after the subject a vivid expression clause that clearly clashes with the
+        scene mood. Pick ONE archetype from the pool above and describe it in concrete visual terms through the mouth, eyes, and brows.
+        Examples include a smile stretched too broadly across the face, a fixed grin with bright delighted eyes, a vacant smile with
+        lifted brows, a cold blank stare with tight lips, an irritated scowl with a dismissive sneer, or widened alarmed eyes with a
+        tense mouth at an obviously wrong moment. Do NOT use weak words like slight, mild, faint, subtle, uneasy, or merely confused.
       5. Only modify expression — do NOT change anatomy, style, or scene.
 
       Output only the rewritten prompt.
@@ -131,12 +81,19 @@ semantic_anatomy:
 
       1. The prompt MUST show a single person or creature with a visible face. If no face is present or implied → output "SKIP_THIS_PROMPT".
       2. Identify the scene's emotional tone.
-      3. Remove ALL original expression words and replace with an extreme opposite using vivid, physical, high-intensity descriptors:
-         - Happy/celebratory scene → "with a face contorted in anguish, mouth open in a silent scream, tears streaming down the cheeks"
-         - Grief/funeral scene → "laughing hysterically, mouth wide open, eyes crinkled with uncontrollable joy"
-         - Peaceful/serene scene → "with an expression of sheer terror, eyes wide open and mouth agape in a scream"
-         - Threatening/danger scene → "with a dreamy blissful smile, eyes half-closed in total contentment"
-      4. If no expression word exists, INSERT after the subject an extreme expression clause using physical face details (open mouth, streaming tears, wide eyes, bared teeth) that creates maximum emotional dissonance with the scene.
+      3. Remove ALL original expression words and replace them with an extreme expression that feels emotionally, socially, or
+        situationally incompatible with the scene. The mismatch may come from the wrong emotion, the wrong intensity, or a blatantly
+        inappropriate reaction to the scene. Use ONE extreme archetype chosen from this pool:
+        - Hysterically cheerful: manic laughter, ecstatic delight, or a wild open-mouthed grin with gleaming eyes
+        - Severely detached: a deadpan vacant smile, cold blank detachment, or unnervingly peaceful emotional absence
+        - Aggressive contempt or irritation: a harsh sneer, furious irritation, or overt contempt in a scene that should feel gentle, intimate, or solemn
+        - Panic or terror: a frozen horrified scream, wide-eyed terror, or obvious alarm in a scene that should feel calm, safe, or ordinary
+        Make the face visually obvious at a glance through mouth shape, eye openness, brow tension, and overall affect.
+        e.g. visible manic delight in a scene of grief or danger; an expression of terror in a calm or gentle moment; harsh contempt
+        in a warm or respectful interaction; an unnaturally vacant detached smile in a situation that should feel urgent or emotional.
+      4. If no expression word exists, INSERT after the subject an intense expression clause using vivid physical facial cues that
+        creates maximum dissonance with the scene. Pick ONE archetype from the pool above and make the contradiction visually obvious
+        through the mouth, eyes, and brows at a glance.
       5. Only modify expression — do NOT change anatomy, style, or scene.
 
       Output only the rewritten prompt.
@@ -160,14 +117,17 @@ semantic_anatomy:
       You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of body proportions. You may apply the following strategies:
 
       1. Locate the main character/creature noun phrase in the prompt.
-      2. Immediately after the subject noun, insert 1-2 proportion descriptors that produce a grotesquely wrong-looking figure. Use extreme concrete ratios so the mismatch is undeniable:
-         - Torso/leg ratio: "with a torso twice as long as the legs, the upper body dominating two-thirds of the total height"
-         - Head ratio: "with a head nearly twice the normal size sitting on the body, making the figure look strangely wrong"
-         - Limb thickness: "with oversized hands almost as wide as the shoulders, clearly disproportionate"
+      2. Immediately after the subject noun, insert ONE dominant proportion error that is easy to notice at a glance. Prefer
+         strong visible archetypes such as an oversized head relative to the body, extremely short legs beneath a long torso, or
+         disproportionately large hands or feet on an otherwise normal body. Use a tiny head above a broad oversized upper body
+         only occasionally, not as the default pattern. Do not dilute the effect with smaller limb-length issues.
+         e.g. with a head that looks strikingly too large for the body; with extremely short legs beneath a long torso; with hands
+         that look disproportionately large for the arms; with feet that look far too large for the body; with a head that looks
+         noticeably too small for a broad, oversized upper body.
       3. Keep everything else in the original prompt unchanged.
-      4. CRITICAL: Do NOT add any new characters. The SAME single figure must have these wrong proportions — describe the deformation of the existing subject, not a new person.
+      4. Keep the error easy to read at a glance rather than scattering many small proportion changes across the whole body.
 
-      Do NOT use "withered", "skinny", "fat", "inflated".
+
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of body proportions.
       Output only the rewritten prompt.
@@ -176,14 +136,16 @@ semantic_anatomy:
       You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of body proportions. You may apply the following strategies:
 
       1. Locate the main character/creature noun phrase in the prompt.
-      2. Immediately after the subject noun, insert 2-3 extreme proportion descriptors combined together, making the figure look grotesquely and obviously disproportionate:
-         - "with a massive barrel-like torso three times the length of the tiny stick-like legs, the upper body grotesquely dominating the frame"
-         - "with an enormous torso dwarfing shrunken legs, combined with a tiny head that looks absurdly small on the huge upper body"
-         - "with wide heavy shoulders on top of extremely thin stick legs, and a neck so thick it blends into the shoulders"
+      2. Immediately after the subject noun, insert TWO dominant proportion errors that are easy to read at a glance. Prefer clear
+         combinations such as oversized head + very short legs, oversized head + disproportionately large hands, or very short legs
+         + oversized feet. A tiny head above a bulky upper body may be used as one occasional variant, but it should not dominate
+         the outputs. Keep the figure clearly disproportionate without turning into a creature.
+         e.g. with a head far too large for the body and legs that look far too short beneath a long torso; with a head far too
+         large for the body and hands that look disproportionately huge; with very short legs beneath a long torso and feet that
+         look much too large; with a noticeably tiny head above an oversized upper body and broad shoulders.
       3. Keep everything else in the original prompt unchanged.
-      4. CRITICAL: Do NOT add any new characters. The SAME single figure must have these extreme wrong proportions — deform the existing subject, not replace them.
+      4. Keep the distortion visually obvious and structured rather than spreading many subtle changes across unrelated body parts.
 
-      Do NOT use "skeleton", "withered", "balloon", "inflated", "fat", "obesity". Keep the body build average weight, just badly proportioned.
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of body proportions.
       Output only the rewritten prompt.
@@ -202,10 +164,12 @@ semantic_anatomy:
     moderate: |
       You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of limb count. You may apply the following strategies:
 
-      1. Identify the subject and determine how many arms/hands/legs they should normally have.
-      2. Directly state the total number of limbs visible in the final image, rather than describing "an extra limb growing from" (e.g., "with three arms clearly visible, two on the left side and one on the right", "with three hands visible, one holding the cup and two resting on the table", "with three legs visible underneath the body").
-      3. The extra limb should be described as solid and real, positioned naturally alongside the existing limbs.
-      4. Keep the total to ONE additional limb (3 arms or 3 hands total).
+      1. Identify the subject and determine which limb group is most likely to be clearly visible in the original composition.
+      2. Strongly prefer extra visible arms or hands as the default limb-count error, because these are usually easier to render clearly and more visually obvious than extra legs.
+      3. Only choose extra visible legs or feet when the prompt very clearly suggests a full-body or lower-body view with separated legs, visible lower limbs, and little risk of those limbs being hidden, overlapped, or cropped.
+      4. For arm-based errors, do NOT default to only three visible arms if a stronger but still plausible count will render more clearly. Prefer four clearly visible arms as the default moderate arm-count failure, with two normal arms and two extra arms distinctly protruding from the sides of the torso or shoulders. If the subject is holding an object, keep the normal pair doing the holding and make the extra arms extend separately beside the torso rather than merging into the same holding pose.
+      5. Directly state an incorrect total number of visible arms, hands, legs, or feet in the final image, rather than describing a new limb vaguely growing from somewhere. Prefer wording such as "with four clearly visible arms, two normal and two extra extending beside the torso", "with four visible hands clearly separated from one another", or "with one extra visible arm protruding separately from the shoulder line". Use leg-based errors only in the clearly suitable full-body cases described above.
+      6. Keep the anatomical counting failure obvious at a glance: the extra limbs should be fully visible, spatially separated, and easy to count, not hidden, cropped, overlapped, or visually absorbed into clothing, props, or the original pose.
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of limb count.
       Output only the rewritten prompt.
@@ -213,43 +177,14 @@ semantic_anatomy:
     severe: |
       You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of limb count. You may apply the following strategies:
 
-      1. Identify the subject and directly state an incorrect total number of limbs or heads in the final image.
-      2. Use concrete counts and positions (e.g., "with four arms total, two on each side of the body", "with two heads side by side on the shoulders, each facing a slightly different direction", "with six arms extending from the torso, three on each side", "with four legs visible, two in front and two behind").
-      3. Keep the original artistic style and medium — do NOT use words like "surreal", "dream-like", "fractal", or "abstract". Describe it as a straightforward anatomical error with specific limb counts.
+      1. Identify the subject and choose the visible limb group that best matches the likely composition of the original prompt.
+      2. Prefer severe extra-arm or extra-hand errors by default, because they are more likely to remain visible and read clearly at a glance. Only use extra legs or feet when the prompt clearly shows a front-facing or otherwise unobstructed full-body view with clearly separated lower limbs.
+      3. Directly state an incorrect total number of visible arms, hands, legs, or feet in the final image. For severe arm-based failures, prefer six clearly visible arms, or another equally unmistakable multi-arm count, when the composition can show them cleanly.
+      4. Use clear counting-based anatomical errors that are immediately noticeable, affecting one or two visible limb groups on the same subject. Prefer wording such as "with six clearly visible arms, two normal and four extra emerging distinctly from the shoulders and torso", "with multiple extra hands clearly separated at different angles", or "with six visible arms spread in different directions and all fully visible in the frame". Avoid relying on extra arms or hands that are tightly merged into an existing holding pose, hidden inside clothing, or swallowed by overlapping props. Use leg-based counting errors only in the clearly suitable full-body cases described above.
+      5. Keep the result grounded as a severe generation failure in limb count rather than a fantasy creature, but make the count error impossible to miss at first glance.
+      6. Avoid choosing limb types that would likely be hidden, cropped, overlapped, or impossible to observe clearly in the original composition; all extra limbs should remain countable and visibly separate.
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of limb count.
-      Output only the rewritten prompt.
-
-  impossible_pose:
-    mild: |
-      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of pose logic. You may apply the following strategies:
-
-      1. Identify the subject (person or creature).
-      2. Insert a visibly stiff or over-extended pose descriptor immediately after the subject, describing a specific body part at an awkward extreme angle (e.g., "with head tilted sharply to one side, almost touching the shoulder", "with both arms raised stiffly above the head at rigid unnatural angles", "standing with the torso leaning far forward while the legs remain perfectly straight").
-      3. Focus on poses that are physically possible but clearly uncomfortable and unnatural-looking.
-
-      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of pose logic.
-      Output only the rewritten prompt.
-
-    moderate: |
-      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of pose logic. You may apply the following strategies:
-
-      1. Identify the subject (person or creature).
-      2. Insert a pose descriptor where body parts face contradictory directions, using concrete spatial relationships (e.g., "with the head twisted looking directly behind while the body faces forward", "sitting with both legs bent backwards under the chair", "with one arm reaching behind the back and bending upward to touch the opposite shoulder from behind").
-      3. Describe the exact direction each body part faces to create a clear directional conflict.
-
-      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of pose logic.
-      Output only the rewritten prompt.
-
-    severe: |
-      You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of pose logic. You may apply the following strategies:
-
-      1. Identify the subject (person or creature).
-      2. Insert an extreme full-body twist or contortion descriptor that makes the overall posture clearly broken (e.g., "with the upper body rotated 180 degrees so the chest faces backward while the legs face forward", "in a contortionist pose with the head between the knees and arms wrapped around from behind", "with the torso bent completely sideways at the waist so the head is at hip level while standing").
-      3. Describe the spatial relationship between at least two major body sections (upper/lower body, head/torso) to ensure the conflict is visually obvious.
-      4. Do NOT use words like "spiral", "mangled", or "broken". The body parts are intact, just in an impossible arrangement.
-
-      Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of pose logic.
       Output only the rewritten prompt.
 
   animal_anatomy_error:
@@ -267,8 +202,10 @@ semantic_anatomy:
       You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of animal anatomy logic. You may apply the following strategies:
 
       1. Inject clear anatomy error descriptors right after the animal is mentioned.
-      2. Use phrases like 'a deformed [animal] with bad anatomy', 'a [animal] with extra legs and wrong joints', or 'a [animal] with a twisted body pose'.
-      3. Maintain the integrity of the original style and environmental context.
+      2. Describe 1-2 immediately visible anatomy failures on the same animal. Prefer obvious count or part-placement errors such as too many legs, one missing leg, two heads on one neck, an extra tail, a wing growing from the wrong place, missing ears, or horns attached in the wrong location.
+         e.g. a [animal] with six legs instead of four; a [animal] missing one foreleg; a [animal] with two heads sharing one neck; a [animal] with a tail growing from the chest; a [animal] with one ear missing and the other attached too low.
+      3. Avoid subtle direction-only mistakes such as slightly awkward joints, mild limb angles, or small pose irregularities.
+      4. Maintain the integrity of the original style and environmental context.
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of animal anatomy.
       Output only the rewritten prompt.
@@ -277,8 +214,10 @@ semantic_anatomy:
       You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of extreme animal anatomy distortion. You may apply the following strategies:
 
       1. Inject descriptors for severe structural errors immediately after the animal.
-      2. Use specific terms like 'a [animal] with two heads growing from the same neck', 'a [animal] with a cluster of extra legs growing from its back', or 'a [animal] with 8 legs and a twisted torso'.
-      3. Do not use words that change the style to medical diagrams and preserve the original artistic medium.
+      2. Combine 2-3 strong, obvious anatomy failures across the same animal. Prefer major count or placement errors such as extra or missing legs, duplicated heads, an extra tail, wings or horns attached in clearly wrong places, or a major body part missing entirely.
+         e.g. a [animal] with two heads on one neck and six legs; a [animal] with one foreleg missing, an extra hind leg, and a tail growing from the shoulder; a [animal] with wings attached near the hips and one horn growing from the cheek.
+      3. Avoid subtle orientation-only mistakes such as mildly wrong joints, small angle mismatches, or slightly awkward poses. The anatomy failure should be obvious at first glance.
+      4. Do not use words that change the style to medical diagrams and preserve the original artistic medium.
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of animal anatomy.
       Output only the rewritten prompt.

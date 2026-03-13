@@ -24,14 +24,10 @@ from typing import Dict, Iterable, List, Optional, Tuple
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 DEFAULT_PLAN_PATH = SCRIPT_DIR.parent / "data" / "llm_backfill_plan_all_dimensions_v1.json"
-DEFAULT_SUBPOOL_INDEX_PATH = (
-    SCRIPT_DIR.parent
-    / "data"
-    / "prompt_sources_workspace"
-    / "backfill_merge_runs"
-    / "all_dimensions_v1_full"
-    / "dimension_subpools"
-    / "index.json"
+DEFAULT_SUBPOOL_INDEX_PATH = Path(
+    "/root/autodl-tmp/AGIQA/data/prompt_sources_workspace"
+    "/backfill_merge_runs/all_dimensions_v1_full"
+    "/dimension_subpools/index.json"
 )
 DEFAULT_OUTPUT_ROOT = SCRIPT_DIR.parent / "data" / "semantic_screening_runs"
 

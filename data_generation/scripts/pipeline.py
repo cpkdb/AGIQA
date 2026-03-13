@@ -17,6 +17,7 @@ import json
 import logging
 import os
 import random
+import re
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -31,6 +32,11 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+
+_ANIMAL_SUBJECT_PATTERN = re.compile(
+    r"\b(cat|dog|wolf|fox|lion|tiger|bear|horse|cow|sheep|goat|deer|rabbit|hare|monkey|ape|gorilla|chimp|bird|eagle|owl|hawk|penguin|fish|shark|whale|dolphin|octopus|insect|butterfly|spider|snake|lizard|dragon|creature|beast|monster|animal|furry|anthro|coyote|feline|canine)\b"
+)
 
 
 def _load_source_prompt_rows(source_prompts_path: Path) -> List[Any]:
@@ -152,14 +158,13 @@ class DataGenerationPipeline:
     DIMENSION_TO_TEMPLATE_GROUP = {
         # semantic_anatomy
         "hand_malformation": "semantic_anatomy",
-        "face_asymmetry": "semantic_anatomy",
         "expression_mismatch": "semantic_anatomy",
         "body_proportion_error": "semantic_anatomy",
         "extra_limbs": "semantic_anatomy",
-        "impossible_pose": "semantic_anatomy",
         "animal_anatomy_error": "semantic_anatomy",
         # semantic_object
-        "object_shape_error": "semantic_object",
+        "object_structure_error": "semantic_object",
+        "material_mismatch": "semantic_object",
         "extra_objects": "semantic_object",
         "count_error": "semantic_object",
         "illogical_colors": "semantic_object",
@@ -167,8 +172,6 @@ class DataGenerationPipeline:
         "scale_inconsistency": "semantic_spatial",
         "floating_objects": "semantic_spatial",
         "penetration_overlap": "semantic_spatial",
-        "shadow_mismatch": "semantic_spatial",
-        "reflection_error": "semantic_spatial",
         "context_mismatch": "semantic_spatial",
         "time_inconsistency": "semantic_spatial",
         "scene_layout_error": "semantic_spatial",
@@ -181,16 +184,17 @@ class DataGenerationPipeline:
     # 未列出的维度不做过滤，使用全量 prompt 池
     DIMENSION_REQUIRED_TAGS = {
         # 需要人脸
-        "face_asymmetry": ["has_face"],
         "expression_mismatch": ["has_face"],
         # 需要人物（全身/半身）
         "body_proportion_error": ["has_person"],
         "extra_limbs": ["has_person"],
-        "impossible_pose": ["has_person"],
         # 需要手部
         "hand_malformation": ["has_hand"],
         # 需要动物
         "animal_anatomy_error": ["has_animal"],
+        # 需要结构化非生物物体
+        "object_structure_error": ["has_structured_object"],
+        "material_mismatch": ["has_structured_object"],
         # 需要可数物体
         "count_error": ["has_countable_objects"],
         # 需要多物体（尺度对比）
@@ -198,11 +202,51 @@ class DataGenerationPipeline:
         # 需要有背景的场景
         "scene_layout_error": ["has_background"],
         "context_mismatch": ["has_background"],
-        # 需要反射面
-        "reflection_error": ["has_reflective_surface"],
         # 需要自然物体/生物（草地、动物、人、水果等可变色目标）
         "illogical_colors": ["has_person", "has_animal", "has_background"],
     }
+
+    def _get_record_tags(self, record: Dict[str, Any]) -> Set[str]:
+        tags = record.get("semantic_tags", record.get("tags", []))
+        if isinstance(tags, str):
+            return {tags}
+        if isinstance(tags, list):
+            return {str(tag) for tag in tags if isinstance(tag, str) and tag}
+        return set()
+
+    def _is_record_compatible_for_dimension(
+        self,
+        record: Dict[str, Any],
+        dimension: str,
+    ) -> Tuple[bool, str]:
+        tags = self._get_record_tags(record)
+        required_tags = self.DIMENSION_REQUIRED_TAGS.get(dimension, [])
+        if required_tags and not any(tag in tags for tag in required_tags):
+            return False, f"missing_required_tags:{','.join(required_tags)}"
+
+        prompt_text = str(record.get("prompt", "") or "").strip().lower()
+        if dimension == "animal_anatomy_error" and not _ANIMAL_SUBJECT_PATTERN.search(prompt_text):
+            return False, "missing_explicit_animal_subject"
+
+        return True, "ok"
+
+    def _filter_records_for_dimension(
+        self,
+        records: List[Dict[str, Any]],
+        dimension: str,
+        source: str,
+    ) -> List[Dict[str, Any]]:
+        filtered: List[Dict[str, Any]] = []
+        dropped = 0
+        for record in records:
+            compatible, _ = self._is_record_compatible_for_dimension(record, dimension)
+            if compatible:
+                filtered.append(record)
+            else:
+                dropped += 1
+        if dropped:
+            logger.info(f"[CompatFilter] {dimension}/{source}: kept {len(filtered)}, dropped {dropped}")
+        return filtered
 
     def _get_template_subcategory(self, dimension: str, perspective: str = None) -> str:
         """获取维度对应的模板分组名，用于 prompt_degrader 的 subcategory 参数"""
@@ -331,6 +375,7 @@ class DataGenerationPipeline:
                     if replace_idx < sample_size:
                         sampled[replace_idx] = record
 
+        logger.info(f"[Subpool] {dimension}: trusting offline subpool and skipping runtime compat filter")
         if not sampled:
             logger.warning(f"[Subpool] No valid prompts for {dimension} from {subpool_path}")
         return sampled
@@ -491,12 +536,14 @@ class DataGenerationPipeline:
                     negative_prompt="",
                     output_path=pos_image_path,
                     model_path=self.model_path or gen_cfg.get('model_path'),
+                    nunchaku_model_path=gen_cfg.get('nunchaku_model_path'),
                     steps=gen_cfg.get('steps', 35),
                     cfg=gen_cfg.get('cfg', 7.5),
                     width=gen_cfg.get('width', 1024),
                     height=gen_cfg.get('height', 1024),
                     optimize=gen_cfg.get('optimize', False),
                     use_cpu_offload=gen_cfg.get('use_cpu_offload', False),
+                    runtime_profile=gen_cfg.get('runtime_profile', 'fast-gpu'),
                 )
             except Exception as e:
                 logger.error(f"[{pair_id}] Positive image generation failed: {e}")
@@ -595,6 +642,13 @@ class DataGenerationPipeline:
                     continue
 
             # Step 1.5: 检测 SKIP_THIS_PROMPT
+            if not negative_prompt or not negative_prompt.strip():
+                logger.error(f"[{pair_id}] Empty negative prompt returned by degrader")
+                attempt_record["status"] = "error"
+                attempt_record["error"] = "empty_negative_prompt"
+                attempts.append(attempt_record)
+                continue
+
             if "SKIP_THIS_PROMPT" in negative_prompt:
                 logger.info(f"[{pair_id}] LLM returned SKIP_THIS_PROMPT, skipping pair")
                 attempt_record["status"] = "skipped"
@@ -612,12 +666,14 @@ class DataGenerationPipeline:
                     negative_prompt="",
                     output_path=neg_image_path,
                     model_path=self.model_path or gen_cfg.get('model_path'),
+                    nunchaku_model_path=gen_cfg.get('nunchaku_model_path'),
                     steps=gen_cfg.get('steps', 35),
                     cfg=gen_cfg.get('cfg', 7.5),
                     width=gen_cfg.get('width', 1024),
                     height=gen_cfg.get('height', 1024),
                     optimize=gen_cfg.get('optimize', False),
                     use_cpu_offload=gen_cfg.get('use_cpu_offload', False),
+                    runtime_profile=gen_cfg.get('runtime_profile', 'fast-gpu'),
                 )
                 attempt_record["negative_image_path"] = neg_image_path
             except Exception as e:
@@ -702,12 +758,14 @@ class DataGenerationPipeline:
                             negative_prompt="",
                             output_path=pos_image_path,
                             model_path=self.model_path or gen_cfg.get('model_path'),
+                            nunchaku_model_path=gen_cfg.get('nunchaku_model_path'),
                             steps=gen_cfg.get('steps', 35),
                             cfg=gen_cfg.get('cfg', 7.5),
                             width=gen_cfg.get('width', 1024),
                             height=gen_cfg.get('height', 1024),
                             optimize=gen_cfg.get('optimize', False),
                             use_cpu_offload=gen_cfg.get('use_cpu_offload', False),
+                            runtime_profile=gen_cfg.get('runtime_profile', 'fast-gpu'),
                         )
                         logger.info(f"[{pair_id}] Positive sample regenerated with style anchor")
 
@@ -1050,17 +1108,9 @@ class DataGenerationPipeline:
                     + (f" (pool_count={est_total})" if isinstance(est_total, int) else "")
                 )
             else:
-                # 按标签过滤 prompt 池，再随机选取 N 个
-                required_tags = self.DIMENSION_REQUIRED_TAGS.get(dimension, [])
-                if required_tags:
-                    pool = [p for p in prompts if any(t in p.get("semantic_tags", p.get("tags", [])) for t in required_tags)]
-                    if not pool:
-                        logger.warning(f"[TagFilter] {dimension} requires {required_tags} but no matching prompts, using full pool")
-                        pool = prompts
-                    else:
-                        logger.info(f"[TagFilter] {dimension}: {len(pool)}/{len(prompts)} prompts match {required_tags}")
-                else:
-                    pool = prompts
+                pool = self._filter_records_for_dimension(prompts, dimension, source="fallback_pool")
+                if not pool:
+                    logger.warning(f"[TagFilter] {dimension}: no compatible prompts in fallback pool")
                 selected = rng.sample(pool, min(num_prompts_per_dim, len(pool)))
             dim_prompt_items = []
             for selected_item in selected:
@@ -1249,10 +1299,15 @@ def main():
 
     # 图像生成配置
     parser.add_argument("--model_id", type=str, default="sdxl",
-                        choices=["sdxl", "flux", "flux-schnell", "hunyuan-dit", "sd3.5-large", "qwen-image-lightning"],
-                        help="Generation model: sdxl, flux, flux-schnell, hunyuan-dit, sd3.5-large or qwen-image-lightning (default: sdxl)")
+                        choices=["sdxl", "flux", "flux-schnell", "hunyuan-dit", "sd3.5-large", "sd3.5-large-turbo", "qwen-image-lightning"],
+                        help="Generation model: sdxl, flux, flux-schnell, hunyuan-dit, sd3.5-large, sd3.5-large-turbo or qwen-image-lightning (default: sdxl)")
     parser.add_argument("--model_path", type=str, default=None,
                         help="Model path (SDXL: /root/ckpts/sd_xl_base_1.0.safetensors, Flux: /root/autodl-tmp/flux-1-dev)")
+    parser.add_argument("--nunchaku_model_path", type=str, default=None,
+                        help="Optional fused Nunchaku checkpoint path for qwen-image-lightning")
+    parser.add_argument("--runtime_profile", type=str, default="fast-gpu",
+                        choices=["fast-gpu", "fit-24g", "fast-gpu-24g", "nunchaku-int4", "experimental"],
+                        help="Runtime profile: fast-gpu, fit-24g, fast-gpu-24g, nunchaku-int4, or experimental (default: fast-gpu)")
     parser.add_argument("--steps", type=int, default=35,
                         help="Inference steps (default: 35 for SDXL, 28 for Flux)")
     parser.add_argument("--cfg", type=float, default=7.5,
@@ -1274,6 +1329,14 @@ def main():
                         help="Override subpool directory containing per-dimension *.jsonl files (default: parent of index.json)")
 
     args = parser.parse_args()
+
+    if args.model_id == "sd3.5-large-turbo":
+        if args.steps == 35:
+            args.steps = 4
+        if args.cfg == 7.5:
+            args.cfg = 0.0
+        if args.runtime_profile == "fit-24g" and not args.use_cpu_offload:
+            args.use_cpu_offload = True
 
     severities = [s.strip() for s in args.severities.split(',')]
 
@@ -1330,6 +1393,8 @@ def main():
 
     pipeline.generation_config = {
         "model_path": args.model_path,
+        "nunchaku_model_path": args.nunchaku_model_path,
+        "runtime_profile": args.runtime_profile,
         "steps": args.steps,
         "cfg": args.cfg,
         "width": args.width,
