@@ -1,0 +1,36 @@
+{
+  "version": "v1",
+  "description": "Prompt pool 后续共享父池与维度子池构建的标准命名方案。",
+  "shared_pool_family_outputs": {
+    "common": {
+      "directory_name": "shared_family_screened_pools_cleaned_v1",
+      "index_name": "index.json",
+      "candidate_suffix": "_candidates.jsonl",
+      "screening_input_suffix": "_screening_input.jsonl"
+    },
+    "turbo": {
+      "directory_name": "sd35_turbo_shared_family_screened_pools_clipsafe_v1",
+      "index_name": "index.json",
+      "candidate_suffix": "_candidates.jsonl",
+      "screening_input_suffix": "_screening_input.jsonl",
+      "derivation_mode": "reuse_common_passes_then_token_filter"
+    }
+  },
+  "dimension_subpool_outputs": {
+    "common": {
+      "directory_name": "semantic_screened_dimension_subpools_cleaned_v1",
+      "index_name": "index.json"
+    },
+    "turbo": {
+      "directory_name": "sd35_turbo_semantic_screened_dimension_subpools_clipsafe_v1",
+      "index_name": "index.json",
+      "derivation_mode": "reuse_common_passes_then_token_filter"
+    }
+  },
+  "notes": [
+    "shared_family_screened_pools_* 用于共享父池的最终通过集。",
+    "semantic_screened_dimension_subpools_* 用于从共享父池或轻规则池派生到具体维度。",
+    "turbo 版本后续不单独做 family-level 语义筛查，而是复用 common 的 pass 集后再做 token / clipsafe 过滤。",
+    "命名中显式保留 cleaned / sd35_turbo_clipsafe / semantic_screened / family_screened 信息，方便与旧产物区分。"
+  ]
+}

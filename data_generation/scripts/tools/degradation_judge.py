@@ -10,15 +10,24 @@ import logging
 import yaml
 import time
 import httpx
+import re
 from pathlib import Path
 from typing import Optional, Dict, Any
 from PIL import Image
 import io
+from functools import lru_cache
 
 from smolagents import tool
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+DATA_GENERATION_ROOT = Path(__file__).resolve().parents[2]
+CONFIG_ROOT = DATA_GENERATION_ROOT / "config"
+PROMPT_TEMPLATES_ROOT = CONFIG_ROOT / "prompt_templates_v3"
+ACTIVE_TAXONOMY_PATH = CONFIG_ROOT / "quality_dimensions_active.json"
+JUDGE_COMPATIBILITY_HINTS_PATH = CONFIG_ROOT / "judge_compatibility_hints_v1.yaml"
+DEGRADATION_DIMENSIONS_DOC_PATH = DATA_GENERATION_ROOT / "docs" / "degradation_dimensions.md"
 
 # 尝试导入 OpenAI
 try:
@@ -121,8 +130,8 @@ def _concat_images_horizontally(
     return combined, quality
 
 
-# Dimension-specific check guidelines (from degradation_dimensions.md)
-DIMENSION_GUIDELINES = {
+# Legacy fallback guidelines used only if newer source-of-truth extraction fails.
+LEGACY_DIMENSION_GUIDELINES = {
     # === Technical Quality ===
     "blur": "Lack of sharpness overall or locally, with defocus or motion blur effects",
     "overexposure": "Overly bright image with blown highlights and severe loss of bright area details",
@@ -169,27 +178,6 @@ DIMENSION_GUIDELINES = {
     "text_error": "Generated text with spelling errors, garbled characters, or unreadable content",
     "logo_symbol_error": "Unexpected distracting icons (barcodes, QR codes) or brand logo watermarks",
 }
-
-# Dimension category mapping
-DIMENSION_CATEGORIES = {
-    "technical_quality": ["blur", "overexposure", "underexposure", "low_contrast",
-                          "color_cast", "desaturation", "plastic_waxy_texture"],
-    "aesthetic_quality": ["awkward_positioning", "awkward_framing", "unbalanced_layout",
-                          "cluttered_scene", "lighting_imbalance", "color_clash",
-                          "dull_palette"],
-    "semantic_rationality": ["hand_malformation", "expression_mismatch",
-                             "body_proportion_error", "extra_limbs",
-                             "animal_anatomy_error", "object_structure_error",
-                             "material_mismatch", "extra_objects",
-                             "count_error", "illogical_colors", "scale_inconsistency", "floating_objects",
-                             "penetration_overlap",
-                             "context_mismatch", "time_inconsistency", "scene_layout_error",
-                             "text_error", "logo_symbol_error"]
-}
-
-
-import re
-
 
 def _repair_and_parse_json(text: str) -> dict:
     """
@@ -288,14 +276,170 @@ def _extract_fields_by_regex(text: str) -> dict:
     return result
 
 
-def _get_dimension_guideline(dimension: str) -> str:
-    """Get dimension-specific check guideline"""
-    return DIMENSION_GUIDELINES.get(dimension, f"Check for visible {dimension} degradation in the image")
+@lru_cache(maxsize=1)
+def _load_active_taxonomy() -> Dict[str, Any]:
+    with ACTIVE_TAXONOMY_PATH.open("r", encoding="utf-8") as handle:
+        return json.load(handle)
+
+
+@lru_cache(maxsize=1)
+def _load_degradation_dimension_effects() -> Dict[str, str]:
+    effects: Dict[str, str] = {}
+    if not DEGRADATION_DIMENSIONS_DOC_PATH.exists():
+        return effects
+
+    for raw_line in DEGRADATION_DIMENSIONS_DOC_PATH.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line.startswith("| **"):
+            continue
+        cells = [cell.strip() for cell in line.split("|")[1:-1]]
+        if len(cells) < 3:
+            continue
+        dimension_cell, _zh_name, effect = cells[:3]
+        match = re.match(r"\*\*([a-z0-9_]+)\*\*", dimension_cell)
+        if not match:
+            continue
+        effects[match.group(1)] = effect
+    return effects
+
+
+@lru_cache(maxsize=1)
+def _load_compatibility_hints() -> Dict[str, str]:
+    if not JUDGE_COMPATIBILITY_HINTS_PATH.exists():
+        return {}
+
+    with JUDGE_COMPATIBILITY_HINTS_PATH.open("r", encoding="utf-8") as handle:
+        payload = yaml.safe_load(handle) or {}
+
+    if not isinstance(payload, dict):
+        return {}
+
+    return {str(key): str(value) for key, value in payload.items()}
+
+
+@lru_cache(maxsize=1)
+def _load_prompt_template_entries() -> Dict[str, Dict[str, Any]]:
+    entries: Dict[str, Dict[str, Any]] = {}
+    for yaml_path in sorted(PROMPT_TEMPLATES_ROOT.glob("*.yaml")):
+        with yaml_path.open("r", encoding="utf-8") as handle:
+            payload = yaml.safe_load(handle) or {}
+        if not isinstance(payload, dict):
+            continue
+        for group_name, group_payload in payload.items():
+            if not isinstance(group_payload, dict):
+                continue
+            for dimension, dimension_payload in group_payload.items():
+                if not isinstance(dimension_payload, dict):
+                    continue
+                entries[dimension] = {
+                    "template_group": group_name,
+                    "yaml_file": str(yaml_path),
+                    "severity_prompts": dimension_payload,
+                }
+    return entries
+
+
+def _extract_template_strategy_cues(severity_prompts: Dict[str, str]) -> list[str]:
+    cues: list[str] = []
+    ordered_keys = [key for key in ("moderate", "severe", "mild") if key in severity_prompts]
+    if not ordered_keys:
+        ordered_keys = list(severity_prompts.keys())
+
+    for severity in ordered_keys:
+        text = str(severity_prompts.get(severity, "") or "")
+        for raw_line in text.splitlines():
+            line = raw_line.strip()
+            if not line:
+                continue
+            line = re.sub(r"^\d+[a-z]?\.\s*", "", line)
+            line = re.sub(r"^-\s*", "", line)
+            if not line:
+                continue
+            if line.startswith(("You are given", "Avoid making", "Output only", "CRITICAL:", "FORBIDDEN")):
+                continue
+            if len(line) < 24:
+                continue
+            if "e.g." in line:
+                line = line.split("e.g.", 1)[1].strip()
+            keep = (
+                "prefer" in line.lower()
+                or "focus" in line.lower()
+                or "describe" in line.lower()
+                or "use " in line.lower()
+                or "explicitly" in line.lower()
+                or "make " in line.lower()
+                or "keep the mismatch" in line.lower()
+                or "the mismatch should" in line.lower()
+                or "the size error" in line.lower()
+                or "waxy rubber" in line.lower()
+                or "extra visible arms" in line.lower()
+            )
+            if not keep:
+                continue
+            line = re.sub(r"\s+", " ", line).strip()
+            if len(line) > 220:
+                line = line[:217].rstrip() + "..."
+            if line not in cues:
+                cues.append(line)
+            if len(cues) >= 4:
+                return cues
+    return cues
+
+
+def _get_compatibility_hint(dimension: str) -> str:
+    hints = _load_compatibility_hints()
+    return hints.get(
+        dimension,
+        f"The positive image must contain the core subject matter required to visually express {dimension}."
+    )
+
+
+def _find_dimension_metadata(dimension: str) -> Dict[str, Any]:
+    taxonomy = _load_active_taxonomy()
+    perspectives = taxonomy.get("perspectives", {})
+    for perspective_name, perspective_payload in perspectives.items():
+        dimensions = (perspective_payload or {}).get("dimensions", {})
+        if dimension in dimensions:
+            meta = dimensions[dimension]
+            return {
+                "perspective": perspective_name,
+                "zh_name": meta.get("zh"),
+                "prompt_strategy": meta.get("prompt_strategy"),
+                "controllability": meta.get("controllability"),
+            }
+    return {
+        "perspective": None,
+        "zh_name": None,
+        "prompt_strategy": None,
+        "controllability": None,
+    }
+
+
+def _get_dimension_criteria(dimension: str) -> Dict[str, Any]:
+    metadata = _find_dimension_metadata(dimension)
+    effects = _load_degradation_dimension_effects()
+    template_entry = _load_prompt_template_entries().get(dimension, {})
+    severity_prompts = template_entry.get("severity_prompts", {})
+
+    effect_definition = effects.get(dimension) or LEGACY_DIMENSION_GUIDELINES.get(
+        dimension, f"Check for visible {dimension} degradation in the image"
+    )
+
+    return {
+        "dimension": dimension,
+        "zh_name": metadata.get("zh_name"),
+        "perspective": metadata.get("perspective"),
+        "prompt_strategy": metadata.get("prompt_strategy"),
+        "effect_definition": effect_definition,
+        "template_group": template_entry.get("template_group"),
+        "template_strategy_cues": _extract_template_strategy_cues(severity_prompts),
+        "compatibility_hint": _get_compatibility_hint(dimension),
+    }
 
 
 def _build_judge_prompt(dimension: str, positive_prompt: str = None, negative_prompt: str = None, attribute: str = None) -> str:
     """Build judge prompt (hybrid approach: overall judgment + conditional diagnosis)"""
-    guideline = _get_dimension_guideline(dimension)
+    criteria = _get_dimension_criteria(dimension)
     attr_text = f" ({attribute})" if attribute else ""
 
     prompt_section = ""
@@ -306,9 +450,21 @@ Prompts:
 - Negative: "{negative_prompt}"
 """
 
+    cue_lines = criteria.get("template_strategy_cues") or []
+    if cue_lines:
+        template_cues = "\n".join(f"- {cue}" for cue in cue_lines)
+    else:
+        template_cues = "- No template cues found; rely on the official effect definition and prompt strategy."
+
     return f"""You are an image quality judge. Compare LEFT (positive) vs RIGHT (negative).
 {prompt_section}
-Expected: {dimension}{attr_text} degradation - {guideline}
+Expected: {dimension}{attr_text} degradation
+
+Dimension profile:
+- Official effect definition: {criteria.get("effect_definition")}
+- Positive compatibility hint: {criteria.get("compatibility_hint")}
+Template strategy cues:
+{template_cues}
 
 **EVALUATE IN STRICT PRIORITY ORDER (stop at first failure)**:
 
@@ -316,12 +472,12 @@ Expected: {dimension}{attr_text} degradation - {guideline}
 Is the positive image compatible with {dimension} degradation?
 
 1a. **Content compatibility**: Does the positive image contain the subject/element required for {dimension}?
-   - Face/expression dimensions need a visible face; hand dimensions need visible hands; text dimensions need text present; shadow dimensions need objects casting shadows, etc.
-   - If the image content CANNOT carry {dimension} degradation regardless of style (e.g., landscape for hand_malformation, abstract art for expression_mismatch) → failure = "positive_content_mismatch", STOP here
+   - Use the positive compatibility hint above as the primary content prerequisite.
+   - If the image content CANNOT carry {dimension} degradation regardless of style, then failure = "positive_content_mismatch", STOP here
 
 1b. **Style compatibility**: Is the rendering style suitable for {dimension}?
-   - blur/exposure need photorealistic; anatomy errors need realistic depiction
-   - If the content is suitable but the style makes {dimension} invisible → failure = "positive_incompatible", provide recommended_style, STOP here
+   - Judge whether the current rendering style makes the target degradation clearly visible or hides it.
+   - If the content is suitable but the style makes {dimension} hard to perceive → failure = "positive_incompatible", provide recommended_style, STOP here
 
 **Step 2 — Pair Evaluation (only if Step 1 passes)**:
 a. Content: Are subjects/scenes similar between positive and negative?
@@ -329,7 +485,8 @@ b. Style: Is the MAJOR rendering category (realistic/illustration/painting) pres
    - Focus on major category, minor sub-style variations are acceptable
 c. Degradation: Is there CLEAR, VISIBLE {dimension} degradation?
    - Must be obvious enough for contrastive learning
-   - Must specifically match {dimension}
+   - Must specifically match the official effect definition above
+   - Use the template strategy cues above to judge whether the degradation direction is the intended one, not just any generic corruption
 
 If Step 2 fails, pick the FIRST matching failure:
 1. style_drift: negative changed major style category (realistic↔illustration↔painting)

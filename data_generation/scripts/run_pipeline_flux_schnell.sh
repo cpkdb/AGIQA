@@ -17,11 +17,14 @@ if [ -f "$CLEANED_SOURCE_PROMPTS" ]; then
 fi
 BASE_DIMENSION_SUBPOOL_INDEX="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/dimension_subpools/index.json"
 BASE_CLEANED_DIMENSION_SUBPOOL_INDEX="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/dimension_subpools_cleaned_v1/index.json"
+SEMANTIC_SCREENED_DIMENSION_SUBPOOL_INDEX_V1="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/semantic_screened_dimension_subpools_cleaned_v1/index.json"
 SCREENED_CLEANED_DIMENSION_SUBPOOL_INDEX_V2="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/anatomy_screened_dimension_subpools_cleaned_v2/index.json"
 SCREENED_CLEANED_DIMENSION_SUBPOOL_INDEX="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/anatomy_screened_dimension_subpools_cleaned_v1/index.json"
 SCREENED_DIMENSION_SUBPOOL_INDEX="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/anatomy_screened_dimension_subpools/index.json"
 DIMENSION_SUBPOOL_INDEX="$BASE_DIMENSION_SUBPOOL_INDEX"
-if [ -f "$SCREENED_CLEANED_DIMENSION_SUBPOOL_INDEX_V2" ]; then
+if [ -f "$SEMANTIC_SCREENED_DIMENSION_SUBPOOL_INDEX_V1" ]; then
+    DIMENSION_SUBPOOL_INDEX="$SEMANTIC_SCREENED_DIMENSION_SUBPOOL_INDEX_V1"
+elif [ -f "$SCREENED_CLEANED_DIMENSION_SUBPOOL_INDEX_V2" ]; then
     DIMENSION_SUBPOOL_INDEX="$SCREENED_CLEANED_DIMENSION_SUBPOOL_INDEX_V2"
 elif [ -f "$SCREENED_CLEANED_DIMENSION_SUBPOOL_INDEX" ]; then
     DIMENSION_SUBPOOL_INDEX="$SCREENED_CLEANED_DIMENSION_SUBPOOL_INDEX"

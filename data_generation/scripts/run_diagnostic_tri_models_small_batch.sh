@@ -37,13 +37,17 @@ if [[ -f "$CLEANED_SOURCE_PROMPTS" ]]; then
 fi
 BASE_DIMENSION_SUBPOOL_INDEX="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/dimension_subpools/index.json"
 BASE_CLEANED_DIMENSION_SUBPOOL_INDEX="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/dimension_subpools_cleaned_v1/index.json"
+SEMANTIC_SCREENED_DIMENSION_SUBPOOL_INDEX_V1="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/semantic_screened_dimension_subpools_cleaned_v1/index.json"
 SCREENED_CLEANED_DIMENSION_SUBPOOL_INDEX_V2="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/anatomy_screened_dimension_subpools_cleaned_v2/index.json"
 SCREENED_CLEANED_DIMENSION_SUBPOOL_INDEX="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/anatomy_screened_dimension_subpools_cleaned_v1/index.json"
 SCREENED_DIMENSION_SUBPOOL_INDEX="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/anatomy_screened_dimension_subpools/index.json"
+SD35_TURBO_SEMANTIC_SCREENED_DIMENSION_SUBPOOL_INDEX_V1="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/sd35_turbo_semantic_screened_dimension_subpools_clipsafe_v1/index.json"
 SD35_TURBO_DIMENSION_SUBPOOL_INDEX_V2="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/sd35_turbo_dimension_subpools_clipsafe_v2/index.json"
 SD35_TURBO_DIMENSION_SUBPOOL_INDEX="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/sd35_turbo_dimension_subpools_clipsafe_v1/index.json"
 DIMENSION_SUBPOOL_INDEX="${DIMENSION_SUBPOOL_INDEX:-$BASE_DIMENSION_SUBPOOL_INDEX}"
-if [[ -f "$SCREENED_CLEANED_DIMENSION_SUBPOOL_INDEX_V2" ]]; then
+if [[ -f "$SEMANTIC_SCREENED_DIMENSION_SUBPOOL_INDEX_V1" ]]; then
+    DIMENSION_SUBPOOL_INDEX="$SEMANTIC_SCREENED_DIMENSION_SUBPOOL_INDEX_V1"
+elif [[ -f "$SCREENED_CLEANED_DIMENSION_SUBPOOL_INDEX_V2" ]]; then
     DIMENSION_SUBPOOL_INDEX="$SCREENED_CLEANED_DIMENSION_SUBPOOL_INDEX_V2"
 elif [[ -f "$SCREENED_CLEANED_DIMENSION_SUBPOOL_INDEX" ]]; then
     DIMENSION_SUBPOOL_INDEX="$SCREENED_CLEANED_DIMENSION_SUBPOOL_INDEX"
@@ -94,7 +98,9 @@ run_one() {
         if [[ -f "$SD35_TURBO_SOURCE_PROMPTS" ]]; then
             source_prompts="$SD35_TURBO_SOURCE_PROMPTS"
         fi
-        if [[ -f "$SD35_TURBO_DIMENSION_SUBPOOL_INDEX_V2" ]]; then
+        if [[ -f "$SD35_TURBO_SEMANTIC_SCREENED_DIMENSION_SUBPOOL_INDEX_V1" ]]; then
+            dimension_subpool_index="$SD35_TURBO_SEMANTIC_SCREENED_DIMENSION_SUBPOOL_INDEX_V1"
+        elif [[ -f "$SD35_TURBO_DIMENSION_SUBPOOL_INDEX_V2" ]]; then
             dimension_subpool_index="$SD35_TURBO_DIMENSION_SUBPOOL_INDEX_V2"
         elif [[ -f "$SD35_TURBO_DIMENSION_SUBPOOL_INDEX" ]]; then
             dimension_subpool_index="$SD35_TURBO_DIMENSION_SUBPOOL_INDEX"
@@ -199,7 +205,7 @@ fi
 
 # SD3.5 Large (使用 Turbo 权重，沿用 sd3.5-large 生成器接口)
 if [[ "$FILTER_MODEL" == "all" || "$FILTER_MODEL" == "sd3.5-large-turbo" || "$FILTER_MODEL" == "sd3.5-large" ]]; then
-    run_model sd3.5-large-turbo "$SD35_LARGE_TURBO_MODEL_PATH" 4 0.0 fit-24g
+    run_model sd3.5-large-turbo "$SD35_LARGE_TURBO_MODEL_PATH" 4 1.0 fit-24g
 fi
 
 # Qwen-Image-Lightning (Nunchaku INT4 快路径)

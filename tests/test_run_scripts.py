@@ -8,6 +8,8 @@ SD35_SCRIPT = ROOT / "data_generation" / "scripts" / "run_pipeline_sd35_large.sh
 QWEN_SCRIPT = ROOT / "data_generation" / "scripts" / "run_pipeline_qwen_image_lightning.sh"
 TRI_SMALL_BATCH_SCRIPT = ROOT / "data_generation" / "scripts" / "run_diagnostic_tri_models_small_batch.sh"
 RUN_PIPELINE_SCRIPT = ROOT / "data_generation" / "scripts" / "run_pipeline.sh"
+TAXONOMY_ALLOCATION_AGENT_SCRIPT = ROOT / "data_generation" / "scripts" / "taxonomy_allocation_agent.py"
+TAXONOMY_ALLOCATION_AGENT_DOC = ROOT / "data_generation" / "docs" / "taxonomy_allocation_agent.md"
 
 
 class RunScriptsTests(unittest.TestCase):
@@ -21,6 +23,7 @@ class RunScriptsTests(unittest.TestCase):
         source = SD35_SCRIPT.read_text(encoding="utf-8")
         self.assertIn("--model_id sd3.5-large-turbo", source)
         self.assertIn("merged_working_pool_sd35_turbo_clipsafe_v1.jsonl", source)
+        self.assertIn("sd35_turbo_semantic_screened_dimension_subpools_clipsafe_v1/index.json", source)
         self.assertIn("sd35_turbo_dimension_subpools_clipsafe_v2/index.json", source)
         self.assertIn("sd35_turbo_dimension_subpools_clipsafe_v1/index.json", source)
         self.assertNotIn("sd35_turbo_targeted_dimension_subpools_clipsafe_v1/index.json", source)
@@ -32,6 +35,7 @@ class RunScriptsTests(unittest.TestCase):
         self.assertIn("--systematic", source)
         self.assertIn("--dimension_subpool_index $DIMENSION_SUBPOOL_INDEX", source)
         self.assertIn("merged_working_pool_cleaned_v1.jsonl", source)
+        self.assertIn("semantic_screened_dimension_subpools_cleaned_v1/index.json", source)
         self.assertIn("dimension_subpools_cleaned_v1/index.json", source)
         self.assertIn("anatomy_screened_dimension_subpools_cleaned_v2/index.json", source)
         self.assertIn("anatomy_screened_dimension_subpools_cleaned_v1/index.json", source)
@@ -49,9 +53,11 @@ class RunScriptsTests(unittest.TestCase):
         self.assertIn("--dimension_subpool_index \"$dimension_subpool_index\"", source)
         self.assertIn("merged_working_pool_cleaned_v1.jsonl", source)
         self.assertIn("merged_working_pool_sd35_turbo_clipsafe_v1.jsonl", source)
+        self.assertIn("semantic_screened_dimension_subpools_cleaned_v1/index.json", source)
         self.assertIn("dimension_subpools_cleaned_v1/index.json", source)
         self.assertIn("anatomy_screened_dimension_subpools_cleaned_v2/index.json", source)
         self.assertIn("anatomy_screened_dimension_subpools_cleaned_v1/index.json", source)
+        self.assertIn("sd35_turbo_semantic_screened_dimension_subpools_clipsafe_v1/index.json", source)
         self.assertIn("sd35_turbo_dimension_subpools_clipsafe_v2/index.json", source)
         self.assertIn("sd35_turbo_dimension_subpools_clipsafe_v1/index.json", source)
         self.assertNotIn("targeted_dimension_subpools_cleaned_v1/index.json", source)
@@ -65,11 +71,26 @@ class RunScriptsTests(unittest.TestCase):
         source = RUN_PIPELINE_SCRIPT.read_text(encoding="utf-8")
 
         self.assertIn("merged_working_pool_sd35_turbo_clipsafe_v1.jsonl", source)
+        self.assertIn("semantic_screened_dimension_subpools_cleaned_v1/index.json", source)
         self.assertIn("anatomy_screened_dimension_subpools_cleaned_v2/index.json", source)
+        self.assertIn("sd35_turbo_semantic_screened_dimension_subpools_clipsafe_v1/index.json", source)
         self.assertIn("sd35_turbo_dimension_subpools_clipsafe_v2/index.json", source)
         self.assertIn("sd35_turbo_dimension_subpools_clipsafe_v1/index.json", source)
         self.assertNotIn("targeted_dimension_subpools_cleaned_v1/index.json", source)
         self.assertNotIn("sd35_turbo_targeted_dimension_subpools_clipsafe_v1/index.json", source)
+
+    def test_taxonomy_allocation_agent_script_exists(self):
+        self.assertTrue(TAXONOMY_ALLOCATION_AGENT_SCRIPT.exists())
+        source = TAXONOMY_ALLOCATION_AGENT_SCRIPT.read_text(encoding="utf-8")
+        self.assertIn("run_taxonomy_allocation_agent", source)
+        self.assertIn("allocation_plan.template.json", source)
+
+    def test_taxonomy_allocation_agent_doc_exists(self):
+        self.assertTrue(TAXONOMY_ALLOCATION_AGENT_DOC.exists())
+        source = TAXONOMY_ALLOCATION_AGENT_DOC.read_text(encoding="utf-8")
+        self.assertIn("Taxonomy & Allocation Agent", source)
+        self.assertIn("allocation_insights.md", source)
+        self.assertIn("python scripts/taxonomy_allocation_agent.py", source)
 
 
 if __name__ == "__main__":

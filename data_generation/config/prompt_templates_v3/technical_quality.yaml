@@ -21,8 +21,8 @@ technical_quality:
 
       1. Preserve the original subject, scene identity, and style, but you MAY rewrite the visual-condition wording so the whole prompt reads like a genuinely defocused or poorly focused capture. Do NOT rely only on appending a few blur words at the end.
       2. Remove ALL words implying sharpness or fine detail (e.g., 'sharp', 'crisp', 'detailed', '4k', 'HD', 'clear', 'intricate', 'fine', 'visible').
-      3. Rewrite the prompt so the main subject or the whole scene is clearly captured out of focus, with failed focus, missed focus, or soft focus across important details. Make the blur read like an actual capture issue rather than a stylistic glow.
-      4. For portraits or characters, explicitly make the face, eyes, hairline, or clothing edges read as softly blurred or out of focus. For objects or food, explicitly make the object contours and surface details read as out of focus.
+      3. Rewrite the prompt so the main subject or the whole scene is clearly captured out of focus, with failed focus, missed focus, or soft focus across important details. Make the blur read like an actual capture issue rather than a stylistic glow, and make the blur affect the overall readability of the image rather than a tiny local patch.
+      4. For portraits or characters, describe the entire face and nearby visible details as softly unresolved because of failed focus: the eyes, eyelashes, eyebrows, hair strands, skin detail, and clothing edges should all read as softly blurred rather than leaving the face mostly sharp. For objects or food, explicitly make the object contours and surface details read as out of focus.
       5. Append a short blur phrase at the END of the prompt, such as: ", blurry, out of focus, unfocused, soft focus"
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of blur.
@@ -33,8 +33,8 @@ technical_quality:
 
       1. Preserve the original subject and scene identity, but you MAY rewrite the visual-condition wording throughout the prompt so the result reads like a heavily defocused or badly failed-focus capture. Do NOT rely only on a blur suffix.
       2. AGGRESSIVELY remove adjectives related to sharpness or fine detail while keeping enough subject information to preserve the original content.
-      3. Rewrite the prompt so the whole image or the main subject is clearly severely out of focus, heavily blurred, and hard to read because focus has failed. Emphasize lost edge clarity, smeared contours, and missing fine detail rather than dreamy atmosphere.
-      4. For portraits, explicitly make facial features and subject edges difficult to resolve because of failed focus. For objects or food, explicitly make outlines, edges, and surface details difficult to read because of strong blur.
+      3. Rewrite the prompt so the whole image or the main subject is clearly severely out of focus, heavily blurred, and hard to read because focus has failed. Emphasize lost edge clarity, smeared contours, missing fine detail, and overall soft unreadability rather than dreamy atmosphere.
+      4. For portraits, explicitly make the entire face and upper-body details difficult to resolve because of failed focus: eyes, lashes, brows, lips, hair strands, and clothing edges should all blur together without crisp local detail. For objects or food, explicitly make outlines, edges, and surface details difficult to read because of strong blur.
       5. Append a short severe blur phrase at the END of the prompt, such as: ", extremely blurry, heavily out of focus, strong failed focus, soft focus"
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of blur.

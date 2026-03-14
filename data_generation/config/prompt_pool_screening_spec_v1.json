@@ -1,0 +1,128 @@
+{
+  "version": "v1",
+  "description": "共享父池与轻规则池的 screening 规范。用于后续构建专门子池时统一 LLM 语义筛选标准，不直接触发任何实际构池任务。",
+  "shared_pool_families": {
+    "human_full_body_realistic": {
+      "builder_mode": "rule_recall_then_llm_screen",
+      "base_tags": [
+        "has_person"
+      ],
+      "turbo_pool_strategy": "reuse_common_semantic_screen_then_token_filter",
+      "screening_goal": "保留至少一个可读主人物的人体场景，优先自然人体呈现，并让身体、肢体或头身比例线索足够清楚，供 body_proportion_error 和 extra_limbs 复用。",
+      "llm_prompt_focus": [
+        "at least one readable main human subject",
+        "natural human presentation is preferred, but stylization is allowed if body readability remains clear",
+        "body, limbs, or head-to-body relation should be readable enough for later anatomical degradation",
+        "multi-person scenes are allowed when one main subject remains clearly readable",
+        "exclude non-human or heavily transformed humanoids, mannequin-like subjects, and explicit adult-pose prompts"
+      ]
+    },
+    "structured_object_primary": {
+      "builder_mode": "rule_recall_then_llm_screen",
+      "base_tags": [
+        "has_structured_object"
+      ],
+      "turbo_pool_strategy": "reuse_common_semantic_screen_then_token_filter",
+      "screening_goal": "保留有单个主导性结构化非生物物体的 prompt，确保轮廓、部件和材质观感可读。",
+      "llm_prompt_focus": [
+        "one dominant structured non-living object",
+        "shape, parts, and surface material are easy to perceive",
+        "exclude biology-dominant or overly crowded scenes"
+      ]
+    },
+    "multi_object_reference": {
+      "builder_mode": "rule_recall_then_llm_screen",
+      "base_tags": [
+        "has_multiple_objects"
+      ],
+      "prefilter_tags_any": [
+        "has_multiple_objects",
+        "has_person",
+        "has_animal",
+        "has_structured_object",
+        "has_countable_objects"
+      ],
+      "turbo_pool_strategy": "reuse_common_semantic_screen_then_token_filter",
+      "screening_goal": "先做轻量规则预筛，再保留多个可读实体、或一个主体加清楚参照关系的 prompt；实体可以是物体、人或动物。",
+      "llm_prompt_focus": [
+        "entities may be objects, humans, or animals",
+        "at least two readable entities, or one main subject with a clear reference context",
+        "object boundaries or object relations are readable",
+        "do not require highly explicit geometric language"
+      ]
+    }
+  },
+  "dimension_overrides": {
+    "body_proportion_error": {
+      "shared_pool_family": "human_full_body_realistic",
+      "requires_llm_screen": true,
+      "turbo_pool_strategy": "reuse_common_semantic_screen_then_token_filter",
+      "dimension_focus": [
+        "at least one main human subject",
+        "head-to-body ratio and leg length must be readable for that main subject",
+        "non-human or strongly transformed humanoids should be rejected"
+      ]
+    },
+    "extra_limbs": {
+      "shared_pool_family": "human_full_body_realistic",
+      "requires_llm_screen": true,
+      "turbo_pool_strategy": "reuse_common_semantic_screen_then_token_filter",
+      "dimension_focus": [
+        "at least one main human subject",
+        "arms or limbs should be readable enough for later extra-limb degradation",
+        "criteria should be slightly looser than body_proportion_error"
+      ]
+    },
+    "object_structure_error": {
+      "shared_pool_family": "structured_object_primary",
+      "requires_llm_screen": true,
+      "turbo_pool_strategy": "reuse_common_semantic_screen_then_token_filter",
+      "dimension_focus": [
+        "structured non-living object should dominate the scene",
+        "shape and part layout must be easy to read"
+      ]
+    },
+    "material_mismatch": {
+      "shared_pool_family": "structured_object_primary",
+      "requires_llm_screen": true,
+      "turbo_pool_strategy": "reuse_common_semantic_screen_then_token_filter",
+      "dimension_focus": [
+        "surface material cues must be readable",
+        "object category should remain visually obvious"
+      ]
+    },
+    "scale_inconsistency": {
+      "shared_pool_family": "multi_object_reference",
+      "requires_llm_screen": true,
+      "turbo_pool_strategy": "reuse_common_semantic_screen_then_token_filter",
+      "dimension_focus": [
+        "there should be at least one clear reference object for later scale comparison"
+      ]
+    },
+    "penetration_overlap": {
+      "shared_pool_family": "multi_object_reference",
+      "requires_llm_screen": true,
+      "turbo_pool_strategy": "reuse_common_semantic_screen_then_token_filter",
+      "dimension_focus": [
+        "object boundaries and contact relations should be readable",
+        "criteria should stay broad enough to preserve prompt volume"
+      ]
+    },
+    "floating_objects": {
+      "shared_pool_family": null,
+      "requires_llm_screen": false,
+      "builder_mode": "rule_recall_only",
+      "turbo_pool_strategy": "reuse_common_rule_pool_then_token_filter",
+      "base_tags": [
+        "has_structured_object",
+        "has_countable_objects",
+        "has_person",
+        "has_animal"
+      ],
+      "dimension_focus": [
+        "only require a clear subject",
+        "subject may be an object, a human, or an animal"
+      ]
+    }
+  }
+}

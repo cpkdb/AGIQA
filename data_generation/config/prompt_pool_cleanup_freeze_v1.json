@@ -1,0 +1,30 @@
+{
+  "version": "v1",
+  "description": "Prompt pool 清理冻结清单。用于后续人工确认后执行删除，不代表当前立即删除任何外部 pool。",
+  "keep_active": [
+    "/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/merged_working_pool_cleaned_v1.jsonl",
+    "/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/merged_working_pool_sd35_turbo_clipsafe_v1.jsonl",
+    "/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/dimension_subpools_cleaned_v1/index.json",
+    "/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/anatomy_screened_dimension_subpools_cleaned_v2/index.json",
+    "/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/sd35_turbo_dimension_subpools_clipsafe_v2/index.json"
+  ],
+  "keep_fallback_until_cutover": [
+    "/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/anatomy_screened_dimension_subpools_cleaned_v1/index.json",
+    "/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/sd35_turbo_dimension_subpools_clipsafe_v1/index.json"
+  ],
+  "keep_historical_reference": [
+    "/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/anatomy_screened_dimension_subpools_v2/index.json"
+  ],
+  "pending_delete_after_confirmation": [
+    "/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/dimension_subpools/index.json",
+    "/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/anatomy_screened_dimension_subpools/index.json",
+    "/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/targeted_dimension_subpools_cleaned_v1/index.json",
+    "/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/sd35_turbo_targeted_dimension_subpools_clipsafe_v1/index.json",
+    "/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/sd35_turbo_clipsafe_v2_tmp"
+  ],
+  "notes": [
+    "anatomy_screened_dimension_subpools_v2 目前不在主脚本优先级中，但属于 lineage 中间产物，暂不列入待删除。",
+    "anatomy_screened_dimension_subpools_cleaned_v1 和 sd35_turbo_dimension_subpools_clipsafe_v1 仍作为 fallback 保留，待新版 routing 完整接管后再考虑移除。",
+    "真正执行删除前应再次运行 Prompt Pool Agent，并人工核对主脚本实际引用路径。"
+  ]
+}

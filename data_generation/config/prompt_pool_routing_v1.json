@@ -1,0 +1,178 @@
+{
+  "version": "v1",
+  "description": "Prompt Pool Agent 第一版 routing 配置：定义 32 个 active 维度应走的 pool 策略，仅用于分析与计划，不直接触发任何外部 pool 重建或删除。",
+  "routing": {
+    "blur": {
+      "strategy": "global_cleaned_pool",
+      "notes": "技术退化维度，可直接使用全局 cleaned pool。"
+    },
+    "overexposure": {
+      "strategy": "global_cleaned_pool",
+      "notes": "技术退化维度，可直接使用全局 cleaned pool。"
+    },
+    "underexposure": {
+      "strategy": "global_cleaned_pool",
+      "notes": "技术退化维度，可直接使用全局 cleaned pool。"
+    },
+    "low_contrast": {
+      "strategy": "global_cleaned_pool",
+      "notes": "技术退化维度，可直接使用全局 cleaned pool。"
+    },
+    "color_cast": {
+      "strategy": "global_cleaned_pool",
+      "notes": "技术退化维度，可直接使用全局 cleaned pool。"
+    },
+    "desaturation": {
+      "strategy": "global_cleaned_pool",
+      "notes": "技术退化维度，可直接使用全局 cleaned pool。"
+    },
+    "plastic_waxy_texture": {
+      "strategy": "global_cleaned_pool",
+      "notes": "当前先沿用全局 cleaned pool，后续可视人像覆盖率再决定是否收紧。"
+    },
+    "awkward_positioning": {
+      "strategy": "global_cleaned_pool",
+      "notes": "美学维度，当前适合走全局 cleaned pool。"
+    },
+    "awkward_framing": {
+      "strategy": "global_cleaned_pool",
+      "notes": "美学维度，当前适合走全局 cleaned pool。"
+    },
+    "unbalanced_layout": {
+      "strategy": "global_cleaned_pool",
+      "notes": "美学维度，当前适合走全局 cleaned pool。"
+    },
+    "cluttered_scene": {
+      "strategy": "global_cleaned_pool",
+      "notes": "美学维度，当前适合走全局 cleaned pool。"
+    },
+    "lighting_imbalance": {
+      "strategy": "global_cleaned_pool",
+      "notes": "美学维度，当前适合走全局 cleaned pool。"
+    },
+    "color_clash": {
+      "strategy": "global_cleaned_pool",
+      "notes": "美学维度，当前适合走全局 cleaned pool。"
+    },
+    "dull_palette": {
+      "strategy": "global_cleaned_pool",
+      "notes": "美学维度，当前适合走全局 cleaned pool。"
+    },
+    "hand_malformation": {
+      "strategy": "existing_special_pool",
+      "notes": "沿用现有 anatomy screened 专门子池。"
+    },
+    "expression_mismatch": {
+      "strategy": "existing_special_pool",
+      "notes": "沿用现有 anatomy screened 专门子池。"
+    },
+    "body_proportion_error": {
+      "strategy": "rule_recall_then_llm_screen",
+      "base_tags": [
+        "has_person"
+      ],
+      "shared_pool_family": "human_full_body_realistic",
+      "llm_screening_required": true,
+      "turbo_pool_strategy": "reuse_common_semantic_screen_then_token_filter",
+      "notes": "需要至少一个可读主人物，优先自然人体呈现，且头身比例和腿长线索清楚；允许多人场景，但主人物必须足够可读。turbo 版本不单独做语义筛查，直接复用 common pass 集再做 token / clipsafe 过滤。"
+    },
+    "extra_limbs": {
+      "strategy": "rule_recall_then_llm_screen",
+      "base_tags": [
+        "has_person"
+      ],
+      "shared_pool_family": "human_full_body_realistic",
+      "llm_screening_required": true,
+      "turbo_pool_strategy": "reuse_common_semantic_screen_then_token_filter",
+      "notes": "与 body_proportion_error 复用同一人体父池；允许多人场景，但至少一个主人物的肢体要足够可读。turbo 版本不单独做语义筛查，直接复用 common pass 集再做 token / clipsafe 过滤。"
+    },
+    "animal_anatomy_error": {
+      "strategy": "existing_special_pool",
+      "notes": "沿用现有 anatomy screened 专门子池。"
+    },
+    "object_structure_error": {
+      "strategy": "rule_recall_then_llm_screen",
+      "base_tags": [
+        "has_structured_object"
+      ],
+      "shared_pool_family": "structured_object_primary",
+      "llm_screening_required": true,
+      "turbo_pool_strategy": "reuse_common_semantic_screen_then_token_filter",
+      "notes": "需要单个显著结构化非生物物体；建议规则召回后再做 LLM 语义筛选。turbo 版本不单独做语义筛查，直接复用 common pass 集再做 token / clipsafe 过滤。"
+    },
+    "material_mismatch": {
+      "strategy": "rule_recall_then_llm_screen",
+      "base_tags": [
+        "has_structured_object"
+      ],
+      "shared_pool_family": "structured_object_primary",
+      "llm_screening_required": true,
+      "turbo_pool_strategy": "reuse_common_semantic_screen_then_token_filter",
+      "notes": "需要材质观感可读的结构化非生物物体；建议从 object 路线派生。turbo 版本不单独做语义筛查，直接复用 common pass 集再做 token / clipsafe 过滤。"
+    },
+    "extra_objects": {
+      "strategy": "global_cleaned_pool",
+      "notes": "当前可先走全局 cleaned pool。"
+    },
+    "count_error": {
+      "strategy": "global_cleaned_pool",
+      "notes": "当前可先走全局 cleaned pool。"
+    },
+    "illogical_colors": {
+      "strategy": "global_cleaned_pool",
+      "notes": "当前可先走全局 cleaned pool。"
+    },
+    "scale_inconsistency": {
+      "strategy": "rule_recall_then_llm_screen",
+      "base_tags": [
+        "has_multiple_objects"
+      ],
+      "shared_pool_family": "multi_object_reference",
+      "llm_screening_required": true,
+      "turbo_pool_strategy": "reuse_common_semantic_screen_then_token_filter",
+      "notes": "需要可比较对象与参照物，不应继续直接走全池。turbo 版本不单独做语义筛查，直接复用 common pass 集再做 token / clipsafe 过滤。"
+    },
+    "floating_objects": {
+      "strategy": "rule_recall_only",
+      "base_tags": [
+        "has_structured_object",
+        "has_countable_objects",
+        "has_person",
+        "has_animal"
+      ],
+      "turbo_pool_strategy": "reuse_common_rule_pool_then_token_filter",
+      "notes": "只要求存在明确主体即可，主体可以是物体、人或动物；当前优先做轻量规则池，不强制 LLM 语义筛选。turbo 版本不单独筛查，直接复用 common 规则池再做 token / clipsafe 过滤。"
+    },
+    "penetration_overlap": {
+      "strategy": "rule_recall_then_llm_screen",
+      "base_tags": [
+        "has_multiple_objects",
+        "has_structured_object"
+      ],
+      "shared_pool_family": "multi_object_reference",
+      "llm_screening_required": true,
+      "turbo_pool_strategy": "reuse_common_semantic_screen_then_token_filter",
+      "notes": "需要两个实体且边界/接触关系清楚，建议规则召回后再做语义筛选。turbo 版本不单独做语义筛查，直接复用 common pass 集再做 token / clipsafe 过滤。"
+    },
+    "context_mismatch": {
+      "strategy": "global_cleaned_pool",
+      "notes": "当前可先走全局 cleaned pool。"
+    },
+    "time_inconsistency": {
+      "strategy": "global_cleaned_pool",
+      "notes": "当前可先走全局 cleaned pool。"
+    },
+    "scene_layout_error": {
+      "strategy": "global_cleaned_pool",
+      "notes": "当前可先走全局 cleaned pool。"
+    },
+    "text_error": {
+      "strategy": "existing_special_pool",
+      "notes": "沿用现有 text 专门子池。"
+    },
+    "logo_symbol_error": {
+      "strategy": "existing_special_pool",
+      "notes": "沿用现有 logo/symbol 专门子池。"
+    }
+  }
+}

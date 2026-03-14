@@ -17,13 +17,19 @@ if [ -f "$SD35_TURBO_SOURCE_PROMPTS" ]; then
 fi
 BASE_DIMENSION_SUBPOOL_INDEX="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/anatomy_screened_dimension_subpools_cleaned_v2/index.json"
 BASE_DIMENSION_SUBPOOL_INDEX_V1="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/anatomy_screened_dimension_subpools_cleaned_v1/index.json"
+SEMANTIC_SCREENED_DIMENSION_SUBPOOL_INDEX_V1="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/semantic_screened_dimension_subpools_cleaned_v1/index.json"
+SD35_TURBO_SEMANTIC_SCREENED_DIMENSION_SUBPOOL_INDEX_V1="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/sd35_turbo_semantic_screened_dimension_subpools_clipsafe_v1/index.json"
 SD35_TURBO_DIMENSION_SUBPOOL_INDEX_V2="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/sd35_turbo_dimension_subpools_clipsafe_v2/index.json"
 SD35_TURBO_DIMENSION_SUBPOOL_INDEX="/root/autodl-tmp/AGIQA/data/prompt_sources_workspace/backfill_merge_runs/all_dimensions_v1_full/sd35_turbo_dimension_subpools_clipsafe_v1/index.json"
 DIMENSION_SUBPOOL_INDEX="$BASE_DIMENSION_SUBPOOL_INDEX"
-if [ ! -f "$DIMENSION_SUBPOOL_INDEX" ] && [ -f "$BASE_DIMENSION_SUBPOOL_INDEX_V1" ]; then
+if [ -f "$SEMANTIC_SCREENED_DIMENSION_SUBPOOL_INDEX_V1" ]; then
+    DIMENSION_SUBPOOL_INDEX="$SEMANTIC_SCREENED_DIMENSION_SUBPOOL_INDEX_V1"
+elif [ ! -f "$DIMENSION_SUBPOOL_INDEX" ] && [ -f "$BASE_DIMENSION_SUBPOOL_INDEX_V1" ]; then
     DIMENSION_SUBPOOL_INDEX="$BASE_DIMENSION_SUBPOOL_INDEX_V1"
 fi
-if [ -f "$SD35_TURBO_DIMENSION_SUBPOOL_INDEX_V2" ]; then
+if [ -f "$SD35_TURBO_SEMANTIC_SCREENED_DIMENSION_SUBPOOL_INDEX_V1" ]; then
+    DIMENSION_SUBPOOL_INDEX="$SD35_TURBO_SEMANTIC_SCREENED_DIMENSION_SUBPOOL_INDEX_V1"
+elif [ -f "$SD35_TURBO_DIMENSION_SUBPOOL_INDEX_V2" ]; then
     DIMENSION_SUBPOOL_INDEX="$SD35_TURBO_DIMENSION_SUBPOOL_INDEX_V2"
 elif [ -f "$SD35_TURBO_DIMENSION_SUBPOOL_INDEX" ]; then
     DIMENSION_SUBPOOL_INDEX="$SD35_TURBO_DIMENSION_SUBPOOL_INDEX"
@@ -61,7 +67,7 @@ echo "Runtime Profile: $RUNTIME_PROFILE"
 echo "CPU Offload: $USE_CPU_OFFLOAD"
 echo ""
 
-# 推荐参数: Turbo steps=4, cfg=0.0
+# 推荐参数: Turbo steps=4, cfg=1.0
 CMD="python scripts/pipeline.py \
     --source_prompts $SOURCE_PROMPTS \
     --output_dir $OUTPUT_DIR \
@@ -74,7 +80,7 @@ CMD="python scripts/pipeline.py \
     --seed $SEED \
     --severities $SEVERITIES \
     --steps 4 \
-    --cfg 0.0 \
+    --cfg 1.0 \
     --dimension_subpool_index $DIMENSION_SUBPOOL_INDEX"
 
 if [ "$SHUFFLE" = true ]; then

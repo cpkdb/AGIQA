@@ -118,12 +118,11 @@ semantic_anatomy:
 
       1. Locate the main character/creature noun phrase in the prompt.
       2. Immediately after the subject noun, insert ONE dominant proportion error that is easy to notice at a glance. Prefer
-         strong visible archetypes such as an oversized head relative to the body, extremely short legs beneath a long torso, or
-         disproportionately large hands or feet on an otherwise normal body. Use a tiny head above a broad oversized upper body
-         only occasionally, not as the default pattern. Do not dilute the effect with smaller limb-length issues.
-         e.g. with a head that looks strikingly too large for the body; with extremely short legs beneath a long torso; with hands
-         that look disproportionately large for the arms; with feet that look far too large for the body; with a head that looks
-         noticeably too small for a broad, oversized upper body.
+         strong visible archetypes centered on head scale or leg length: a head that looks clearly too large or too small for the
+         body, or legs that look clearly too short or too long relative to the torso. Do not dilute the effect with weaker hand,
+         foot, shoulder, or upper-body proportion details unless they are absolutely necessary.
+         e.g. with a head that looks strikingly too large for the body; with a head that looks noticeably too small for the body;
+         with extremely short legs beneath a long torso; with unusually long legs beneath a compact torso.
       3. Keep everything else in the original prompt unchanged.
       4. Keep the error easy to read at a glance rather than scattering many small proportion changes across the whole body.
 
@@ -136,13 +135,13 @@ semantic_anatomy:
       You are given a text-to-image prompt. Your task is to rewrite this prompt so that the resulting image will have visually degraded quality specifically in terms of body proportions. You may apply the following strategies:
 
       1. Locate the main character/creature noun phrase in the prompt.
-      2. Immediately after the subject noun, insert TWO dominant proportion errors that are easy to read at a glance. Prefer clear
-         combinations such as oversized head + very short legs, oversized head + disproportionately large hands, or very short legs
-         + oversized feet. A tiny head above a bulky upper body may be used as one occasional variant, but it should not dominate
-         the outputs. Keep the figure clearly disproportionate without turning into a creature.
+      2. Immediately after the subject noun, insert TWO dominant proportion errors that are easy to read at a glance. Build the
+         distortion around head scale plus leg length whenever possible: oversized head + very short legs, oversized head + very
+         long legs, tiny head + very short legs, or tiny head + very long legs. Keep the figure clearly disproportionate without
+         turning into a creature or introducing many smaller secondary errors.
          e.g. with a head far too large for the body and legs that look far too short beneath a long torso; with a head far too
-         large for the body and hands that look disproportionately huge; with very short legs beneath a long torso and feet that
-         look much too large; with a noticeably tiny head above an oversized upper body and broad shoulders.
+         large for the body and unusually long legs beneath a compact torso; with a noticeably tiny head above a normal body and
+         legs that look much too short; with a tiny head and extremely long legs that dominate the figure.
       3. Keep everything else in the original prompt unchanged.
       4. Keep the distortion visually obvious and structured rather than spreading many subtle changes across unrelated body parts.
 
@@ -167,9 +166,9 @@ semantic_anatomy:
       1. Identify the subject and determine which limb group is most likely to be clearly visible in the original composition.
       2. Strongly prefer extra visible arms or hands as the default limb-count error, because these are usually easier to render clearly and more visually obvious than extra legs.
       3. Only choose extra visible legs or feet when the prompt very clearly suggests a full-body or lower-body view with separated legs, visible lower limbs, and little risk of those limbs being hidden, overlapped, or cropped.
-      4. For arm-based errors, do NOT default to only three visible arms if a stronger but still plausible count will render more clearly. Prefer four clearly visible arms as the default moderate arm-count failure, with two normal arms and two extra arms distinctly protruding from the sides of the torso or shoulders. If the subject is holding an object, keep the normal pair doing the holding and make the extra arms extend separately beside the torso rather than merging into the same holding pose.
-      5. Directly state an incorrect total number of visible arms, hands, legs, or feet in the final image, rather than describing a new limb vaguely growing from somewhere. Prefer wording such as "with four clearly visible arms, two normal and two extra extending beside the torso", "with four visible hands clearly separated from one another", or "with one extra visible arm protruding separately from the shoulder line". Use leg-based errors only in the clearly suitable full-body cases described above.
-      6. Keep the anatomical counting failure obvious at a glance: the extra limbs should be fully visible, spatially separated, and easy to count, not hidden, cropped, overlapped, or visually absorbed into clothing, props, or the original pose.
+      4. For arm-based errors, do NOT default to only three visible arms if a stronger but still plausible count will render more clearly. Prefer four visible arms as the default moderate arm-count failure, with two normal arms and two extra arms extending from the torso or shoulders. If the subject is holding an object, keep the normal pair doing the holding and let the extra arms appear as additional limbs rather than rewriting the whole pose.
+      5. Directly state an incorrect total number of visible arms, hands, legs, or feet in the final image, rather than describing a new limb vaguely growing from somewhere. Prefer wording such as "with four visible arms, two normal and two extra extending from the torso", "with one extra visible arm emerging from the shoulder line", or "with four arms instead of two". Use leg-based errors only in the clearly suitable full-body cases described above.
+      6. Keep the anatomical counting failure obvious at a glance and focused on limb number rather than on pose complexity, clothing interaction, or prop interaction.
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of limb count.
       Output only the rewritten prompt.
@@ -179,10 +178,10 @@ semantic_anatomy:
 
       1. Identify the subject and choose the visible limb group that best matches the likely composition of the original prompt.
       2. Prefer severe extra-arm or extra-hand errors by default, because they are more likely to remain visible and read clearly at a glance. Only use extra legs or feet when the prompt clearly shows a front-facing or otherwise unobstructed full-body view with clearly separated lower limbs.
-      3. Directly state an incorrect total number of visible arms, hands, legs, or feet in the final image. For severe arm-based failures, prefer six clearly visible arms, or another equally unmistakable multi-arm count, when the composition can show them cleanly.
-      4. Use clear counting-based anatomical errors that are immediately noticeable, affecting one or two visible limb groups on the same subject. Prefer wording such as "with six clearly visible arms, two normal and four extra emerging distinctly from the shoulders and torso", "with multiple extra hands clearly separated at different angles", or "with six visible arms spread in different directions and all fully visible in the frame". Avoid relying on extra arms or hands that are tightly merged into an existing holding pose, hidden inside clothing, or swallowed by overlapping props. Use leg-based counting errors only in the clearly suitable full-body cases described above.
-      5. Keep the result grounded as a severe generation failure in limb count rather than a fantasy creature, but make the count error impossible to miss at first glance.
-      6. Avoid choosing limb types that would likely be hidden, cropped, overlapped, or impossible to observe clearly in the original composition; all extra limbs should remain countable and visibly separate.
+      3. Directly state an incorrect total number of visible arms, hands, legs, or feet in the final image. Prefer six visible arms for severe arm-based failures, or another equally unmistakable multi-arm count, when the composition can support a clear limb-count error.
+      4. Use clear counting-based anatomical errors that are immediately noticeable, affecting one or two visible limb groups on the same subject. Prefer wording such as "with six visible arms, two normal and four extra extending from the shoulders and torso", "with multiple extra arms branching from the upper body", or "with six arms instead of two". Use leg-based counting errors only in the clearly suitable full-body cases described above.
+      5. Keep the result grounded as a severe generation failure in limb count rather than a fantasy creature, and make the limb-count error impossible to miss at first glance.
+      6. Keep the error centered on too many limbs rather than on tangled pose complexity or overly elaborate motion.
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of limb count.
       Output only the rewritten prompt.

@@ -47,7 +47,7 @@ semantic_object:
 
       1. Identify a structured non-living object in the prompt.
       2. Describe it as keeping the same object identity and shape while visibly looking made of a slightly wrong material. Use clear visual material cues rather than soft touch-only words.
-         e.g. a wooden chair that still keeps its shape but looks faintly waxy; a ceramic mug that still keeps its shape but appears lightly fabric-covered; a metal kettle that still keeps its shape but shows a subtly porous sponge-like surface.
+         e.g. a wooden chair that still keeps its shape but looks faintly waxy; a ceramic mug that still keeps its shape but appears lightly fabric-covered; a metal kettle that still keeps its shape but looks like cloudy plastic.
       3. Do not alter the object's shape, count, or scene role.
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of material appearance.
@@ -58,9 +58,9 @@ semantic_object:
 
       1. Identify a visually prominent structured non-living object in the prompt. Prefer an object that is clearly visible and important in the image, rather than a small or easily ignored background prop.
       2. Explicitly state that this target object keeps the same shape and category but clearly looks made of the wrong material.
-         e.g. a wooden table that keeps its wooden shape but looks made of porous sponge; a metal appliance that keeps its shape but appears covered in thick waxy rubber; a ceramic cup that keeps its shape but looks fabric-covered instead of hard and smooth.
-      3. If the target object is a thin-framed or clearly metallic object such as a bicycle, tripod, wheelbarrow, rail, handlebar, frame, tool, or stand, prefer visually stronger wrong materials such as translucent jelly, thick waxy rubber, cloudy plastic, or inflatable plastic rather than weak sponge-like wording.
-      4. Use visually strong material cues such as translucent jelly, porous sponge, fabric-covered, chalky stone, waxy rubber, cloudy plastic, inflatable plastic, or soft foam. Do NOT use weak wording like slightly rubbery, mildly soft, or faintly unusual.
+         e.g. a wooden table that keeps its wooden shape but looks made of cloudy plastic; a metal appliance that keeps its shape but appears covered in thick waxy rubber; a ceramic cup that keeps its shape but looks fabric-covered instead of hard and smooth.
+      3. If the target object is a thin-framed or clearly metallic object such as a bicycle, tripod, wheelbarrow, rail, handlebar, frame, tool, or stand, prefer visually stronger wrong materials such as thick waxy rubber, cloudy plastic, inflatable plastic, fabric-wrapped ceramic, or fuzzy plush rather than weak low-contrast material wording.
+      4. Use visually strong material cues such as fabric-covered, chalky stone, thick waxy rubber, cloudy plastic, inflatable plastic, milky resin, fuzzy plush, wrinkled leather, or glossy ceramic shell. Do NOT use weak wording like slightly rubbery, mildly soft, faintly unusual, or vague soft-material phrasing.
       5. Keep the mismatch focused on material and surface appearance, not shape, identity, pose, or scene composition. Make it clear that only the target object's material changes while the person, background, and other objects stay the same.
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of material appearance.
@@ -71,9 +71,9 @@ semantic_object:
 
       1. Identify the main structured non-living object in the prompt. Prefer a target object that is clearly visible and central enough for its material change to be easy to notice.
       2. Explicitly state that the object keeps the same object identity and shape, but is unmistakably made of a drastically wrong material.
-         e.g. a metal kettle that keeps its kettle shape but is entirely made of soft foam; a wooden cabinet that keeps its shape but appears made of translucent waxy rubber; a glass bottle that keeps its bottle shape but looks like cloudy chalky stone instead of clear hard glass.
-      3. If the target object is thin-framed, metallic, or structurally delicate, such as a bicycle, tripod, wheelbarrow, tool, rail, frame, or stand, prefer very strong material swaps such as glossy translucent jelly, thick waxy rubber, cloudy plastic, or inflatable plastic instead of weaker sponge-like descriptions.
-      4. Use strong, highly visible material terms such as glossy translucent jelly, gelatinous slime, porous sponge foam, cloudy chalky stone, thick waxy rubber, cloudy plastic, inflatable plastic, or fabric-wrapped ceramic. Avoid weak wording like soft, rubbery, or slightly unusual on their own.
+         e.g. a metal kettle that keeps its kettle shape but is entirely made of thick rubber; a wooden cabinet that keeps its shape but appears made of wrinkled leather; a glass bottle that keeps its bottle shape but looks like cloudy chalky stone instead of clear hard glass.
+      3. If the target object is thin-framed, metallic, or structurally delicate, such as a bicycle, tripod, wheelbarrow, tool, rail, frame, or stand, prefer very strong material swaps such as thick waxy rubber, cloudy plastic, inflatable plastic, fuzzy plush, or fabric-wrapped ceramic instead of weaker low-contrast material descriptions.
+      4. Use strong, highly visible material terms such as cloudy chalky stone, thick waxy rubber, cloudy plastic, inflatable plastic, fabric-wrapped ceramic, milky resin, fuzzy plush, wrinkled leather, or thick foam. Avoid weak wording like soft, rubbery, slightly unusual, or vague gooey-material phrasing on their own.
       5. Keep the error centered on material appearance, not damage or deformation. Make it explicit that only the target object's material is wrong, while the person, scene layout, and surrounding objects remain unchanged.
 
       Avoid making the prompt nonsensical—keep the scene semantically plausible but intentionally degraded in terms of material appearance.
